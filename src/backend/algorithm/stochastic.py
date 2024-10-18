@@ -2,41 +2,8 @@ import numpy as np
 import time
 import math
 import random
+import utils
 
-def objective_function(cube):
-    """
-    Calculate the objective function cost based on the deviation from the magic number.
-    Args:
-    - cube (numpy array): The 3D cube configuration.
-    Returns:
-    - cost (int): The total deviation from the magic number across all rows, columns, and diagonals.
-    """
-    N = cube.shape[0]
-    magic_number = (N * (N**3 + 1)) // 2
-    cost = 0
-
-    # Row, column, and pillar sums
-    for i in range(N):
-        for j in range(N):
-            row_sum = np.sum(cube[i, j, :])  # Row
-            col_sum = np.sum(cube[i, :, j])  # Column
-            pillar_sum = np.sum(cube[:, i, j])  # Pillar
-            cost += abs(magic_number - row_sum)
-            cost += abs(magic_number - col_sum)
-            cost += abs(magic_number - pillar_sum)
-
-    # Space diagonals (3D diagonals)
-    diag1 = np.sum([cube[i, i, i] for i in range(N)])  # (0,0,0) to (N-1,N-1,N-1)
-    diag2 = np.sum([cube[i, i, N - i - 1] for i in range(N)])  # (0,0,N-1) to (N-1,N-1,0)
-    diag3 = np.sum([cube[i, N - i - 1, i] for i in range(N)])  # (0,N-1,0) to (N-1,0,N-1)
-    diag4 = np.sum([cube[N - i - 1, i, i] for i in range(N)])  # (N-1,0,0) to (0,N-1,N-1)
-
-    cost += abs(magic_number - diag1)
-    cost += abs(magic_number - diag2)
-    cost += abs(magic_number - diag3)
-    cost += abs(magic_number - diag4)
-
-    return cost
 
 def select_random_position(N):
     """
@@ -62,7 +29,7 @@ def generate_random_neighbor(cube):
 def stochastic_hill_climbing(cube, max_moves=1000, no_improvement_limit=100, min_improvement_threshold=5, exploration_prob=0.1):
     N = cube.shape[0]
     current_cube = np.copy(cube)
-    current_cost = objective_function(current_cube)
+    current_cost = utils.objective_function(current_cube)
     best_cube = np.copy(current_cube)
     best_cost = current_cost
     moves = 0
@@ -73,7 +40,7 @@ def stochastic_hill_climbing(cube, max_moves=1000, no_improvement_limit=100, min
     while moves < max_moves and no_improvement < no_improvement_limit:
         # Generate a random neighbor
         neighbor_cube = generate_random_neighbor(current_cube)
-        neighbor_cost = objective_function(neighbor_cube)
+        neighbor_cost = utils.objective_function(neighbor_cube)
 
         # Decide whether to accept the neighbor
         if neighbor_cost < current_cost or random.random() < exploration_prob * math.exp(-(neighbor_cost - current_cost)):
