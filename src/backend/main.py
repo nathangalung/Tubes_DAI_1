@@ -1,4 +1,4 @@
-from algorithm import initialize_random_cube, print_cube, objective_function, stochastic_hill_climbing, initialize_population, tournament_selection, crossover, mutate, adjust_mutation_rate, genetic_algorithm
+from algorithm import initialize_random_cube, print_cube, objective_function, stochastic_hill_climbing, genetic_algorithm
 from copy import deepcopy
 
 N = 5
