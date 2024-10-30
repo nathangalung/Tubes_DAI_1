@@ -2,7 +2,7 @@ import numpy as np
 import time
 import math
 import random
-import utils
+from . import utils
 
 
 def select_random_position(N):
@@ -64,4 +64,5 @@ def stochastic_hill_climbing(cube, max_moves=1000, no_improvement_limit=100, min
     end_time = time.time()
     elapsed_time = end_time - start_time
     print(f"Stochastic Hill Climbing: Moves={moves}, Time={elapsed_time:.2f} seconds, Best Cost={best_cost}")
-    return best_cube, best_cost
+    
+    return best_cube
