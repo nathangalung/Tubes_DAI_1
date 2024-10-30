@@ -88,6 +88,28 @@ def objective_function(cube):
     cost += abs(magic_number - diag3)
     cost += abs(magic_number - diag4)
 
+    # Plane diagonals for each face
+    # Front face (fixed x)
+    for i in range(N):
+        diag_front1 = np.sum([cube[i, j, j] for j in range(N)])  # Diagonal front face
+        diag_front2 = np.sum([cube[i, j, N-1-j] for j in range(N)])  # Anti-diagonal front face
+        cost += abs(magic_number - diag_front1)
+        cost += abs(magic_number - diag_front2)
+
+    # Side face (fixed y)
+    for j in range(N):
+        diag_side1 = np.sum([cube[i, j, i] for i in range(N)])  # Diagonal side face
+        diag_side2 = np.sum([cube[i, j, N-1-i] for i in range(N)])  # Anti-diagonal side face
+        cost += abs(magic_number - diag_side1)
+        cost += abs(magic_number - diag_side2)
+
+    # Top face (fixed z)
+    for k in range(N):
+        diag_top1 = np.sum([cube[i, i, k] for i in range(N)])  # Diagonal top face
+        diag_top2 = np.sum([cube[i, N-1-i, k] for i in range(N)])  # Anti-diagonal top face
+        cost += abs(magic_number - diag_top1)
+        cost += abs(magic_number - diag_top2)
+
     return cost
 
 def calculate_element_cost(cube, i, j, k):
@@ -128,32 +150,3 @@ def calculate_element_cost(cube, i, j, k):
         element_cost += abs(magic_number - anti_diag_sum)
 
     return element_cost
-
-def partial_objective_function(cube, i1, j1, k1, i2, j2, k2, current_cost):
-    """
-    Calculates the new cost after swapping two elements in the cube.
-    
-    Args:
-    - cube (numpy array): The cube configuration.
-    - i1, j1, k1 (int): Coordinates of the first element to swap.
-    - i2, j2, k2 (int): Coordinates of the second element to swap.
-    - current_cost (int): The current objective function cost before the swap.
-    
-    Returns:
-    - new_cost (int): The updated cost after the swap.
-    """
-    # Calculate the cost before the swap for the two elements
-    old_cost_1 = calculate_element_cost(cube, i1, j1, k1)
-    old_cost_2 = calculate_element_cost(cube, i2, j2, k2)
-
-    # Perform the swap
-    cube[i1][j1][k1], cube[i2][j2][k2] = cube[i2][j2][k2], cube[i1][j1][k1]
-
-    # Calculate the cost after the swap
-    new_cost_1 = calculate_element_cost(cube, i1, j1, k1)
-    new_cost_2 = calculate_element_cost(cube, i2, j2, k2)
-
-    # Update the current cost with the difference in old and new costs
-    new_cost = current_cost + (new_cost_1 - old_cost_1) + (new_cost_2 - old_cost_2)
-
-    return new_cost
