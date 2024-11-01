@@ -6,13 +6,13 @@ from .utils import (
     objective_function
 )
 
+from .steepestAscent import steepest_ascent_hill_climbing
+
 # Import stochastic algorithm functions
 from .stochastic import stochastic_hill_climbing
 
 # Import genetic algorithm and necessary components
-from .genetic import (
-    genetic_algorithm  # Main function for running the genetic algorithm
-)
+from .genetic import genetic_algorithm
 
 # from .steepestAscent import SteepestAscent
 # from .sidwaysMove import SidewaysMove

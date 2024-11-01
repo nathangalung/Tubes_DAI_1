@@ -1,9 +1,10 @@
 import random
 import time
+from . import utils
 
 def steepest_ascent_hill_climbing(cube):
-    N = len(cube)
-    best_cost = objective_function(cube)
+    N = cube.shape[0]
+    best_cost = utils.objective_function(cube)
     moves = 0
     no_improvement = 0  # Counter untuk iterasi tanpa perbaikan
     MAX_NO_IMPROVEMENT = 100  # Batas maksimal iterasi tanpa perbaikan
@@ -24,7 +25,7 @@ def steepest_ascent_hill_climbing(cube):
 
             # Lakukan swap sementara
             cube[i][j][k], cube[l][m][n] = cube[l][m][n], cube[i][j][k]
-            current_cost = objective_function(cube)
+            current_cost = utils.objective_function(cube)
 
             # Cek jika ada perbaikan
             if current_cost < best_neighbor_cost:

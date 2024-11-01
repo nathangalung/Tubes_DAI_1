@@ -1,19 +1,18 @@
-from algorithm import initialize_random_cube, print_cube, objective_function, stochastic_hill_climbing, genetic_algorithm
+from algorithm import initialize_random_cube, print_cube, objective_function, steepest_ascent_hill_climbing, stochastic_hill_climbing, genetic_algorithm
 from copy import deepcopy
 
 N = 5
 
 def main():
-    
     cube = initialize_random_cube(5)
-    cube1, cube2, cube3, cube4, cube5, cube6, cube7 = deepcopy(cube), deepcopy(cube), deepcopy(cube), deepcopy(cube), deepcopy(cube), deepcopy(cube), deepcopy(cube)
+    cube1, cube2, cube3, cube4, cube5, cube6 = deepcopy(cube), deepcopy(cube), deepcopy(cube), deepcopy(cube), deepcopy(cube), deepcopy(cube)
     
     print(f"Cost={objective_function(cube)}")
     print_cube(cube)
 
-    # print("Testing Steepest Ascent Hill Climbing")
-    # steepest_ascent_hill_climbing(cube1)
-    # print_cube(cube1)
+    print("Testing Steepest Ascent Hill Climbing")
+    steepest_ascent_hill_climbing(cube1)
+    print_cube(cube1)
 
     # print("Testing Hill Climbing with Sideways Move")
     # hill_climbing_with_sideways_move(cube2)
