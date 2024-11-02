@@ -1,20 +1,26 @@
 import numpy as np
 import time
+import matplotlib.pyplot as plt  # Untuk plotting
 from typing import Tuple
-from utils import  initialize_random_cube, print_cube, calculate_magic_number, objective_function, calculate_element_cost
+
+# Import fungsi-fungsi dari utils
+from utils import initialize_random_cube, print_cube, calculate_magic_number, objective_function, calculate_element_cost
 
 def swap_elements(cube: np.ndarray, pos1: Tuple[int, int, int], pos2: Tuple[int, int, int]) -> None:
+    # Fungsi untuk menukar elemen antara dua posisi di kubus
     i, j, k = pos1
     l, m, n = pos2
     cube[i, j, k], cube[l, m, n] = cube[l, m, n], cube[i, j, k]
 
 def swap_and_calculate_cost(cube: np.ndarray, pos1: Tuple[int, int, int], pos2: Tuple[int, int, int]) -> int:
+    # Fungsi untuk menukar elemen sementara, menghitung biaya, lalu mengembalikan ke posisi awal
     swap_elements(cube, pos1, pos2)  # Melakukan pertukaran elemen
     cost = objective_function(cube)  # Menghitung biaya berdasarkan konfigurasi setelah pertukaran
     swap_elements(cube, pos1, pos2)  # Mengembalikan ke konfigurasi awal
     return cost
 
 def find_best_neighbor_optimized(cube: np.ndarray, best_cost: int, max_sideways: int, sideways_moves: int) -> Tuple[int, Tuple[int, int, int, int, int, int]]:
+    # Fungsi untuk mencari tetangga terbaik dengan biaya minimum
     N = cube.shape[0]
     best_neighbor_cost = best_cost
     best_swap = (-1, -1, -1, -1, -1, -1)
@@ -48,13 +54,21 @@ def find_best_neighbor_optimized(cube: np.ndarray, best_cost: int, max_sideways:
 
     return best_neighbor_cost, best_swap
 
-def hill_climbing_with_sideways_move_optimized(cube: np.ndarray, max_sideways: int = 100) -> Tuple[int, float, int]:
+def hill_climbing_with_sideways_move_optimized(cube: np.ndarray, max_sideways: int = 100, max_iterations: int = 1000) -> Tuple[int, float, int, list]:
+    # Fungsi utama untuk melakukan hill climbing dengan sideways moves dan batas iterasi
     N = cube.shape[0]
     best_cost = objective_function(cube)
     moves, sideways_moves = 0, 0
     start_time = time.time()
 
-    while True:
+    # Cetak keadaan awal kubus
+    print("Keadaan Awal Kubus:")
+    print_cube(cube)
+
+    # Melacak nilai objective function pada setiap iterasi untuk plotting
+    cost_history = [best_cost]
+
+    while moves < max_iterations:  # Tambahkan kondisi batas iterasi
         # Panggil fungsi yang sudah dioptimalkan untuk mencari tetangga terbaik
         best_neighbor_cost, best_swap = find_best_neighbor_optimized(cube, best_cost, max_sideways, sideways_moves)
 
@@ -75,7 +89,23 @@ def hill_climbing_with_sideways_move_optimized(cube: np.ndarray, max_sideways: i
             best_cost = best_neighbor_cost
 
         moves += 1
+        cost_history.append(best_cost)  # Melacak biaya terbaik per iterasi
 
     # Menghitung waktu yang dibutuhkan
     time_elapsed = time.time() - start_time
-    return moves, time_elapsed, best_cost
+
+    # Cetak hasil akhir
+    print("Keadaan Akhir Kubus:")
+    print_cube(cube)  # Cetak keadaan akhir kubus
+    print(f"Nilai Akhir Objective Function: {best_cost}")
+    print(f"Durasi Waktu: {time_elapsed:.2f} detik")
+    print(f"Total Langkah: {moves}")
+
+    # Plot nilai objective function terhadap iterasi
+    plt.plot(cost_history)
+    plt.xlabel("Iterasi")
+    plt.ylabel("Nilai Objective Function")
+    plt.title("Nilai Objective Function per Iterasi")
+    plt.show()
+
+    return moves, time_elapsed, best_cost, cost_history
