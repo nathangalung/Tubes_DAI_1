@@ -5,15 +5,17 @@ import time
 from numba import njit, prange
 from . import utils
 from concurrent.futures import ThreadPoolExecutor
+# from .utils import plot_objective_function_progress
+from copy import deepcopy
 
-# Constants
-POPULATION_SIZE = 300
-GENERATIONS = 1500  # Increased for better convergence
+# Populasi dan iterasi dengan nilai yang lebih besar
+POPULATION_OPTIONS = [100, 200, 300]  # Variasi ukuran populasi yang lebih besar untuk eksperimen yang maksimal
+ITERATION_OPTIONS = [500, 1000, 1500]   # Variasi jumlah iterasi yang lebih besar untuk eksperimen yang maksimal
 TOURNAMENT_SIZE = 10
-INITIAL_ELITISM = 15  # Reduced initial elitism, will adjust dynamically
+INITIAL_ELITISM = 15
 initial_mutation_rate = 0.05
 mutation_rate = initial_mutation_rate
-initial_crossover_rate = 0.9  # Initial crossover rate
+initial_crossover_rate = 0.9
 crossover_rate = initial_crossover_rate
 
 creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
@@ -29,7 +31,8 @@ class CustomHallOfFame(tools.HallOfFame):
                     self.items.pop(-1)
                     self.insert(ind)
 
-def create_toolbox(cube, executor):
+
+def create_toolbox(cube, executor, population_size):
     N = cube.shape[0]
     toolbox = base.Toolbox()
 
@@ -47,6 +50,7 @@ def create_toolbox(cube, executor):
 
     return toolbox
 
+
 @njit(parallel=True)
 def multi_parent_crossover(parents, N):
     num_parents = len(parents)
@@ -63,6 +67,7 @@ def multi_parent_crossover(parents, N):
 
     return child1, child2
 
+
 @njit
 def adaptive_gaussian_mutate(individual, N, scale=0.1):
     global mutation_rate
@@ -73,77 +78,138 @@ def adaptive_gaussian_mutate(individual, N, scale=0.1):
         individual[idx] = max(1, min(individual[idx], N * N * N))
     return individual
 
-def adjust_mutation_and_crossover_rate(population, generation):
+
+def adjust_mutation_and_crossover_rate(population, iteration_index, population_size):
     global mutation_rate, crossover_rate
     unique_fitness_values = len(set(ind.fitness.values[0] for ind in population if ind.fitness.valid))
     
-    if unique_fitness_values < POPULATION_SIZE / 4:
+    if unique_fitness_values < population_size / 4:
         mutation_rate = min(0.3, mutation_rate * 1.1)
         crossover_rate = max(0.7, crossover_rate * 0.95)
     else:
         mutation_rate = max(0.01, mutation_rate * 0.9)
         crossover_rate = min(0.95, crossover_rate * 1.05)
 
-def restart_population(population, toolbox):
-    restart_count = int(POPULATION_SIZE * 0.3)  # Restarting 30% of the population
+
+def restart_population(population, toolbox, population_size):
+    restart_count = int(population_size * 0.3)
     new_individuals = [toolbox.individual() for _ in range(restart_count)]
     population[-restart_count:] = new_individuals
 
-def dynamic_elitism(generation):
-    if generation < GENERATIONS // 3:
+
+def dynamic_elitism(iteration_index, iteration_count):
+    if iteration_index < iteration_count // 3:
         return INITIAL_ELITISM
-    elif generation < (2 * GENERATIONS) // 3:
+    elif iteration_index < (2 * iteration_count) // 3:
         return int(INITIAL_ELITISM * 1.5)
     else:
         return int(INITIAL_ELITISM * 2)
 
+
 def genetic_algorithm(cube):
-    N = cube.shape[0]
-    with ThreadPoolExecutor() as executor:
-        toolbox = create_toolbox(cube, executor)
-        population = toolbox.population(n=POPULATION_SIZE)
-        hof = CustomHallOfFame(INITIAL_ELITISM)
-        stats = tools.Statistics(lambda ind: ind.fitness.values)
-        stats.register("avg", np.mean)
-        stats.register("min", np.min)
+    """
+    Runs the genetic algorithm 9 times with different configurations of population sizes and iteration counts.
+    
+    Args:
+    - cube: Initial state of the cube to solve.
+    """
+    pop_options = POPULATION_OPTIONS.copy()
+    iter_options = ITERATION_OPTIONS.copy()
+    
+    experiments_completed = 0
 
-        start_time = time.time()
-        best_fitness, no_improvement_count = float('inf'), 0
-        
-        for generation in range(GENERATIONS):
-            elitism_size = dynamic_elitism(generation)
-            population = algorithms.varAnd(population, toolbox, cxpb=crossover_rate, mutpb=mutation_rate)
+    while experiments_completed < 9 and pop_options:
+        # Prompt user to choose a population size
+        print("\nJumlah Populasi tersedia:", pop_options)
+        population_size = int(input("Pilih Jumlah Populasi: "))
+        if population_size not in pop_options:
+            print("Jumlah Populasi tidak  valid, silakan pilih Jumlah Populasi yang valid.")
+            continue
 
-            invalid_ind = [ind for ind in population if not ind.fitness.valid]
-            fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
-            for ind, fit in zip(invalid_ind, fitnesses):
-                ind.fitness.values = fit
-
-            offspring = toolbox.select(population + list(hof), k=POPULATION_SIZE - elitism_size)
-            population[:] = offspring + list(hof)
-
-            adjust_mutation_and_crossover_rate(population, generation)
-            current_best_fitness = min(ind.fitness.values[0] for ind in population)
+        # Run 3 trials with different iteration counts for the chosen population size
+        iter_trials = 0
+        while iter_trials < 3 and iter_options:
+            # Prompt user to choose an iteration count
+            print("\nJumlah Iterasi tersedia:", iter_options)
+            iteration_count = int(input("Pilih Jumlah Iterasi: "))
+            if iteration_count not in iter_options:
+                print("Jumlah Iterasi tidak  valid, silakan pilih Jumlah Iterasi yang valid.")
+                continue
             
-            if current_best_fitness < best_fitness:
-                best_fitness = current_best_fitness
-                no_improvement_count = 0
-            else:
-                no_improvement_count += 1
+            # Use a copy of the initial cube state for each experiment
+            initial_cube = deepcopy(cube)
+            print(f"\nEksperimen dengan Jumlah Populasi = {population_size} dan Jumlah Iterasi = {iteration_count}")
 
-            if no_improvement_count > 50:
-                restart_population(population, toolbox)
-                no_improvement_count = 0
+            with ThreadPoolExecutor() as executor:
+                toolbox = create_toolbox(initial_cube, executor, population_size)
+                population = toolbox.population(n=population_size)
+                hof = CustomHallOfFame(INITIAL_ELITISM)
+                stats = tools.Statistics(lambda ind: ind.fitness.values)
+                stats.register("avg", np.mean)
+                stats.register("min", np.min)
 
-            hof.update(population)
+                start_time = time.time()
+                best_fitness, no_improvement_count = float('inf'), 0
+                avg_fitness_over_time = []
+                
+                for iter_idx in range(iteration_count):
+                    elitism_size = dynamic_elitism(iter_idx, iteration_count)
+                    population = algorithms.varAnd(population, toolbox, cxpb=crossover_rate, mutpb=mutation_rate)
 
-            if generation % 50 == 0:
-                best_fitness = hof[0].fitness.values[0]
+                    invalid_ind = [ind for ind in population if not ind.fitness.valid]
+                    fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
+                    for ind, fit in zip(invalid_ind, fitnesses):
+                        ind.fitness.values = fit
 
-            if hof[0].fitness.values[0] <= 1e-3:
-                break
+                    offspring = toolbox.select(population + list(hof), k=population_size - elitism_size)
+                    population[:] = offspring + list(hof)
 
-        end_time = time.time()
-        best_individual = hof[0]
-        print(f"Genetic Algorithm Complete: Time={end_time - start_time:.2f} seconds, Best Fitness={best_individual.fitness.values[0]}")
-        return best_individual
+                    adjust_mutation_and_crossover_rate(population, iter_idx, population_size)
+                    avg_fitness = stats.compile(population)["avg"]
+
+                    avg_fitness_over_time.append(avg_fitness)
+                    current_best_fitness = min(ind.fitness.values[0] for ind in population)
+                    
+                    if current_best_fitness < best_fitness:
+                        best_fitness = current_best_fitness
+                        no_improvement_count = 0
+                    else:
+                        no_improvement_count += 1
+
+                    if no_improvement_count > 50:
+                        restart_population(population, toolbox, population_size)
+                        no_improvement_count = 0
+
+                    hof.update(population)
+
+                    if hof[0].fitness.values[0] <= 1e-3:
+                        break
+
+                end_time = time.time()
+                best_individual = hof[0]
+                duration = end_time - start_time
+
+                # # Plot the objective function over time for this experiment
+                # plot_objective_function_progress(
+                #     avg_fitness_over_time=avg_fitness_over_time,
+                #     title=f'Genetic Algorithm (Pop Size={population_size}, Iterations={iteration_count})'
+                # )
+
+                # Print results for this experiment
+                print("Initial Cube State:")
+                utils.print_cube(initial_cube)  # Print the original initial state
+                print("Final Cube State:")
+                utils.print_cube(best_individual)
+                print(f"Nilai Objective Function: {best_fitness}")
+                print(f"Jumlah Populasi: {population_size}, Jumlah Iterasi: {iteration_count}")
+                print(f"Durasi Eksperimen: {duration:.2f} detik\n")
+
+            # Increment iteration trial counter and remove used iteration option
+            iter_trials += 1
+            iter_options.remove(iteration_count)
+            experiments_completed += 1
+
+        # Remove the population size option if all iteration trials are done or all iteration options are used
+        if iter_trials == 3 or not iter_options:
+            pop_options.remove(population_size)
+            iter_options = ITERATION_OPTIONS.copy()  # Reset iteration options for the next population size

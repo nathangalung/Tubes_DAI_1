@@ -4,7 +4,6 @@ import math
 import random
 from . import utils
 
-
 def select_random_position(N):
     """
     Selects a random position in the cube.
@@ -26,8 +25,7 @@ def generate_random_neighbor(cube):
     new_cube[i1, j1, k1], new_cube[i2, j2, k2] = new_cube[i2, j2, k2], new_cube[i1, j1, k1]
     return new_cube
 
-def stochastic_hill_climbing(cube, max_moves=1000, no_improvement_limit=100, min_improvement_threshold=5, exploration_prob=0.1):
-    N = cube.shape[0]
+def stochastic_algorithm(cube, max_moves=1000, no_improvement_limit=100, min_improvement_threshold=5, exploration_prob=0.1):
     current_cube = np.copy(cube)
     current_cost = utils.objective_function(current_cube)
     best_cube = np.copy(current_cube)

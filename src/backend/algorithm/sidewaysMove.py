@@ -55,9 +55,8 @@ def find_best_neighbor(cube: np.ndarray, best_cost: int, max_sideways: int, side
 
     return best_neighbor_cost, best_swap
 
-def sideways_move(cube: np.ndarray, max_sideways: int = 100, max_iterations: int = 1000) -> Tuple[int, float, int, list]:
+def sideways_move_algorithm(cube: np.ndarray, max_sideways: int = 100, max_iterations: int = 1000) -> Tuple[int, float, int, list]:
     # Fungsi utama untuk melakukan hill climbing dengan sideways moves dan batas iterasi
-    N = cube.shape[0]
     best_cost = utils.objective_function(cube)
     moves, sideways_moves = 0, 0
     start_time = time.time()
@@ -96,8 +95,6 @@ def sideways_move(cube: np.ndarray, max_sideways: int = 100, max_iterations: int
     time_elapsed = time.time() - start_time
 
     # Cetak hasil akhir
-    print("Keadaan Akhir Kubus:")
-    utils.print_cube(cube)  # Cetak keadaan akhir kubus
     print(f"Nilai Akhir Objective Function: {best_cost}")
     print(f"Durasi Waktu: {time_elapsed:.2f} detik")
     print(f"Total Langkah: {moves}")
@@ -110,11 +107,3 @@ def sideways_move(cube: np.ndarray, max_sideways: int = 100, max_iterations: int
     plt.show()
 
     return moves, time_elapsed, best_cost, cost_history
-
-if __name__ == "__main__":
-    # Inisialisasi kubus dengan ukuran N x N x N
-    N = 5
-    cube = utils.initialize_random_cube(5)  # Buat kubus acak dengan ukuran N
-
-    # Jalankan algoritma simulated annealing
-    sideways_move(cube)

@@ -6,10 +6,12 @@ from .utils import (
     objective_function
 )
 
-from .steepestAscent import steepest_ascent_hill_climbing
+from .steepestAscent import steepest_ascent_algorithm
+
+from .sidewaysMove import sideways_move_algorithm
 
 # Import stochastic algorithm functions
-from .stochastic import stochastic_hill_climbing
+from .stochastic import stochastic_algorithm
 
 # Import genetic algorithm and necessary components
 from .genetic import genetic_algorithm
@@ -19,4 +21,4 @@ from .genetic import genetic_algorithm
 # from .randomRestart import RandomRestart
 # from .stochastic import Stochastic
 # from .simulatedAnnealing import SimulatedAnnealing
-# from .genetic import Genetic    
+# from .genetic import Genetic

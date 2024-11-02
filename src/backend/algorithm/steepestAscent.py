@@ -2,13 +2,12 @@ import random
 import time
 from . import utils
 
-def steepest_ascent_hill_climbing(cube):
+def steepest_ascent_algorithm(cube):
     N = cube.shape[0]
     best_cost = utils.objective_function(cube)
     moves = 0
     no_improvement = 0  # Counter untuk iterasi tanpa perbaikan
     MAX_NO_IMPROVEMENT = 100  # Batas maksimal iterasi tanpa perbaikan
-    IMPROVEMENT_THRESHOLD = 0  # Menerima semua perbaikan
     MAX_SEARCH_SIZE = N * N * N // 2  # Jumlah swap yang diuji dalam satu iterasi
     start_time = time.time()
 
