@@ -1,7 +1,7 @@
 const canvasIds = [
     'init-cube-canvas',
     'steepest-cube-canvas',
-    'sideway-cube-canvas',
+    'sideways-cube-canvas',
     'random-cube-canvas',
     'stochastic-cube-canvas',
     'annealing-cube-canvas',
