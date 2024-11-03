@@ -2,7 +2,6 @@
 from .utils import (
     initialize_random_cube,
     print_cube,
-    calculate_magic_number,
     objective_function
 )
 
@@ -10,7 +9,10 @@ from .steepestAscent import steepest_ascent_algorithm
 
 from .sidewaysMove import sideways_move_algorithm
 
-# Import stochastic algorithm functions
+# from .randomRestart import random_restart_algorithm
+
+from .simulatedAnnealing import simulated_annealing_algorithm
+
 from .stochastic import stochastic_algorithm
 
 # Import genetic algorithm and necessary components

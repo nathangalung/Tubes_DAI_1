@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="algorithm.css">
+    <title>DAI - Algorithm</title>
+</head>
+<body>
+    <header>
+        <h1>Tugas DAI</h1>
+        <nav>
+            <div class="hamburger" onclick="toggleMenu()">☰</div>
+            <ul class="nav-links" id="nav-links">
+                <li class="dropdown">
+                    <a href="index.html">HOME</a>
+                    <ul class="dropdown-content">
+                        <li><a href="index.html#general">General</a></li>
+                        <li><a href="index.html#magic-cube">Math</a></li>
+                        <li><a href="index.html#random-cube">Graph</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="algorithm.html">ALGORITHM</a>
+                    <ul class="dropdown-content">
+                        <li><a href="#initialize">Initialize Cube</a></li>
+                        <li><a href="#steepest-ascent">Steepest Ascent</a></li>
+                        <li><a href="#sideway-moves">Sideway Moves</a></li>
+                        <li><a href="#random-restart">Random Restart</a></li>
+                        <li><a href="#stochastic">Stochastic</a></li>
+                        <li><a href="#simulated-annealing">Simulated Annealing</a></li>
+                        <li><a href="#genetic">Genetic</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Sections for each algorithm -->
+    <section id="initialize">
+        <button id="initialize-cube" class="algorithm-button">Initialize Cube</button>
+        <canvas id="init-cube-canvas" class="cube-canvas"></canvas>
+        <p>Initialized Cube</p>
+    </section>
+
+    <section id="steepest-ascent">
+        <canvas id="steepest-cube-canvas" class="cube-canvas"></canvas>
+        <p>Steepest Ascent</p>
+    </section>
+
+    <section id="sideway-moves">
+        <canvas id="sideway-cube-canvas" class="cube-canvas"></canvas>
+        <p>Sideway Moves</p>
+    </section>
+
+    <section id="random-restart">
+        <canvas id="random-cube-canvas" class="cube-canvas"></canvas>
+        <p>Random Restart</p>
+    </section>
+
+    <section id="stochastic">
+        <canvas id="stochastic-cube-canvas" class="cube-canvas"></canvas>
+        <p>Stochastic</p>
+    </section>
+
+    <section id="simulated-annealing">
+        <canvas id="annealing-cube-canvas" class="cube-canvas"></canvas>
+        <p>Simulated Annealing</p>
+    </section>
+
+    <section id="genetic">
+        <canvas id="genetic-cube-canvas" class="cube-canvas"></canvas>
+        <p>Genetic</p>
+    </section>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

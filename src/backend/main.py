@@ -1,45 +1,75 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+import numpy as np
+from copy import deepcopy
+from pydantic import BaseModel
+
+# Import algorithm functions
 from algorithm import (
     initialize_random_cube,
-    print_cube, objective_function,
     steepest_ascent_algorithm,
     sideways_move_algorithm,
+    simulated_annealing_algorithm,
     stochastic_algorithm,
     genetic_algorithm
 )
-from copy import deepcopy
 
-N = 5
+app = FastAPI()
 
-def main():
-    initial_state_cube = initialize_random_cube(5)
-    final_state_cube = [deepcopy(initial_state_cube) for _ in range(6)]
-    
-    print(f"Cost={objective_function(initial_state_cube)}")
-    print_cube(initial_state_cube)
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins, change for production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-    print("Eksperimen Steepest Ascent Hill Climbing")
-    steepest_ascent_algorithm(final_state_cube[0])
-    print_cube(final_state_cube[0])
+N = 5  # Cube dimension
 
-    print("Eksperimen Hill Climbing with Sideways Move")
-    sideways_move_algorithm(final_state_cube[1])
-    print_cube(final_state_cube[1])
+class CubeResponse(BaseModel):
+    cube: list
 
-    # print("Eksperimen Random Restart Hill Climbing")
-    # random_restart_hill_climbing(final_state_cube[2])
-    # print_cube(final_state_cube[2])
+# Endpoint to initialize the cube
+@app.get("/initialize_cube", response_model=CubeResponse)
+async def initialize_cube():
+    initial_cube = initialize_random_cube(N)
+    return {"cube": initial_cube.tolist()}
 
-    # print("Eksperimen Simulated Annealing Algorithm")
-    # simulated_annealing(final_state_cube[3])
-    # print_cube(final_state_cube[3])
+# Helper function to run an algorithm and return its result
+def run_algorithm(algorithm, cube_data):
+    modified_cube = deepcopy(cube_data)  # Deep copy to avoid modifying the original data
+    algorithm(modified_cube)
+    return modified_cube.tolist()
 
-    print("Eksperimen Stochastic Hill Climbing Algorithm")
-    final_state_cube[4] = stochastic_algorithm(final_state_cube[4])
-    print_cube(final_state_cube[4])
+# Endpoint for each algorithm
 
-    print("Eksperimen Genetic Algorithm")
-    final_state_cube[5] = genetic_algorithm(final_state_cube[5])
-    print_cube(final_state_cube[5])
-    
-if __name__ == "__main__":
-    main()
+@app.post("/steepest_ascent", response_model=CubeResponse)
+async def steepest_ascent(cube: CubeResponse):
+    cube_data = np.array(cube.cube)
+    result = run_algorithm(steepest_ascent_algorithm, cube_data)
+    return {"cube": result}
+
+@app.post("/sideways_move", response_model=CubeResponse)
+async def sideways_move(cube: CubeResponse):
+    cube_data = np.array(cube.cube)
+    result = run_algorithm(sideways_move_algorithm, cube_data)
+    return {"cube": result}
+
+@app.post("/stochastic", response_model=CubeResponse)
+async def stochastic(cube: CubeResponse):
+    cube_data = np.array(cube.cube)
+    result = run_algorithm(stochastic_algorithm, cube_data)
+    return {"cube": result}
+
+@app.post("/simulated_annealing", response_model=CubeResponse)
+async def simulated_annealing(cube: CubeResponse):
+    cube_data = np.array(cube.cube)
+    result = run_algorithm(simulated_annealing_algorithm, cube_data)
+    return {"cube": result}
+
+@app.post("/genetic", response_model=CubeResponse)
+async def genetic(cube: CubeResponse):
+    cube_data = np.array(cube.cube)
+    result = run_algorithm(genetic_algorithm, cube_data)
+    return {"cube": result}

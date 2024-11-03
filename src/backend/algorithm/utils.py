@@ -23,6 +23,8 @@ def initialize_random_cube(N):
                 cube[i][j][k] = num
                 used.add(num)
     
+    print(f"Cost = {objective_function(cube)}")
+    
     return cube
 
 def print_cube(cube):

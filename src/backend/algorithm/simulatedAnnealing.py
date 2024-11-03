@@ -26,8 +26,8 @@ def acceptance_probability(delta_cost, temperature):
     # Menghitung probabilitas penerimaan untuk solusi yang lebih buruk
     return math.exp(-delta_cost / temperature)
 
-def simulated_annealing(cube, initial_temperature=100.0, cooling_rate=0.9995, min_temperature=0.1, 
-                        max_no_improvement=500, reheating_factor=1.2, max_iterations=10000):
+def simulated_annealing_algorithm(cube, initial_temperature=100.0, cooling_rate=0.9995, min_temperature=0.1,
+                                  max_no_improvement=500, reheating_factor=1.2, max_iterations=10000):
     # Menginisialisasi array Numpy untuk melacak riwayat dengan ukuran tetap
     objective_history = np.zeros(max_iterations)
     energy_temp_history = np.zeros(max_iterations)

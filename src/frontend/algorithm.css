@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+header {
+    background-color: #2c003e;
+    color: white;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+header h1 {
+    font-size: 24px;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    align-items: center;
+}
+
+.nav-links .dropdown {
+    position: relative;
+}
+
+.nav-links a {
+    color: white;
+    padding: 10px 15px;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #2c003e;
+    list-style: none;
+    margin-top: 5px;
+    right: 0;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-content li {
+    width: 200px;
+    text-align: left;
+}
+
+.dropdown-content li a {
+    display: block;
+    padding: 10px 20px;
+}
+
+.dropdown-content li a:hover {
+    background-color: #4b0082;
+}
+
+.cube-canvas {
+    background-color: black;
+    width: 300px;
+    height: 300px;
+    margin: 20px auto;
+    display: block;
+    border-radius: 5px;
+}
+
+.algorithm-button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #4b0082;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.algorithm-button:hover {
+    background-color: #6a0dad;
+}
+
+section {
+    padding: 20px;
+    text-align: center;
+}
