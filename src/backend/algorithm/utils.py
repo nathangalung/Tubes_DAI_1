@@ -7,10 +7,6 @@ import io
 def save_costs(costs, filename="costs.json"):
     """
     Saves a list of costs to a file in JSON format.
-
-    Args:
-    - costs (list of int): List of cost values.
-    - filename (str): File to save costs to.
     """
     # Convert all numpy.int64 values to Python's native int
     costs = [int(cost) for cost in costs]
@@ -132,53 +128,10 @@ def objective_function(cube):
 
     return cost
 
-def calculate_element_cost(cube, i, j, k):
-    """
-    Calculates the cost associated with a specific element in the cube.
-    
-    Args:
-    - cube (numpy array): 3D cube configuration.
-    - i, j, k (int): Coordinates of the element in the cube.
-    
-    Returns:
-    - element_cost (int): The cost for that element's row, column, and diagonals.
-    """
-    N = cube.shape[0]
-    magic_number = calculate_magic_number(N)
-    element_cost = 0
-
-    # Row (across x-axis)
-    row_sum = np.sum(cube[:, j, k])
-    element_cost += abs(magic_number - row_sum)
-
-    # Column (across y-axis)
-    col_sum = np.sum(cube[i, :, k])
-    element_cost += abs(magic_number - col_sum)
-
-    # Depth (across z-axis)
-    depth_sum = np.sum(cube[i, j, :])
-    element_cost += abs(magic_number - depth_sum)
-
-    # Main diagonal (if applicable)
-    if i == j == k:
-        diag_sum = np.sum([cube[d, d, d] for d in range(N)])
-        element_cost += abs(magic_number - diag_sum)
-
-    # Anti-diagonal (if applicable)
-    if i == j and k == N - 1 - i:
-        anti_diag_sum = np.sum([cube[d, d, N-d-1] for d in range(N)])
-        element_cost += abs(magic_number - anti_diag_sum)
-
-    return element_cost
-
 def plot_objective_function(filename="costs.json", plot_filename="objective_function_plot.png"):
     """
     Loads the cost values from a JSON file and plots the objective function values 
     per iteration, saving the plot as a PNG file.
-    
-    Args:
-    - filename (str): Name of the JSON file containing the costs.
-    - plot_filename (str): Name of the file to save the plot.
     """
     # Load costs from JSON file
     with open(filename, "r") as f:

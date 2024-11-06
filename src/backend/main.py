@@ -1,17 +1,20 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import numpy as np
+import io
+import json
 from algorithm import (
     initialize_random_cube,
     steepest_ascent_algorithm,
     sideways_move_algorithm,
     stochastic_algorithm,
     simulated_annealing_algorithm,
-    genetic_algorithm
+    genetic_algorithm,
+    plot_objective_function,
+    save_costs
 )
-from utils import plot_objective_function  # Import fungsi plot dari utils.py
 
 app = FastAPI()
 
@@ -55,7 +58,7 @@ async def initialize_cube():
 @app.post("/run_algorithm_with_plot")
 async def run_algorithm_with_plot(request: AlgorithmRequest):
     """
-    Run the selected algorithm and return a plot of the objective function per iteration.
+    Run the selected algorithm, save the cost data, and return a plot of the objective function.
     """
     # Get the algorithm function based on the requested algorithm name
     algorithm_function = algorithm_map.get(request.algorithm)
@@ -65,11 +68,22 @@ async def run_algorithm_with_plot(request: AlgorithmRequest):
     # Convert cube data from list to numpy array
     cube_data = np.array(request.cube)
 
-    # Run the algorithm and get the modified cube and best cost over iterations
-    modified_cube, best_cost = algorithm_function(cube_data)
+    # Run the algorithm and get the modified cube and cost data
+    try:
+        modified_cube, best_cost = algorithm_function(cube_data)
+    except ValueError as e:
+        print("Error:", e)
+        raise HTTPException(status_code=500, detail="Algorithm function did not return the expected output.")
 
-    # Generate and return the plot based on best_cost data
-    return plot_objective_function(best_cost)
+    # Tentukan nama file PNG yang dinamis berdasarkan nama algoritma
+    plot_filename = f"{request.algorithm}_objective_function_plot.png"
+
+    # Save the costs and plot them with a dynamic filename
+    save_costs(best_cost, filename=f"{request.algorithm}_costs.json")
+    plot_objective_function(filename=f"{request.algorithm}_costs.json", plot_filename=plot_filename)
+
+    # Return the file as a FileResponse instead of StreamingResponse
+    return FileResponse(plot_filename, media_type="image/png")
 
 @app.on_event("startup")
 async def clear_algorithm_results():

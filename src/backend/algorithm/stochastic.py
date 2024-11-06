@@ -1,7 +1,7 @@
 import numpy as np
 import time
 import random
-import utils
+from . import utils
 
 def select_random_position(N):
     """Selects a random position in the cube."""
@@ -59,16 +59,10 @@ def stochastic_algorithm(cube, max_moves=1000):
     elapsed_time = end_time - start_time
     print(f"Stochastic Hill Climbing: Moves={moves}, Time={elapsed_time:.2f} seconds, Final Cost={current_cost}")
 
-    # Save costs to JSON file
-    utils.save_costs(costs, "stochastic_costs.json")
+    # # Save costs to JSON file
+    # utils.save_costs(costs, "stochastic_costs.json")
 
-    # Plot the costs over iterations
-    utils.plot_objective_function("stochastic_costs.json", "stochastic_objective_function_plot.png")
+    # # Plot the costs over iterations
+    # utils.plot_objective_function("stochastic_costs.json", "stochastic_objective_function_plot.png")
     
-    return current_cube
-
-# if __name__ == "__main__":
-#     N = 5  # Ukuran cube
-#     cube = utils.initialize_random_cube(N)
-#     stochastic_algorithm(cube)
-#     print(cube)
+    return current_cube, costs  # Return current_cube and costs list for frontend use

@@ -2,32 +2,33 @@ import numpy as np
 import random
 import time
 import matplotlib.pyplot as plt
+from . import utils
 
-def random_initial_cube(n):
-    # Membuat array angka 1 hingga n^3 lalu mengacaknya untuk membuat kubus awal
-    numbers = list(range(1, n**3 + 1))
-    random.shuffle(numbers)
-    return np.array(numbers).reshape((n, n, n))
+# def random_initial_cube(n):
+#     # Membuat array angka 1 hingga n^3 lalu mengacaknya untuk membuat kubus awal
+#     numbers = list(range(1, n**3 + 1))
+#     random.shuffle(numbers)
+#     return np.array(numbers).reshape((n, n, n))
 
-def calculate_fitness(cube, magic_number):
-    # Menghitung fitness sebagai jumlah selisih antara jumlah tiap baris, kolom, tiang, dan diagonal dengan magic number
-    n = cube.shape[0]
-    fitness = 0
+# def calculate_fitness(cube, magic_number):
+#     # Menghitung fitness sebagai jumlah selisih antara jumlah tiap baris, kolom, tiang, dan diagonal dengan magic number
+#     n = cube.shape[0]
+#     fitness = 0
     
-    # Cek baris, kolom, dan tiang
-    for i in range(n):
-        for j in range(n):
-            fitness += abs(magic_number - np.sum(cube[i, j, :]))   # Baris
-            fitness += abs(magic_number - np.sum(cube[i, :, j]))   # Kolom
-            fitness += abs(magic_number - np.sum(cube[:, i, j]))   # Tiang
+#     # Cek baris, kolom, dan tiang
+#     for i in range(n):
+#         for j in range(n):
+#             fitness += abs(magic_number - np.sum(cube[i, j, :]))   # Baris
+#             fitness += abs(magic_number - np.sum(cube[i, :, j]))   # Kolom
+#             fitness += abs(magic_number - np.sum(cube[:, i, j]))   # Tiang
 
-    # Cek diagonal ruang
-    fitness += abs(magic_number - np.sum([cube[i, i, i] for i in range(n)]))
-    fitness += abs(magic_number - np.sum([cube[i, i, n-i-1] for i in range(n)]))
-    fitness += abs(magic_number - np.sum([cube[i, n-i-1, i] for i in range(n)]))
-    fitness += abs(magic_number - np.sum([cube[n-i-1, i, i] for i in range(n)]))
+#     # Cek diagonal ruang
+#     fitness += abs(magic_number - np.sum([cube[i, i, i] for i in range(n)]))
+#     fitness += abs(magic_number - np.sum([cube[i, i, n-i-1] for i in range(n)]))
+#     fitness += abs(magic_number - np.sum([cube[i, n-i-1, i] for i in range(n)]))
+#     fitness += abs(magic_number - np.sum([cube[n-i-1, i, i] for i in range(n)]))
     
-    return fitness
+#     return fitness
 
 def swap_two_random_positions(cube):
     # Mengacak dua posisi dalam kubus dan menukarnya
@@ -48,14 +49,14 @@ def random_restart_magic_cube(n, max_restarts, max_iterations):
 
     for restart in range(max_restarts):
         restart_counts += 1
-        cube = random_initial_cube(n)
+        cube = utils.initialize_random_cube(n)
         initial_state = cube.copy()
-        current_score = calculate_fitness(cube, magic_number)
+        current_score = utils.objective_function(cube, magic_number)
         scores_per_restart = [current_score]
         
         for iteration in range(max_iterations):
             new_cube = swap_two_random_positions(cube.copy())
-            new_score = calculate_fitness(new_cube, magic_number)
+            new_score = utils.objective_function(new_cube, magic_number)
             
             if new_score < current_score:
                 cube = new_cube

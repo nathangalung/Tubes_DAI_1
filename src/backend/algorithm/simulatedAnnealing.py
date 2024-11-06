@@ -2,7 +2,7 @@ import time
 import math
 import matplotlib.pyplot as plt
 import numpy as np
-import utils
+from . import utils
 
 def swap_elements(cube, pos1, pos2):
     i1, j1, k1 = pos1

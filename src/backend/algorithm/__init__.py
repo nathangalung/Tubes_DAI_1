@@ -2,7 +2,9 @@
 from .utils import (
     initialize_random_cube,
     print_cube,
-    objective_function
+    objective_function,
+    plot_objective_function,
+    save_costs
 )
 
 from .steepestAscent import steepest_ascent_algorithm
