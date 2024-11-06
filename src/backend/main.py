@@ -7,7 +7,7 @@ from algorithm import (
     initialize_random_cube,
     steepest_ascent_algorithm,
     sideways_move_algorithm,
-    random_restart_algorithm,
+    # random_restart_algorithm,
     stochastic_algorithm,
     simulated_annealing_algorithm,
     genetic_algorithm
@@ -34,7 +34,7 @@ class CubeResponse(BaseModel):
 algorithm_map = {
     'steepest_ascent': steepest_ascent_algorithm,
     'sideways_move': sideways_move_algorithm,
-    'random_restart': random_restart_algorithm,
+    # 'random_restart': random_restart_algorithm,
     'stochastic': stochastic_algorithm,
     'simulated_annealing': simulated_annealing_algorithm,
     'genetic': genetic_algorithm
