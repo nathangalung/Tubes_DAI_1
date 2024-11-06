@@ -19,10 +19,10 @@ canvasIds.forEach((id) => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ canvas });
-    renderer.setSize(400, 400); // Increased canvas size for better visibility
-    renderer.setClearColor(0x000000); // Set canvas background to black
+    renderer.setSize(400, 400);
+    renderer.setClearColor(0x000000);
 
-    camera.position.set(7, 7, 10); // Adjusted for a better view of the cube
+    camera.position.set(7, 7, 10);
     camera.lookAt(0, 0, 0);
 
     scenes[id] = scene;
@@ -30,73 +30,53 @@ canvasIds.forEach((id) => {
     renderers[id] = renderer;
 });
 
-let cubeData = null;
-
-async function initializeCube() {
-    try {
-        const response = await fetch('http://127.0.0.1:8000/initialize_cube');
-        if (!response.ok) throw new Error("Failed to fetch cube data");
-
-        const data = await response.json();
-        cubeData = data.cube;
-
-        console.log("Initialized Cube Data:", cubeData);
-        displayCube(cubeData, 'init-cube-canvas'); // Display initialized cube
-
-        // Automatically run all algorithms after initializing the cube
-        await runAllAlgorithms();
-    } catch (error) {
-        console.error("Error initializing cube:", error);
-    }
+// Store cube state in localStorage to maintain across page reloads
+function saveCubeState(data) {
+    localStorage.setItem('cubeData', JSON.stringify(data));
 }
 
-async function runAllAlgorithms() {
-    const algorithmEndpoints = [
-        // { id: 'steepest-cube-canvas', endpoint: '/steepest_ascent' },
-        // { id: 'sideway-cube-canvas', endpoint: '/sideways_move' },
-        // { id: 'random-cube-canvas', endpoint: '/random_restart' },
-        { id: 'stochastic-cube-canvas', endpoint: '/stochastic' },
-        { id: 'annealing-cube-canvas', endpoint: '/simulated_annealing' },
-        // { id: 'genetic-cube-canvas', endpoint: '/genetic' }
-    ];
-
-    for (const { id, endpoint } of algorithmEndpoints) {
-        displayLoading(id); // Show loading indicator
-
-        try {
-            const response = await fetch(`http://127.0.0.1:8000${endpoint}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ cube: cubeData })
-            });
-
-            if (!response.ok) throw new Error("Failed to run algorithm");
-
-            const result = await response.json();
-            console.log(`Algorithm Result for ${id}:`, result);
-
-            displayCube(result.cube, id); // Display cube result after algorithm completes
-        } catch (error) {
-            console.error(`Error running ${endpoint} algorithm:`, error);
-        }
-    }
+function loadCubeState() {
+    const cubeData = localStorage.getItem('cubeData');
+    return cubeData ? JSON.parse(cubeData) : null;
 }
 
+// Remove cube state from localStorage on page load or backend restart
+function clearCubeState() {
+    localStorage.removeItem('cubeData');
+}
+
+// Show loading spinner for specific canvas
+function showSpinner(canvasId) {
+    document.getElementById(`${canvasId}-spinner`).style.display = 'flex';
+}
+
+// Hide loading spinner for specific canvas
+function hideSpinner(canvasId) {
+    document.getElementById(`${canvasId}-spinner`).style.display = 'none';
+}
+
+// Display cube function for rendering
 function displayCube(data, canvasId) {
+    if (!data) {
+        console.error(`No cube data to display for ${canvasId}`);
+        return;
+    }
+
     const scene = scenes[canvasId];
     const renderer = renderers[canvasId];
     const camera = cameras[canvasId];
 
-    // Clear previous objects
+    // Clear previous cube objects
     while (scene.children.length > 0) {
         scene.remove(scene.children[0]);
     }
 
     const N = data.length;
-    const cubeSize = 1.5; // Increased cube size for better visibility
+    const cubeSize = 1.5;
     const offset = (N - 1) / 2;
-    const color = '#800080'; // Purple color for all cubes
+    const color = '#800080';
 
+    // Render each layer of the cube as blocks
     for (let x = 0; x < N; x++) {
         for (let y = 0; y < N; y++) {
             for (let z = 0; z < N; z++) {
@@ -123,41 +103,81 @@ function displayCube(data, canvasId) {
             }
         }
     }
-
     renderer.render(scene, camera);
 }
 
-function displayLoading(canvasId) {
-    const scene = scenes[canvasId];
-    const renderer = renderers[canvasId];
-    const camera = cameras[canvasId];
+async function initializeCube() {
+    console.log("Initializing cube...");
+    try {
+        const response = await fetch('http://127.0.0.1:8000/initialize_cube');
+        
+        if (!response.ok) {
+            throw new Error(`Failed to initialize cube: ${response.status}`);
+        }
 
-    // Clear previous objects
-    while (scene.children.length > 0) {
-        scene.remove(scene.children[0]);
+        const data = await response.json();
+        console.log("Cube initialized:", data);
+
+        saveCubeState(data.cube);
+        displayCube(data.cube, 'init-cube-canvas');
+
+        // Automatically run all algorithms after initializing the cube
+        await runAllAlgorithms(data.cube);
+    } catch (error) {
+        console.error("Error in initializeCube:", error);
     }
-
-    // Create a static "Loading..." texture for the loading indicator
-    const loaderText = document.createElement('canvas');
-    loaderText.width = 256;
-    loaderText.height = 256;
-    const context = loaderText.getContext('2d');
-    context.fillStyle = '#800080';
-    context.fillRect(0, 0, loaderText.width, loaderText.height);
-    context.fillStyle = '#FFFFFF';
-    context.font = '24px Arial';
-    context.textAlign = 'center';
-    context.textBaseline = 'middle';
-    context.fillText("Loading...", loaderText.width / 2, loaderText.height / 2);
-
-    const texture = new THREE.CanvasTexture(loaderText);
-    const material = new THREE.MeshBasicMaterial({ map: texture });
-    const plane = new THREE.PlaneGeometry(4, 4); // Increased size for visibility
-    const mesh = new THREE.Mesh(plane, material);
-
-    scene.add(mesh);
-    renderer.render(scene, camera);
 }
 
-// Add event listener to initialize cube on button click
+// Run all algorithms asynchronously after initializing cube
+async function runAllAlgorithms(cubeData) {
+    try {
+        canvasIds.slice(1).forEach(id => showSpinner(id)); // Show spinner for each algorithm canvas
+
+        const response = await fetch('http://127.0.0.1:8000/run_all_algorithms', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cube: cubeData })
+        });
+
+        if (!response.ok) throw new Error("Failed to run all algorithms");
+
+        await Promise.all([
+            displayAlgorithmResult('steepest_ascent', 'steepest-cube-canvas'),
+            displayAlgorithmResult('sideways_move', 'sideways-cube-canvas'),
+            displayAlgorithmResult('random_restart', 'random-cube-canvas'),
+            displayAlgorithmResult('stochastic', 'stochastic-cube-canvas'),
+            displayAlgorithmResult('simulated_annealing', 'annealing-cube-canvas'),
+            displayAlgorithmResult('genetic', 'genetic-cube-canvas')
+        ]);
+
+    } catch (error) {
+        console.error("Error running all algorithms:", error);
+    } finally {
+        canvasIds.slice(1).forEach(id => hideSpinner(id)); // Hide all spinners after algorithms complete
+    }
+}
+
+// Fetch and display algorithm results
+async function displayAlgorithmResult(algorithm, canvasId) {
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/get_algorithm_result/${algorithm}`);
+        
+        if (!response.ok) throw new Error(`Failed to fetch result for ${algorithm}`);
+
+        const result = await response.json();
+        displayCube(result.cube, canvasId);
+    } catch (error) {
+        console.error(`Error displaying result for ${algorithm}:`, error);
+    } finally {
+        hideSpinner(canvasId); // Hide spinner after displaying result
+    }
+}
+
+// Load state when page loads
+window.addEventListener('load', () => {
+    clearCubeState(); // Clear saved state on page load
+    const savedCube = loadCubeState();
+    if (savedCube) displayCube(savedCube, 'init-cube-canvas');
+});
+
 document.getElementById('initialize-cube').addEventListener('click', initializeCube);

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="algorithm.css">
     <title>DAI - Algorithm</title>
 </head>
@@ -14,11 +15,6 @@
             <ul class="nav-links" id="nav-links">
                 <li class="dropdown">
                     <a href="index.html">HOME</a>
-                    <ul class="dropdown-content">
-                        <li><a href="index.html#general">General</a></li>
-                        <li><a href="index.html#magic-cube">Math</a></li>
-                        <li><a href="index.html#random-cube">Graph</a></li>
-                    </ul>
                 </li>
                 <li class="dropdown">
                     <a href="algorithm.html">ALGORITHM</a>
@@ -36,41 +32,134 @@
         </nav>
     </header>
 
-    <!-- Sections for each algorithm -->
-    <section id="initialize">
+    <!-- Section for Initialize Cube -->
+    <section id="initialize" class="centered-container">
+        <h2>Initialize Cube</h2>
+        <div class="canvas-container">
+            <canvas id="init-cube-canvas" class="cube-canvas"></canvas>
+        </div>
         <button id="initialize-cube" class="algorithm-button">Initialize Cube</button>
-        <canvas id="init-cube-canvas" class="cube-canvas"></canvas>
-        <p>Initialized Cube</p>
     </section>
 
-    <section id="steepest-ascent">
-        <canvas id="steepest-cube-canvas" class="cube-canvas"></canvas>
-        <p>Steepest Ascent</p>
+    <!-- Sections for each algorithm with spinners -->
+    <section id="steepest-ascent" class="algorithm-section">
+        <h2>Steepest Ascent</h2>
+        <div class="left">
+            <div class="canvas-container">
+                <div class="spinner-container" id="steepest-cube-canvas-spinner">
+                    <div class="spinner"></div>
+                </div>
+                <canvas id="steepest-cube-canvas" class="cube-canvas"></canvas>
+            </div>
+            <div class="buttons">
+                <button class="algorithm-button replay">Replay</button>
+                <button class="algorithm-button load">Load</button>
+            </div>
+        </div>
+        <div class="right">
+            <p>Fitness: <span id="steepest-fitness"></span></p>
+            <div id="steepest-chart"></div>
+        </div>
     </section>
 
-    <section id="sideways-move">
-        <canvas id="sideways-cube-canvas" class="cube-canvas"></canvas>
-        <p>Sideways Move</p>
+    <section id="sideways-move" class="algorithm-section">
+        <h2>Sideways Moves</h2>
+        <div class="left">
+            <div class="canvas-container">
+                <div class="spinner-container" id="sideways-cube-canvas-spinner">
+                    <div class="spinner"></div>
+                </div>
+                <canvas id="sideways-cube-canvas" class="cube-canvas"></canvas>
+            </div>
+            <div class="buttons">
+                <button class="algorithm-button replay">Replay</button>
+                <button class="algorithm-button load">Load</button>
+            </div>
+        </div>
+        <div class="right">
+            <p>Fitness: <span id="sideways-fitness"></span></p>
+            <div id="sideways-chart"></div>
+        </div>
     </section>
 
-    <section id="random-restart">
-        <canvas id="random-cube-canvas" class="cube-canvas"></canvas>
-        <p>Random Restart</p>
+    <section id="random-restart" class="algorithm-section">
+        <h2>Random Restart</h2>
+        <div class="left">
+            <div class="canvas-container">
+                <div class="spinner-container" id="random-cube-canvas-spinner">
+                    <div class="spinner"></div>
+                </div>
+                <canvas id="random-cube-canvas" class="cube-canvas"></canvas>
+            </div>
+            <div class="buttons">
+                <button class="algorithm-button replay">Replay</button>
+                <button class="algorithm-button load">Load</button>
+            </div>
+        </div>
+        <div class="right">
+            <p>Fitness: <span id="random-fitness"></span></p>
+            <div id="random-chart"></div>
+        </div>
     </section>
 
-    <section id="stochastic">
-        <canvas id="stochastic-cube-canvas" class="cube-canvas"></canvas>
-        <p>Stochastic</p>
+    <section id="stochastic" class="algorithm-section">
+        <h2>Stochastic</h2>
+        <div class="left">
+            <div class="canvas-container">
+                <div class="spinner-container" id="stochastic-cube-canvas-spinner">
+                    <div class="spinner"></div>
+                </div>
+                <canvas id="stochastic-cube-canvas" class="cube-canvas"></canvas>
+            </div>
+            <div class="buttons">
+                <button class="algorithm-button replay">Replay</button>
+                <button class="algorithm-button load">Load</button>
+            </div>
+        </div>
+        <div class="right">
+            <p>Fitness: <span id="stochastic-fitness"></span></p>
+            <div id="stochastic-chart"></div>
+        </div>
     </section>
 
-    <section id="simulated-annealing">
-        <canvas id="annealing-cube-canvas" class="cube-canvas"></canvas>
-        <p>Simulated Annealing</p>
+    <section id="simulated-annealing" class="algorithm-section">
+        <h2>Simulated Annealing</h2>
+        <div class="left">
+            <div class="canvas-container">
+                <div class="spinner-container" id="annealing-cube-canvas-spinner">
+                    <div class="spinner"></div>
+                </div>
+                <canvas id="annealing-cube-canvas" class="cube-canvas"></canvas>
+            </div>
+            <div class="buttons">
+                <button class="algorithm-button replay">Replay</button>
+                <button class="algorithm-button load">Load</button>
+            </div>
+        </div>
+        <div class="right">
+            <p>Fitness: <span id="annealing-fitness"></span></p>
+            <div id="annealing-chart"></div>
+        </div>
     </section>
 
-    <section id="genetic">
-        <canvas id="genetic-cube-canvas" class="cube-canvas"></canvas>
-        <p>Genetic</p>
+    <section id="genetic" class="algorithm-section">
+        <h2>Genetic</h2>
+        <div class="left">
+            <div class="canvas-container">
+                <div class="spinner-container" id="genetic-cube-canvas-spinner">
+                    <div class="spinner"></div>
+                </div>
+                <canvas id="genetic-cube-canvas" class="cube-canvas"></canvas>
+            </div>
+            <div class="buttons">
+                <button class="algorithm-button replay">Replay</button>
+                <button class="algorithm-button load">Load</button>
+            </div>
+        </div>
+        <div class="right">
+            <p>Fitness: <span id="genetic-fitness"></span></p>
+            <div id="genetic-chart"></div>
+        </div>
     </section>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
