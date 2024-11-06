@@ -1,5 +1,24 @@
 import numpy as np
 import random
+import json
+import matplotlib.pyplot as plt
+import io
+
+def save_costs(costs, filename="costs.json"):
+    """
+    Saves a list of costs to a file in JSON format.
+
+    Args:
+    - costs (list of int): List of cost values.
+    - filename (str): File to save costs to.
+    """
+    # Convert all numpy.int64 values to Python's native int
+    costs = [int(cost) for cost in costs]
+
+    # Save to JSON file
+    with open(filename, "w") as f:
+        json.dump(costs, f)
+    print(f"Costs saved to {filename}")
 
 def initialize_random_cube(N):
     """
@@ -22,9 +41,7 @@ def initialize_random_cube(N):
                     num = random.randint(1, N * N * N)
                 cube[i][j][k] = num
                 used.add(num)
-    
-    print(f"Cost = {objective_function(cube)}")
-    
+
     return cube
 
 def print_cube(cube):
@@ -41,6 +58,7 @@ def print_cube(cube):
                 print(cube[i][j][k], end=' ')
             print()
         print()
+    
 
 def calculate_magic_number(N):
     """
@@ -152,3 +170,64 @@ def calculate_element_cost(cube, i, j, k):
         element_cost += abs(magic_number - anti_diag_sum)
 
     return element_cost
+
+def plot_objective_function(filename="costs.json", plot_filename="objective_function_plot.png"):
+    """
+    Loads the cost values from a JSON file and plots the objective function values 
+    per iteration, saving the plot as a PNG file.
+    
+    Args:
+    - filename (str): Name of the JSON file containing the costs.
+    - plot_filename (str): Name of the file to save the plot.
+    """
+    # Load costs from JSON file
+    with open(filename, "r") as f:
+        costs = json.load(f)
+    
+    # Plot iterations vs cost
+    iterations = list(range(1, len(costs) + 1))  # Iterations are index+1
+    
+    plt.figure(figsize=(6, 4))
+    plt.plot(iterations, costs, label="Objective Function")
+    plt.xlabel("Iteration")
+    plt.ylabel("Objective Function Cost")
+    plt.title("Objective Function Cost per Iteration")
+    plt.legend()
+    
+    # Save the plot as a PNG file
+    plt.savefig(plot_filename, format='png')
+    plt.close()
+    print(f"Plot saved as {plot_filename}")
+
+def run_algorithm(N, iterations):
+    """
+    Runs the cube initialization and objective function calculation over multiple iterations.
+    
+    Args:
+    - N (int): Size of the cube.
+    - iterations (int): Number of iterations to run.
+    
+    Returns:
+    - None
+    """
+    cube = initialize_random_cube(N)
+    costs = []
+
+    for it in range(iterations):
+        cost = objective_function(cube)
+        costs.append(cost)
+        print(f"Iteration {it + 1}, Cost = {cost}")
+
+        # Update the cube with a new random configuration for next iteration
+        cube = initialize_random_cube(N)
+
+    # Save costs to file
+    save_costs(costs)
+
+# if __name__ == "__main__":
+#     N = 5  # Ukuran cube
+#     iterations = 10  # Jumlah iterasi
+
+#     run_algorithm(N, iterations)
+
+#     plot_objective_function("costs.json", "objective_function_plot.png")

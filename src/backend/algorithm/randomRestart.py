@@ -1,60 +1,105 @@
 import numpy as np
+import random
 import time
-from . import utils
+import matplotlib.pyplot as plt
 
-def random_restart_hill_climbing(cube):
-    N = cube.shape[0]
-    best_cost = utils.objective_function(cube)
-    total_moves = 0
-    MAX_RESTARTS = 50
-    MAX_MOVES_PER_RESTART = 1000
+def random_initial_cube(n):
+    # Membuat array angka 1 hingga n^3 lalu mengacaknya untuk membuat kubus awal
+    numbers = list(range(1, n**3 + 1))
+    random.shuffle(numbers)
+    return np.array(numbers).reshape((n, n, n))
+
+def calculate_fitness(cube, magic_number):
+    # Menghitung fitness sebagai jumlah selisih antara jumlah tiap baris, kolom, tiang, dan diagonal dengan magic number
+    n = cube.shape[0]
+    fitness = 0
+    
+    # Cek baris, kolom, dan tiang
+    for i in range(n):
+        for j in range(n):
+            fitness += abs(magic_number - np.sum(cube[i, j, :]))   # Baris
+            fitness += abs(magic_number - np.sum(cube[i, :, j]))   # Kolom
+            fitness += abs(magic_number - np.sum(cube[:, i, j]))   # Tiang
+
+    # Cek diagonal ruang
+    fitness += abs(magic_number - np.sum([cube[i, i, i] for i in range(n)]))
+    fitness += abs(magic_number - np.sum([cube[i, i, n-i-1] for i in range(n)]))
+    fitness += abs(magic_number - np.sum([cube[i, n-i-1, i] for i in range(n)]))
+    fitness += abs(magic_number - np.sum([cube[n-i-1, i, i] for i in range(n)]))
+    
+    return fitness
+
+def swap_two_random_positions(cube):
+    # Mengacak dua posisi dalam kubus dan menukarnya
+    n = cube.shape[0]
+    pos1 = (random.randint(0, n-1), random.randint(0, n-1), random.randint(0, n-1))
+    pos2 = (random.randint(0, n-1), random.randint(0, n-1), random.randint(0, n-1))
+    cube[pos1], cube[pos2] = cube[pos2], cube[pos1]
+    return cube
+
+def random_restart_magic_cube(n, max_restarts, max_iterations):
+    magic_number = (n * (n**3 + 1)) // 2
     start_time = time.time()
+    
+    best_cube = None
+    best_score = float('inf')
+    restart_counts = 0
+    all_scores = []
 
-    for restart in range(MAX_RESTARTS):
-        utils.initialize_random_cube(cube)  # Inisialisasi dengan kondisi acak
-        cost = utils.objective_function(cube)
-        moves = 0
-        no_improvement_steps = 0
-        MAX_NO_IMPROVEMENT_STEPS = 100
-
-        while moves < MAX_MOVES_PER_RESTART and no_improvement_steps < MAX_NO_IMPROVEMENT_STEPS:
-            best_neighbor_cost = cost
-            swap_i, swap_j, swap_k, swap_l, swap_m, swap_n = -1, -1, -1, -1, -1, -1
-
-            for i in range(N):
-                for j in range(N):
-                    for k in range(N):
-                        for l in range(N):
-                            for m in range(N):
-                                for n in range(N):
-                                    if i == l and j == m and k == n:
-                                        continue
-
-                                    # Melakukan swap
-                                    cube[i][j][k], cube[l][m][n] = cube[l][m][n], cube[i][j][k]
-                                    current_cost = utils.objective_function(cube)
-
-                                    if current_cost < best_neighbor_cost:
-                                        best_neighbor_cost = current_cost
-                                        swap_i, swap_j, swap_k, swap_l, swap_m, swap_n = i, j, k, l, m, n
-
-                                    # Batalkan swap
-                                    cube[l][m][n], cube[i][j][k] = cube[i][j][k], cube[l][m][n]
-
-            if best_neighbor_cost >= cost:
-                no_improvement_steps += 1
-            else:
-                no_improvement_steps = 0
-
-            if swap_i != -1:
-                cube[swap_i][swap_j][swap_k], cube[swap_l][swap_m][swap_n] = cube[swap_l][swap_m][swap_n], cube[swap_i][swap_j][swap_k]
-                cost = best_neighbor_cost
-
-            moves += 1
-
-        total_moves += moves
-        best_cost = min(best_cost, cost)
+    for restart in range(max_restarts):
+        restart_counts += 1
+        cube = random_initial_cube(n)
+        initial_state = cube.copy()
+        current_score = calculate_fitness(cube, magic_number)
+        scores_per_restart = [current_score]
+        
+        for iteration in range(max_iterations):
+            new_cube = swap_two_random_positions(cube.copy())
+            new_score = calculate_fitness(new_cube, magic_number)
+            
+            if new_score < current_score:
+                cube = new_cube
+                current_score = new_score
+            
+            scores_per_restart.append(current_score)
+            
+            # Simpan solusi terbaik jika ditemukan
+            if current_score < best_score:
+                best_cube = cube.copy()
+                best_score = current_score
+            
+            # Jika solusi sempurna (fitness score = 0) ditemukan
+            if current_score == 0:
+                break
+        
+        all_scores.extend(scores_per_restart)
+        
+        # Jika solusi ditemukan
+        if current_score == 0:
+            break
 
     end_time = time.time()
-    print(f"Random Restart Hill Climbing: Total Moves={total_moves}, Time={end_time - start_time:.2f} seconds, Best Cost={best_cost}")
-    return cube
+    duration = end_time - start_time
+    
+    # Plot objective function terhadap iterasi
+    plt.plot(all_scores)
+    plt.xlabel("Iterasi")
+    plt.ylabel("Objective Function (Fitness Score)")
+    plt.title("Objective Function terhadap Iterasi")
+    plt.show()
+    
+    # Output hasil akhir
+    print("State Awal Kubus:\n", initial_state)
+    print("\nState Akhir Kubus:\n", best_cube)
+    print("\nNilai Objective Function Akhir yang Dicapai:", best_score)
+    print("\nDurasi Pencarian:", duration, "detik")
+    print("\nBanyak Restart:", restart_counts)
+    print("\nBanyak Iterasi per Restart:", max_iterations)
+
+# Parameter untuk algoritma
+n = 5                    # Ukuran sisi kubus
+max_restarts = 10        # Maksimum jumlah restart
+max_iterations = 1000    # Maksimum iterasi per restart
+
+# Menjalankan algoritma
+random_restart_magic_cube(n, max_restarts, max_iterations)
