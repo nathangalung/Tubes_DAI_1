@@ -4,16 +4,20 @@ import json
 import matplotlib.pyplot as plt
 import io
 
-def save_costs(costs, filename="costs.json"):
+def save_json(X, filename):
     """
     Saves a list of costs to a file in JSON format.
+
+    Args:
+    - costs (list of int): List of cost values.
+    - filename (str): File to save costs to.
     """
     # Convert all numpy.int64 values to Python's native int
-    costs = [int(cost) for cost in costs]
+    X = [int(x) for x in X]
 
     # Save to JSON file
     with open(filename, "w") as f:
-        json.dump(costs, f)
+        json.dump(X, f)
     print(f"Costs saved to {filename}")
 
 def initialize_random_cube(N):
@@ -128,23 +132,27 @@ def objective_function(cube):
 
     return cost
 
-def plot_objective_function(filename="costs.json", plot_filename="objective_function_plot.png"):
+def plot_function(filename, plot_filename, x_label, y_label, title):
     """
     Loads the cost values from a JSON file and plots the objective function values 
     per iteration, saving the plot as a PNG file.
+    
+    Args:
+    - filename (str): Name of the JSON file containing the costs.
+    - plot_filename (str): Name of the file to save the plot.
     """
     # Load costs from JSON file
     with open(filename, "r") as f:
         costs = json.load(f)
     
     # Plot iterations vs cost
-    iterations = list(range(1, len(costs) + 1))  # Iterations are index+1
+    iterations = list(range(1, len(costs) + 1))
     
     plt.figure(figsize=(6, 4))
-    plt.plot(iterations, costs, label="Objective Function")
-    plt.xlabel("Iteration")
-    plt.ylabel("Objective Function Cost")
-    plt.title("Objective Function Cost per Iteration")
+    plt.plot(iterations, costs, label="Objective Function", color='blue')
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+    plt.title(title)
     plt.legend()
     
     # Save the plot as a PNG file
@@ -175,7 +183,7 @@ def run_algorithm(N, iterations):
         cube = initialize_random_cube(N)
 
     # Save costs to file
-    save_costs(costs)
+    save_json(costs)
 
 # if __name__ == "__main__":
 #     N = 5  # Ukuran cube
