@@ -32,7 +32,6 @@
         </nav>
     </header>
 
-    <!-- Section for Initialize Cube -->
     <section id="initialize" class="centered-container">
         <h2>Initialize Cube</h2>
         <div class="canvas-container">
@@ -41,24 +40,21 @@
         <button id="initialize-cube" class="algorithm-button">Initialize Cube</button>
     </section>
 
-    <!-- Sections for each algorithm with spinners -->
+    <!-- Sections for each algorithm with Run buttons -->
     <section id="steepest-ascent" class="algorithm-section">
         <h2>Steepest Ascent</h2>
         <div class="left">
             <div class="canvas-container">
-                <div class="spinner-container" id="steepest-cube-canvas-spinner">
-                    <div class="spinner"></div>
-                </div>
                 <canvas id="steepest-cube-canvas" class="cube-canvas"></canvas>
             </div>
             <div class="buttons">
-                <button class="algorithm-button replay">Replay</button>
-                <button class="algorithm-button load">Load</button>
+                <button class="algorithm-button" onclick="runAlgorithm('steepest_ascent', 'steepest-cube-canvas')">Run</button>
             </div>
-        </div>
-        <div class="right">
-            <p>Fitness: <span id="steepest-fitness"></span></p>
-            <div id="steepest-chart"></div>
+            <div class="right">
+                <div id="steepest-plot-container">
+                    <!-- Plot will be dynamically inserted here -->
+                </div>
+            </div>
         </div>
     </section>
 
@@ -66,19 +62,16 @@
         <h2>Sideways Moves</h2>
         <div class="left">
             <div class="canvas-container">
-                <div class="spinner-container" id="sideways-cube-canvas-spinner">
-                    <div class="spinner"></div>
-                </div>
                 <canvas id="sideways-cube-canvas" class="cube-canvas"></canvas>
             </div>
             <div class="buttons">
-                <button class="algorithm-button replay">Replay</button>
-                <button class="algorithm-button load">Load</button>
+                <button class="algorithm-button" onclick="runAlgorithm('sideways_move', 'sideways-cube-canvas')">Run</button>
             </div>
-        </div>
-        <div class="right">
-            <p>Fitness: <span id="sideways-fitness"></span></p>
-            <div id="sideways-chart"></div>
+            <div class="right">
+                <div id="sideways-plot-container">
+                    <!-- Plot will be dynamically inserted here -->
+                </div>
+            </div>
         </div>
     </section>
 
@@ -86,19 +79,16 @@
         <h2>Random Restart</h2>
         <div class="left">
             <div class="canvas-container">
-                <div class="spinner-container" id="random-cube-canvas-spinner">
-                    <div class="spinner"></div>
-                </div>
                 <canvas id="random-cube-canvas" class="cube-canvas"></canvas>
             </div>
             <div class="buttons">
-                <button class="algorithm-button replay">Replay</button>
-                <button class="algorithm-button load">Load</button>
+                <button class="algorithm-button" onclick="runAlgorithm('random_restart', 'random-cube-canvas')">Run</button>
             </div>
-        </div>
-        <div class="right">
-            <p>Fitness: <span id="random-fitness"></span></p>
-            <div id="random-chart"></div>
+            <div class="right">
+                <div id="random-plot-container">
+                    <!-- Plot will be dynamically inserted here -->
+                </div>
+            </div>
         </div>
     </section>
 
@@ -106,19 +96,16 @@
         <h2>Stochastic</h2>
         <div class="left">
             <div class="canvas-container">
-                <div class="spinner-container" id="stochastic-cube-canvas-spinner">
-                    <div class="spinner"></div>
-                </div>
                 <canvas id="stochastic-cube-canvas" class="cube-canvas"></canvas>
             </div>
             <div class="buttons">
-                <button class="algorithm-button replay">Replay</button>
-                <button class="algorithm-button load">Load</button>
+                <button class="algorithm-button" onclick="runAlgorithm('stochastic', 'stochastic-cube-canvas')">Run</button>
             </div>
-        </div>
-        <div class="right">
-            <p>Fitness: <span id="stochastic-fitness"></span></p>
-            <div id="stochastic-chart"></div>
+            <div class="right">
+                <div id="stochastic-plot-container">
+                    <!-- Plot will be dynamically inserted here -->
+                </div>
+            </div>
         </div>
     </section>
 
@@ -126,19 +113,16 @@
         <h2>Simulated Annealing</h2>
         <div class="left">
             <div class="canvas-container">
-                <div class="spinner-container" id="annealing-cube-canvas-spinner">
-                    <div class="spinner"></div>
-                </div>
                 <canvas id="annealing-cube-canvas" class="cube-canvas"></canvas>
             </div>
             <div class="buttons">
-                <button class="algorithm-button replay">Replay</button>
-                <button class="algorithm-button load">Load</button>
+                <button class="algorithm-button" onclick="runAlgorithm('simulated_annealing', 'annealing-cube-canvas')">Run</button>
             </div>
-        </div>
-        <div class="right">
-            <p>Fitness: <span id="annealing-fitness"></span></p>
-            <div id="annealing-chart"></div>
+            <div class="right">
+                <div id="annealing-plot-container">
+                    <!-- Plot will be dynamically inserted here -->
+                </div>
+            </div>
         </div>
     </section>
 
@@ -146,19 +130,16 @@
         <h2>Genetic</h2>
         <div class="left">
             <div class="canvas-container">
-                <div class="spinner-container" id="genetic-cube-canvas-spinner">
-                    <div class="spinner"></div>
-                </div>
                 <canvas id="genetic-cube-canvas" class="cube-canvas"></canvas>
             </div>
             <div class="buttons">
-                <button class="algorithm-button replay">Replay</button>
-                <button class="algorithm-button load">Load</button>
+                <button class="algorithm-button" onclick="runAlgorithm('genetic', 'genetic-cube-canvas')">Run</button>
             </div>
-        </div>
-        <div class="right">
-            <p>Fitness: <span id="genetic-fitness"></span></p>
-            <div id="genetic-chart"></div>
+            <div class="right">
+                <div id="genetic-plot-container">
+                    <!-- Plot will be dynamically inserted here -->
+                </div>
+            </div>
         </div>
     </section>
 

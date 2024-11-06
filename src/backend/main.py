@@ -1,17 +1,17 @@
-from fastapi import FastAPI, BackgroundTasks
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-import numpy as np
-from copy import deepcopy
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
+import numpy as np
 from algorithm import (
     initialize_random_cube,
     steepest_ascent_algorithm,
     sideways_move_algorithm,
-    # random_restart_algorithm,
     stochastic_algorithm,
     simulated_annealing_algorithm,
     genetic_algorithm
 )
+from utils import plot_objective_function  # Import fungsi plot dari utils.py
 
 app = FastAPI()
 
@@ -24,17 +24,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-N = 5  # Dimension of the cube
-algorithm_results = {}  # Dictionary to store results for each algorithm
+# Size of the cube (dimension)
+N = 5  # Adjust as needed
 
+# Model for request and response
 class CubeResponse(BaseModel):
-    cube: list
+    cube: list  # List to represent the 3D cube array
 
-# Dictionary to map algorithm names to functions
+class AlgorithmRequest(BaseModel):
+    algorithm: str  # Name of the algorithm to run
+    cube: list  # Cube data to process
+
+# Dictionary to map algorithm names to their functions
 algorithm_map = {
     'steepest_ascent': steepest_ascent_algorithm,
     'sideways_move': sideways_move_algorithm,
-    # 'random_restart': random_restart_algorithm,
     'stochastic': stochastic_algorithm,
     'simulated_annealing': simulated_annealing_algorithm,
     'genetic': genetic_algorithm
@@ -42,42 +46,35 @@ algorithm_map = {
 
 @app.get("/initialize_cube", response_model=CubeResponse)
 async def initialize_cube():
+    """
+    Endpoint to initialize a random cube of dimension N x N x N.
+    """
     initial_cube = initialize_random_cube(N)
-    return {"cube": initial_cube.tolist()}
+    return {"cube": initial_cube.tolist()}  # Convert numpy array to list for JSON serialization
 
-def run_algorithm(algorithm, cube_data):
-    modified_cube = deepcopy(cube_data)
-    algorithm(modified_cube)
-    return modified_cube.tolist()
+@app.post("/run_algorithm_with_plot")
+async def run_algorithm_with_plot(request: AlgorithmRequest):
+    """
+    Run the selected algorithm and return a plot of the objective function per iteration.
+    """
+    # Get the algorithm function based on the requested algorithm name
+    algorithm_function = algorithm_map.get(request.algorithm)
+    if not algorithm_function:
+        raise HTTPException(status_code=404, detail="Algorithm not found")
 
-# Run all algorithms in sequence
-@app.post("/run_all_algorithms", response_model=dict)
-async def run_all_algorithms(cube: CubeResponse, background_tasks: BackgroundTasks):
-    for name, algorithm_function in algorithm_map.items():
-        background_tasks.add_task(execute_algorithm, name, cube.cube)
-    return {"status": "running all algorithms"}
+    # Convert cube data from list to numpy array
+    cube_data = np.array(request.cube)
 
-def execute_algorithm(algorithm_name, cube_data):
-    """
-    Execute a specified algorithm, storing the result in algorithm_results.
-    """
-    algorithm_function = algorithm_map.get(algorithm_name)
-    if algorithm_function:
-        result_cube = run_algorithm(algorithm_function, np.array(cube_data))
-        algorithm_results[algorithm_name] = result_cube  # Store the result
+    # Run the algorithm and get the modified cube and best cost over iterations
+    modified_cube, best_cost = algorithm_function(cube_data)
 
-@app.get("/get_algorithm_result/{algorithm_name}", response_model=CubeResponse)
-async def get_algorithm_result(algorithm_name: str):
-    """
-    Retrieve the result of a specified algorithm if available.
-    """
-    result = algorithm_results.get(algorithm_name, [])
-    return {"cube": result}
+    # Generate and return the plot based on best_cost data
+    return plot_objective_function(best_cost)
 
 @app.on_event("startup")
 async def clear_algorithm_results():
     """
     Clear algorithm results on server startup.
     """
-    global algorithm_results
-    algorithm_results = {}
+    # Placeholder function; additional startup configurations can be added here if needed
+    pass

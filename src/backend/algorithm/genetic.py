@@ -5,7 +5,6 @@ import time
 from numba import njit, prange
 from . import utils
 from concurrent.futures import ThreadPoolExecutor
-# from .utils import plot_objective_function_progress
 from copy import deepcopy
 
 # Populasi dan iterasi dengan nilai yang lebih besar
