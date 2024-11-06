@@ -1,53 +1,59 @@
 import numpy as np
 import time
-import math
 import random
-from . import utils
+import utils
 
 def select_random_position(N):
-    """
-    Selects a random position in the cube.
-    Args:
-    - N (int): Size of the cube.
-    Returns:
-    - int: A random position between 0 and N-1.
-    """
-    return random.randint(0, N-1)
+    """Selects a random position in the cube."""
+    return random.randint(0, N - 1)
 
-def generate_random_neighbor(cube):
-    N = cube.shape[0]
-    i1, j1, k1 = select_random_position(N), select_random_position(N), select_random_position(N)
-    i2, j2, k2 = select_random_position(N), select_random_position(N), select_random_position(N)
-    while i1 == i2 and j1 == j2 and k1 == k2:
-        i2, j2, k2 = select_random_position(N), select_random_position(N), select_random_position(N)
-    
-    new_cube = np.copy(cube)
-    new_cube[i1, j1, k1], new_cube[i2, j2, k2] = new_cube[i2, j2, k2], new_cube[i1, j1, k1]
-    return new_cube
+def calculate_cost_change(cube, pos1, pos2):
+    """
+    Calculates the change in cost for a single swap between two positions.
+    """
+    original_cost = utils.objective_function(cube)
+    # Perform the swap
+    cube[pos1], cube[pos2] = cube[pos2], cube[pos1]
+    # Calculate the new cost after the swap
+    new_cost = utils.objective_function(cube)
+    # Undo the swap to keep the cube unchanged
+    cube[pos1], cube[pos2] = cube[pos2], cube[pos1]
+    # Calculate the change in cost
+    return new_cost - original_cost
 
 def stochastic_algorithm(cube, max_moves=1000):
-    current_cube = np.copy(cube)
+    """
+    Performs stochastic hill climbing with a fixed number of iterations.
+    """
+    N = cube.shape[0]
+    current_cube = cube
     current_cost = utils.objective_function(current_cube)
-    best_cube = np.copy(current_cube)
-    best_cost = current_cost
     moves = 0
 
     start_time = time.time()
 
     while moves < max_moves:
-        # Generate a random neighbor
-        neighbor_cube = generate_random_neighbor(current_cube)
-        neighbor_cost = utils.objective_function(neighbor_cube)
+        # Generate two random positions to swap
+        pos1 = (select_random_position(N), select_random_position(N), select_random_position(N))
+        pos2 = (select_random_position(N), select_random_position(N), select_random_position(N))
+        
+        # Ensure they are different positions
+        while pos1 == pos2:
+            pos2 = (select_random_position(N), select_random_position(N), select_random_position(N))
 
-        # Decide whether to accept the neighbor
-        if neighbor_cost < best_cost:
-            best_cube = neighbor_cube
-            best_cost = neighbor_cost
+        # Calculate cost change
+        cost_change = calculate_cost_change(current_cube, pos1, pos2)
+
+        # Move to neighbor if it is better
+        if cost_change < 0:
+            # Perform the swap
+            current_cube[pos1], current_cube[pos2] = current_cube[pos2], current_cube[pos1]
+            current_cost += cost_change
 
         moves += 1
 
     end_time = time.time()
     elapsed_time = end_time - start_time
-    print(f"Stochastic Hill Climbing: Moves={moves}, Time={elapsed_time:.2f} seconds, Best Cost={best_cost}")
+    print(f"Stochastic Hill Climbing: Moves={moves}, Time={elapsed_time:.2f} seconds, Final Cost={current_cost}")
     
-    return best_cube
+    return current_cube
