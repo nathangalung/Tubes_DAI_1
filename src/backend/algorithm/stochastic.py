@@ -29,6 +29,7 @@ def stochastic_algorithm(cube, max_moves=1000):
     current_cube = cube
     current_cost = utils.objective_function(current_cube)
     moves = 0
+    costs = []  # List to store the cost at each move for plotting
 
     start_time = time.time()
 
@@ -50,10 +51,24 @@ def stochastic_algorithm(cube, max_moves=1000):
             current_cube[pos1], current_cube[pos2] = current_cube[pos2], current_cube[pos1]
             current_cost += cost_change
 
+        # Store current cost in the list for tracking
+        costs.append(current_cost)
         moves += 1
 
     end_time = time.time()
     elapsed_time = end_time - start_time
     print(f"Stochastic Hill Climbing: Moves={moves}, Time={elapsed_time:.2f} seconds, Final Cost={current_cost}")
+
+    # Save costs to JSON file
+    utils.save_costs(costs, "stochastic_costs.json")
+
+    # Plot the costs over iterations
+    utils.plot_objective_function("stochastic_costs.json", "stochastic_objective_function_plot.png")
     
     return current_cube
+
+# if __name__ == "__main__":
+#     N = 5  # Ukuran cube
+#     cube = utils.initialize_random_cube(N)
+#     stochastic_algorithm(cube)
+#     print(cube)
