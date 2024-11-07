@@ -17,11 +17,11 @@ def get_random_neighbor(N):
     return pos1, pos2
 
 def acceptance_function(delta_cost, temperature):
-    if delta_cost < 0:
+    if delta_cost > 0:
         return True
     else:
         r = np.random.rand()
-        if r < math.exp(-delta_cost / temperature):
+        if r < math.exp(delta_cost / temperature):
             return True
         else:
             return False
@@ -51,7 +51,7 @@ def simulated_annealing_algorithm(cube, T_max=100.0, T_min=0.1, E_threshold=0.01
         swap_elements(cube, pos1, pos2)
 
         new_cost = utils.objective_function(cube)
-        delta_cost = new_cost - current_cost
+        delta_cost = current_cost - new_cost
 
         if acceptance_function(delta_cost, temperature):
             if delta_cost > 0:
@@ -79,7 +79,7 @@ def simulated_annealing_algorithm(cube, T_max=100.0, T_min=0.1, E_threshold=0.01
         temperature_history.append(temperature)
 
         if moves % 200 == 0:
-            exp_delta_E_T = math.exp(-delta_cost / temperature) if delta_cost > 0 else 1
+            exp_delta_E_T = math.exp(delta_cost / temperature) if delta_cost > 0 else 1
             exp_delta_E_T_history.append(exp_delta_E_T)
             iteration_list.append(moves)
 
@@ -106,22 +106,22 @@ def simulated_annealing_algorithm(cube, T_max=100.0, T_min=0.1, E_threshold=0.01
 
     return best_cost, moves, duration
 
-def main():
-    # Tentukan ukuran kubus
-    N = 5  # Misalnya ukuran 3x3x3
+# def main():
+#     # Tentukan ukuran kubus
+#     N = 5  # Misalnya ukuran 3x3x3
 
-    # Inisialisasi kubus dengan angka unik menggunakan fungsi dari utils
-    cube = utils.initialize_random_cube(N)
+#     # Inisialisasi kubus dengan angka unik menggunakan fungsi dari utils
+#     cube = utils.initialize_random_cube(N)
     
-    # Jalankan algoritma simulated annealing
-    best_cost, moves, duration = simulated_annealing_algorithm(cube)
+#     # Jalankan algoritma simulated annealing
+#     best_cost, moves, duration = simulated_annealing_algorithm(cube)
     
-    # Tampilkan hasil akhir
-    print("\nHasil Simulated Annealing:")
-    print(f"Biaya Terbaik: {best_cost}")
-    print(f"Total Langkah: {moves}")
-    print(f"Durasi: {duration:.2f} detik")
+#     # Tampilkan hasil akhir
+#     print("\nHasil Simulated Annealing:")
+#     print(f"Biaya Terbaik: {best_cost}")
+#     print(f"Total Langkah: {moves}")
+#     print(f"Durasi: {duration:.2f} detik")
 
-# Panggil fungsi main untuk menjalankan driver
-if __name__ == "__main__":
-    main()
+# # Panggil fungsi main untuk menjalankan driver
+# if __name__ == "__main__":
+#     main()
