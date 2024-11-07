@@ -91,12 +91,13 @@ function displayCube(data, canvasId) {
 
 // Function to initialize a random cube
 async function initializeCube() {
+    console.log("Initializing cube...");  // Debugging log
     try {
         const response = await fetch('http://127.0.0.1:8000/initialize_cube');
         if (!response.ok) throw new Error(`Failed to initialize cube: ${response.status}`);
 
         const data = await response.json();
-        saveCubeState(data.cube);  // Save the initialized cube to localStorage
+        saveCubeState(data.cube);
         displayCube(data.cube, 'init-cube-canvas');
     } catch (error) {
         console.error("Error in initializeCube:", error);
@@ -111,6 +112,7 @@ document.getElementById('initialize-cube').addEventListener('click', (event) => 
 
 // Function to run a specific algorithm and display its plot
 async function runAlgorithm(algorithm, canvasId, plotContainerId) {
+    console.log(`Running algorithm: ${algorithm}`);  // Debugging log
     try {
         const savedCube = loadCubeState();
         if (!savedCube) {
@@ -129,7 +131,6 @@ async function runAlgorithm(algorithm, canvasId, plotContainerId) {
 
         if (!response.ok) throw new Error(`Failed to run ${algorithm}`);
 
-        // Get the plot image and display it
         const blob = await response.blob();
         const img = document.createElement('img');
         img.src = URL.createObjectURL(blob);
@@ -137,7 +138,7 @@ async function runAlgorithm(algorithm, canvasId, plotContainerId) {
         img.style.width = '100%';
 
         const plotContainer = document.getElementById(plotContainerId);
-        plotContainer.innerHTML = '';  // Clear any previous plot
+        plotContainer.innerHTML = '';
         plotContainer.appendChild(img);
     } catch (error) {
         console.error(`Error running ${algorithm}:`, error);
