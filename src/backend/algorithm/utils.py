@@ -143,13 +143,18 @@ def plot_function(filename, plot_filename, x_label, y_label, title):
     """
     # Load costs from JSON file
     with open(filename, "r") as f:
-        costs = json.load(f)
+        data = json.load(f)
     
-    # Plot iterations vs cost
-    iterations = list(range(1, len(costs) + 1))
+# Determine the x-axis values (iterations)
+    if filename == "annealing_probability.json":
+        # If the filename indicates probability data, assume data points were taken every 200 iterations
+        iterations = [i * 200 for i in range(1, len(data) + 1)]
+    else:
+        # For other files, plot per iteration
+        iterations = list(range(1, len(data) + 1))
     
     plt.figure(figsize=(6, 4))
-    plt.plot(iterations, costs, label="Objective Function", color='blue')
+    plt.plot(iterations, data, label="Objective Function", color='blue')
     plt.xlabel(x_label)
     plt.ylabel(y_label)
     plt.title(title)

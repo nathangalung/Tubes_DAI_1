@@ -38,8 +38,8 @@ def simulated_annealing_algorithm(cube, T_max=100.0, T_min=0.1, E_threshold=0.01
 
     costs = []
     temperature_history = []
-    exp_delta_E_T_history = []
-    iteration_list = []
+    exp_delta_E_T_history = [] 
+    iteration_list = [] 
 
     print("Keadaan Awal Kubus:")
     utils.print_cube(cube)
@@ -79,7 +79,7 @@ def simulated_annealing_algorithm(cube, T_max=100.0, T_min=0.1, E_threshold=0.01
         temperature_history.append(temperature)
 
         if moves % 200 == 0:
-            exp_delta_E_T = math.exp(delta_cost / temperature) if delta_cost > 0 else 1
+            exp_delta_E_T = 1 if delta_cost > 0 else math.exp(delta_cost / temperature)
             exp_delta_E_T_history.append(exp_delta_E_T)
             iteration_list.append(moves)
 
