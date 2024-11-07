@@ -38,8 +38,7 @@ def swap_two_random_positions(cube):
     cube[pos1], cube[pos2] = cube[pos2], cube[pos1]
     return cube
 
-def random_restart_magic_cube(n, max_restarts, max_iterations):
-    magic_number = (n * (n**3 + 1)) // 2
+def random_restart_algorithm(n, max_restarts, max_iterations):
     start_time = time.time()
     
     best_cube = None
@@ -51,12 +50,12 @@ def random_restart_magic_cube(n, max_restarts, max_iterations):
         restart_counts += 1
         cube = utils.initialize_random_cube(n)
         initial_state = cube.copy()
-        current_score = utils.objective_function(cube, magic_number)
+        current_score = utils.objective_function(cube, utils.calculate_magic_number)
         scores_per_restart = [current_score]
         
         for iteration in range(max_iterations):
             new_cube = swap_two_random_positions(cube.copy())
-            new_score = utils.objective_function(new_cube, magic_number)
+            new_score = utils.objective_function(new_cube, utils.calculate_magic_number)
             
             if new_score < current_score:
                 cube = new_cube
@@ -103,4 +102,4 @@ max_restarts = 10        # Maksimum jumlah restart
 max_iterations = 1000    # Maksimum iterasi per restart
 
 # Menjalankan algoritma
-random_restart_magic_cube(n, max_restarts, max_iterations)
+random_restart_algorithm(n, max_restarts, max_iterations)
