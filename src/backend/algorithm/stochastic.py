@@ -1,7 +1,7 @@
 import numpy as np
 import time
 import random
-import utils
+from . import utils
 
 def select_random_position(N):
     """Selects a random position in the cube."""
@@ -65,7 +65,7 @@ def stochastic_algorithm(cube, max_moves=1000):
     # Plot the costs over iterations
     utils.plot_function("stochastic_costs.json", "stochastic_objective_function_plot.png", "Iteration", "Objective Function", "Stochastic Algorithm Plot")
     
-    return current_cube
+    return current_cube, costs
 
 # if __name__ == "__main__":
 #     N = 5  # Ukuran cube

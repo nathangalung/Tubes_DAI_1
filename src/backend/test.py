@@ -5,7 +5,7 @@ from algorithm import (
     objective_function,
     steepest_ascent_algorithm,
     sideways_move_algorithm,
-    # random_restart_algorithm,
+    random_restart_algorithm,
     stochastic_algorithm,
     simulated_annealing_algorithm,
     genetic_algorithm
@@ -29,9 +29,9 @@ print("Eksperimen Sideways Move Algorithm")
 sideways_move_algorithm(cubes[1])
 print_cube(cubes[1])
 
-# print("Eksperimen Random Restart Algorithm")
-# random_restart_algorithm(cubes[2])
-# print_cube(cubes[2])
+print("Eksperimen Random Restart Algorithm")
+random_restart_algorithm(cubes[2])
+print_cube(cubes[2])
 
 print("Eksperimen Stochastic Algorithm")
 stochastic_algorithm(cubes[3])

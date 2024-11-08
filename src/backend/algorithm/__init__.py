@@ -3,15 +3,15 @@ from .utils import (
     initialize_random_cube,
     print_cube,
     objective_function,
-    plot_objective_function,
-    save_costs
+    plot_function,
+    save_json
 )
 
 from .steepestAscent import steepest_ascent_algorithm
 
 from .sidewaysMove import sideways_move_algorithm
 
-# from .randomRestart import random_restart_algorithm
+from .randomRestart import random_restart_algorithm
 
 from .simulatedAnnealing import simulated_annealing_algorithm
 

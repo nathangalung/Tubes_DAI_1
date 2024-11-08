@@ -164,36 +164,3 @@ def plot_function(filename, plot_filename, x_label, y_label, title):
     plt.savefig(plot_filename, format='png')
     plt.close()
     print(f"Plot saved as {plot_filename}")
-
-def run_algorithm(N, iterations):
-    """
-    Runs the cube initialization and objective function calculation over multiple iterations.
-    
-    Args:
-    - N (int): Size of the cube.
-    - iterations (int): Number of iterations to run.
-    
-    Returns:
-    - None
-    """
-    cube = initialize_random_cube(N)
-    costs = []
-
-    for it in range(iterations):
-        cost = objective_function(cube)
-        costs.append(cost)
-        print(f"Iteration {it + 1}, Cost = {cost}")
-
-        # Update the cube with a new random configuration for next iteration
-        cube = initialize_random_cube(N)
-
-    # Save costs to file
-    save_json(costs)
-
-# if __name__ == "__main__":
-#     N = 5  # Ukuran cube
-#     iterations = 10  # Jumlah iterasi
-
-#     run_algorithm(N, iterations)
-
-#     plot_objective_function("costs.json", "objective_function_plot.png")

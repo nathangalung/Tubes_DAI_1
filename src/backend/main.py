@@ -12,8 +12,8 @@ from algorithm import (
     stochastic_algorithm,
     simulated_annealing_algorithm,
     genetic_algorithm,
-    plot_objective_function,
-    save_costs
+    plot_function,
+    save_json
 )
 
 app = FastAPI()
@@ -77,10 +77,6 @@ async def run_algorithm_with_plot(request: AlgorithmRequest):
 
     # Tentukan nama file PNG yang dinamis berdasarkan nama algoritma
     plot_filename = f"{request.algorithm}_objective_function_plot.png"
-
-    # Save the costs and plot them with a dynamic filename
-    save_costs(best_cost, filename=f"{request.algorithm}_costs.json")
-    plot_objective_function(filename=f"{request.algorithm}_costs.json", plot_filename=plot_filename)
 
     # Return the file as a FileResponse instead of StreamingResponse
     return FileResponse(plot_filename, media_type="image/png")

@@ -38,7 +38,7 @@ def swap_two_random_positions(cube):
     cube[pos1], cube[pos2] = cube[pos2], cube[pos1]
     return cube
 
-def random_restart_algorithm(n, max_restarts, max_iterations):
+def random_restart_algorithm(n):
     start_time = time.time()
     
     best_cube = None
@@ -46,16 +46,16 @@ def random_restart_algorithm(n, max_restarts, max_iterations):
     restart_counts = 0
     all_scores = []
 
-    for restart in range(max_restarts):
+    for restart in range(10):
         restart_counts += 1
         cube = utils.initialize_random_cube(n)
         initial_state = cube.copy()
-        current_score = utils.objective_function(cube, utils.calculate_magic_number)
+        current_score = utils.objective_function(cube)
         scores_per_restart = [current_score]
         
-        for iteration in range(max_iterations):
+        for iteration in range(1000):
             new_cube = swap_two_random_positions(cube.copy())
-            new_score = utils.objective_function(new_cube, utils.calculate_magic_number)
+            new_score = utils.objective_function(new_cube)
             
             if new_score < current_score:
                 cube = new_cube
@@ -94,12 +94,3 @@ def random_restart_algorithm(n, max_restarts, max_iterations):
     print("\nNilai Objective Function Akhir yang Dicapai:", best_score)
     print("\nDurasi Pencarian:", duration, "detik")
     print("\nBanyak Restart:", restart_counts)
-    print("\nBanyak Iterasi per Restart:", max_iterations)
-
-# Parameter untuk algoritma
-n = 5                    # Ukuran sisi kubus
-max_restarts = 10        # Maksimum jumlah restart
-max_iterations = 1000    # Maksimum iterasi per restart
-
-# Menjalankan algoritma
-random_restart_algorithm(n, max_restarts, max_iterations)
