@@ -4,32 +4,6 @@ import time
 import matplotlib.pyplot as plt
 from . import utils
 
-# def random_initial_cube(n):
-#     # Membuat array angka 1 hingga n^3 lalu mengacaknya untuk membuat kubus awal
-#     numbers = list(range(1, n**3 + 1))
-#     random.shuffle(numbers)
-#     return np.array(numbers).reshape((n, n, n))
-
-# def calculate_fitness(cube, magic_number):
-#     # Menghitung fitness sebagai jumlah selisih antara jumlah tiap baris, kolom, tiang, dan diagonal dengan magic number
-#     n = cube.shape[0]
-#     fitness = 0
-    
-#     # Cek baris, kolom, dan tiang
-#     for i in range(n):
-#         for j in range(n):
-#             fitness += abs(magic_number - np.sum(cube[i, j, :]))   # Baris
-#             fitness += abs(magic_number - np.sum(cube[i, :, j]))   # Kolom
-#             fitness += abs(magic_number - np.sum(cube[:, i, j]))   # Tiang
-
-#     # Cek diagonal ruang
-#     fitness += abs(magic_number - np.sum([cube[i, i, i] for i in range(n)]))
-#     fitness += abs(magic_number - np.sum([cube[i, i, n-i-1] for i in range(n)]))
-#     fitness += abs(magic_number - np.sum([cube[i, n-i-1, i] for i in range(n)]))
-#     fitness += abs(magic_number - np.sum([cube[n-i-1, i, i] for i in range(n)]))
-    
-#     return fitness
-
 def swap_two_random_positions(cube):
     # Mengacak dua posisi dalam kubus dan menukarnya
     n = cube.shape[0]
