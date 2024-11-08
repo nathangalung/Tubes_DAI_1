@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MagiCube Solver</title>
+    <link rel="stylesheet" href="../styles.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <section class="visualization-section">
+        <div class="container">
+            <div class="visualization-grid">
+                <div class="visualization-card">
+                    <h3>Initial State</h3>
+                    <div class="cube-canvas" id="initialCube"></div>
+                    <button class="primary-button" id="initializeCube">Initialize Cube</button>
+                </div>
+                <div class="visualization-card">
+                    <h3>Solution Progress</h3>
+                    <div class="cube-canvas" id="solutionCube"></div>
+                    <button class="primary-button" id="solveCube" disabled>Solve Cube</button>
+                </div>
+            </div>
+
+            <div class="metrics-panel">
+                <div class="metric-card">
+                    <h4>Solution Cost</h4>
+                    <div class="metric-value" id="solutionCost">0</div>
+                </div>
+                <div class="metric-card">
+                    <h4>Time Elapsed</h4>
+                    <div class="metric-value" id="timeElapsed">0.00s</div>
+                </div>
+                <div class="metric-card">
+                    <h4>Moves Made</h4>
+                    <div class="metric-value" id="movesMade">0</div>
+                </div>
+            </div>
+        </div>
+    </section>
+<script src="script.js"></script>
+</body>
+</html>

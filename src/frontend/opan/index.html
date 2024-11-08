@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Cube Solver</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">Magic Cube Solver</div>
+            <div class="nav-links">
+                <a href="#" class="nav-link">Home</a>
+                <a href="#" class="nav-link">About</a>
+                <a href="#" class="nav-link">Help</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1 class="hero-title">Solve Magic Cube,<br>Your Way.</h1>
+                    <p class="hero-description">Explore a world of solutions for your Magic Cube with our solver. Visualize, learn, and apply different algorithms tailored to your solving style.</p>
+                    
+                    <div class="algorithm-grid">
+                        <a href="./result/index.html" class="algorithm-card">
+                            <h3>Steepest Ascent</h3>
+                            <p>Optimal path finding algorithm</p>
+                        </a>
+                        <a href="./result/index.html" class="algorithm-card">
+                            <h3>Sideways Move</h3>
+                            <p>Flexible movement patterns</p>
+                        </a>
+                        <a href="./result/index.html" class="algorithm-card">
+                            <h3>Stochastic</h3>
+                            <p>Randomized solution approach</p>
+                        </a>
+                        <a href="./result/index.html" class="algorithm-card">
+                            <h3>Random Restart</h3>
+                            <p>Multiple starting points</p>
+                        </a>
+                        <a href="./result/index.html" class="algorithm-card">
+                            <h3>Simulated Annealing</h3>
+                            <p>Temperature-based solving</p>
+                        </a>
+                        <a href="./result/index.html" class="algorithm-card">
+                            <h3>Genetic Algorithm</h3>
+                            <p>Evolution-inspired solution</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- <section class="visualization-section">
+            <div class="container">
+                <div class="visualization-grid">
+                    <div class="visualization-card">
+                        <h3>Initial State</h3>
+                        <div class="cube-canvas" id="initialCube"></div>
+                        <button class="primary-button" id="initializeCube">Initialize Cube</button>
+                    </div>
+                    <div class="visualization-card">
+                        <h3>Solution Progress</h3>
+                        <div class="cube-canvas" id="solutionCube"></div>
+                        <button class="primary-button" id="solveCube" disabled>Solve Cube</button>
+                    </div>
+                </div>
+
+                <div class="metrics-panel">
+                    <div class="metric-card">
+                        <h4>Solution Cost</h4>
+                        <div class="metric-value" id="solutionCost">0</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Time Elapsed</h4>
+                        <div class="metric-value" id="timeElapsed">0.00s</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Moves Made</h4>
+                        <div class="metric-value" id="movesMade">0</div>
+                    </div>
+                </div>
+            </div>
+        </section> -->
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Magic Cube Solver. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
