@@ -30,7 +30,7 @@ def find_best_neighbor(cube: np.ndarray, best_cost: int, max_sideways: int, side
         for j in range(N):
             for k in range(N):
                 # Hitung biaya saat ini untuk elemen di posisi (i, j, k)
-                current_cost = utils.calculate_element_cost(cube, i, j, k)
+                current_cost = utils.objective_function(cube)
                 
                 for l in range(i, N):  
                     for m in (range(j, N) if i == l else range(N)):
@@ -40,7 +40,7 @@ def find_best_neighbor(cube: np.ndarray, best_cost: int, max_sideways: int, side
                             
                             # Lakukan pertukaran dan hitung biaya total
                             swap_elements(cube, (i, j, k), (l, m, n))
-                            new_cost = utils.calculate_element_cost(cube, i, j, k) + utils.calculate_element_cost(cube, l, m, n)
+                            new_cost = utils.objective_function(cube) + utils.objective_function(cube)
                             total_cost = best_cost - current_cost + new_cost
 
                             # Tentukan apakah pertukaran ini memberikan biaya yang lebih baik
@@ -57,16 +57,19 @@ def find_best_neighbor(cube: np.ndarray, best_cost: int, max_sideways: int, side
 
 def sideways_move_algorithm(cube: np.ndarray, max_sideways: int = 100, max_iterations: int = 1000) -> Tuple[int, float, int, list]:
     # Fungsi utama untuk melakukan hill climbing dengan sideways moves dan batas iterasi
-    best_cost = utils.objective_function(cube)
+    current_cost = utils.objective_function(cube)  # Hitung seluruh kubus
+    best_cost = current_cost
+    best_cube = cube.copy()  # Simpan keadaan kubus dengan biaya terbaik
+    # best_cost = utils.objective_function(cube)
     moves, sideways_moves = 0, 0
-    start_time = time.time()
-
-    # Cetak keadaan awal kubus
-    print("Keadaan Awal Kubus:")
-    utils.print_cube(cube)
 
     # Melacak nilai objective function pada setiap iterasi untuk plotting
-    cost_history = [best_cost]
+    costs = []
+
+    # print("Keadaan Awal Kubus:")
+    # utils.print_cube(cube)
+
+    start_time = time.time()
 
     while moves < max_iterations:  # Tambahkan kondisi batas iterasi
         # Panggil fungsi yang sudah dioptimalkan untuk mencari tetangga terbaik
@@ -89,21 +92,37 @@ def sideways_move_algorithm(cube: np.ndarray, max_sideways: int = 100, max_itera
             best_cost = best_neighbor_cost
 
         moves += 1
-        cost_history.append(best_cost)  # Melacak biaya terbaik per iterasi
+        costs.append(current_cost)
 
     # Menghitung waktu yang dibutuhkan
-    time_elapsed = time.time() - start_time
+    duration = time.time() - start_time
 
     # Cetak hasil akhir
+    print("\nKeadaan Akhir Kubus:")
+    utils.print_cube(best_cube)  # Menampilkan kubus dengan best_cost
     print(f"Nilai Akhir Objective Function: {best_cost}")
-    print(f"Durasi Waktu: {time_elapsed:.2f} detik")
+    print(f"Durasi Waktu: {duration:.2f} detik")
     print(f"Total Langkah: {moves}")
 
-    # Plot nilai objective function terhadap iterasi
-    plt.plot(cost_history)
-    plt.xlabel("Iterasi")
-    plt.ylabel("Nilai Objective Function")
-    plt.title("Nilai Objective Function per Iterasi")
-    plt.show()
+    # Save costs to JSON file
+    utils.save_json(costs, "sideways_costs.json")
 
-    return moves, time_elapsed, best_cost, cost_history
+    # Plot the costs over iterations
+    utils.plot_function("sideways_costs.json", "sideways_objective_function_plot.png", "Iteration",
+                        "Objective Function Cost", "Objective Function Cost per Iteration")
+
+    return moves, duration, best_cost
+
+# def main():
+#     # Tentukan ukuran kubus
+#     N = 5  # Misalnya ukuran 3x3x3
+
+#     # Inisialisasi kubus dengan angka unik menggunakan fungsi dari utils
+#     cube = utils.initialize_random_cube(N)
+    
+#     # Jalankan algoritma simulated annealing
+#     best_cost, moves, duration = sideways_move_algorithm(cube)
+
+# # Panggil fungsi main untuk menjalankan driver
+# if __name__ == "__main__":
+#     main()
