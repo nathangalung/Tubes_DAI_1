@@ -1,108 +1,82 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize UI elements
     const initializeButton = document.getElementById('initializeCube');
-    const solveButton = document.getElementById('solveCube');
-    const solutionCost = document.getElementById('solutionCost');
-    const timeElapsed = document.getElementById('timeElapsed');
-    const movesMade = document.getElementById('movesMade');
+    const objectiveValue = document.getElementById('objectiveValue');
+    const previewCanvas = document.getElementById('previewCube');
     
-    let solving = false;
-    let startTime;
-
-    // Initialize cube visualization canvases
-    const initialCanvas = document.getElementById('initialCube');
-    const solutionCanvas = document.getElementById('solutionCube');
-
-    // Event listeners
-    initializeButton.addEventListener('click', function() {
-        initializeCube();
-        solveButton.disabled = false;
-        resetMetrics();
-    });
-
-    solveButton.addEventListener('click', function() {
-        if (!solving) {
-            startSolving();
+    function drawCubePreview(canvas) {
+        const ctx = canvas.getContext('2d');
+        const width = canvas.offsetWidth;
+        const height = canvas.offsetHeight;
+        
+        // Set canvas size with proper scaling
+        canvas.width = width * window.devicePixelRatio;
+        canvas.height = height * window.devicePixelRatio;
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        
+        // Clear canvas
+        ctx.fillStyle = '#1a1d24';
+        ctx.fillRect(0, 0, width, height);
+        
+        // Draw cube visualization (placeholder)
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const size = Math.min(width, height) * 0.4;
+        
+        // Draw cube faces with perspective
+        ctx.strokeStyle = '#4f46e5';
+        ctx.lineWidth = 2;
+        
+        // Front face
+        ctx.beginPath();
+        ctx.moveTo(centerX - size/2, centerY - size/2);
+        ctx.lineTo(centerX + size/2, centerY - size/2);
+        ctx.lineTo(centerX + size/2, centerY + size/2);
+        ctx.lineTo(centerX - size/2, centerY + size/2);
+        ctx.closePath();
+        ctx.stroke();
+        
+        // Add some random numbers
+        ctx.font = '14px Space Grotesk';
+        ctx.fillStyle = '#94a3b8';
+        ctx.textAlign = 'center';
+        
+        for(let i = 0; i < 9; i++) {
+            const x = centerX - size/3 + (i % 3) * size/3;
+            const y = centerY - size/3 + Math.floor(i/3) * size/3;
+            ctx.fillText(Math.floor(Math.random() * 100), x, y);
         }
+    }
+    
+    function updateObjectiveValue() {
+        const newValue = Math.floor(Math.random() * 5000 + 5000);
+        objectiveValue.textContent = newValue;
+        
+        // Animate the value change
+        objectiveValue.style.color = '#4f46e5';
+        setTimeout(() => {
+            objectiveValue.style.color = 'inherit';
+        }, 300);
+    }
+    
+    if(initializeButton && previewCanvas) {
+        // Initial draw
+        drawCubePreview(previewCanvas);
+        
+        // Handle click
+        initializeButton.addEventListener('click', () => {
+            drawCubePreview(previewCanvas);
+            updateObjectiveValue();
+        });
+    }
+    
+    // Add hover effects to algorithm cards
+    const algorithmCards = document.querySelectorAll('.algorithm-card');
+    algorithmCards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-5px)';
+        });
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0)';
+        });
     });
-
-    function initializeCube() {
-        // Clear previous state
-        clearCanvas(initialCanvas);
-        clearCanvas(solutionCanvas);
-        
-        // Draw random initial state
-        drawRandomCube(initialCanvas);
-        
-        // Enable solve button
-        solveButton.disabled = false;
-    }
-
-    function startSolving() {
-        solving = true;
-        startTime = Date.now();
-        solveButton.disabled = true;
-        
-        // Simulate solving process with animation
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += 1;
-            updateMetrics(progress);
-            
-            if (progress >= 100) {
-                clearInterval(interval);
-                solving = false;
-                solveButton.disabled = false;
-                drawSolvedCube(solutionCanvas);
-            }
-        }, 50);
-    }
-
-    function updateMetrics(progress) {
-        const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
-        const moves = Math.floor(progress * 1.2);
-        const cost = Math.floor(progress * 2.5);
-
-        timeElapsed.textContent = elapsed + 's';
-        movesMade.textContent = moves;
-        solutionCost.textContent = cost;
-    }
-
-    function resetMetrics() {
-        timeElapsed.textContent = '0.00s';
-        movesMade.textContent = '0';
-        solutionCost.textContent = '0';
-    }
-
-    function clearCanvas(canvas) {
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-
-    function drawRandomCube(canvas) {
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#f0f0f0';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // Add placeholder text
-        ctx.fillStyle = '#666';
-        ctx.font = '14px Inter';
-        ctx.textAlign = 'center';
-        ctx.fillText('Random Cube State', canvas.width/2, canvas.height/2);
-    }
-
-    function drawSolvedCube(canvas) {
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#e0ffe0';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // Add placeholder text
-        ctx.fillStyle = '#666';
-        ctx.font = '14px Inter';
-        ctx.textAlign = 'center';
-        ctx.fillText('Solved Cube State', canvas.width/2, canvas.height/2);
-    }
-
-    // Initialize the page
-    resetMetrics();
 });

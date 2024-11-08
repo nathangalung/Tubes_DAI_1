@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Cube Solver - Visualization</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="stochastic-styles.css">
+</head>
+<body>
+    <div class="container">
+        <a href="../index.html" class="back-button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back
+        </a>
+
+        <div class="visualization-grid">
+            <div class="visualization-card">
+                <div class="card-header">
+                    <div class="status-dot blue"></div>
+                    <h2>Initial State</h2>
+                </div>
+                <div class="visualization-canvas"></div>
+                <div class="state-info">Initial State Objective Function: 6505</div>
+            </div>
+
+            <div class="visualization-card">
+                <div class="card-header">
+                    <div class="status-dot green"></div>
+                    <h2>Final State</h2>
+                </div>
+                <div class="visualization-canvas"></div>
+                <div class="state-info">Final State Objective Function: 104</div>
+            </div>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <h3>Solution Cost</h3>
+                <div class="metric-value">104</div>
+            </div>
+            <div class="metric-card">
+                <h3>Time Elapsed</h3>
+                <div class="metric-value">18.76s</div>
+            </div>
+            <div class="metric-card">
+                <h3>Number of Iterations</h3>
+                <div class="metric-value">1500</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h3>Plot of Fitness Values vs Iteration</h3>
+            <canvas id="fitnessChart"></canvas>
+        </div>
+    </div>
+
+    <script src="stochastic-script.js"></script>
+</body>
+</html>

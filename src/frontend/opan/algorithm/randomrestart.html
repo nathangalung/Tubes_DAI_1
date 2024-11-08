@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Cube Solver - Random Restart</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="randomrestart-styles.css">
+</head>
+<body>
+    <div class="container">
+        <a href="../index.html" class="back-button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back
+        </a>
+
+        <div class="visualization-grid">
+            <div class="visualization-card">
+                <div class="card-header">
+                    <div class="status-dot blue"></div>
+                    <h2>Initial State</h2>
+                </div>
+                <div class="visualization-canvas"></div>
+                <div class="state-info">Initial State Objective Function: 6505</div>
+            </div>
+
+            <div class="visualization-card">
+                <div class="card-header">
+                    <div class="status-dot green"></div>
+                    <h2>Final State</h2>
+                </div>
+                <div class="visualization-canvas"></div>
+                <div class="state-info">Final State Objective Function: 104</div>
+            </div>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <h3>Solution Cost</h3>
+                <div class="metric-value">104</div>
+            </div>
+            <div class="metric-card">
+                <h3>Time Elapsed</h3>
+                <div class="metric-value">18.76s</div>
+            </div>
+            <div class="metric-card">
+                <h3>Number of Iterations</h3>
+                <div class="metric-value">1500</div>
+            </div>
+            <div class="metric-card">
+                <h3>Number of Restart</h3>
+                <div class="metric-value">15</div>
+            </div>
+        </div>
+
+        <div class="restart-steps-container">
+            <h2 class="restart-steps-title">Number of Restart per Iteration</h2>
+            <div class="restart-steps-grid">
+                <div class="restart-step">
+                    <div class="step-icon">↺</div>
+                    <div class="step-content">
+                        <span class="step-number">Step 1</span>
+                        <div class="step-value" id="restart-1">150</div>
+                    </div>
+                </div>
+                <div class="restart-step">
+                    <div class="step-icon">↺</div>
+                    <div class="step-content">
+                        <span class="step-number">Step 2</span>
+                        <div class="step-value" id="restart-2">143</div>
+                    </div>
+                </div>
+                <div class="restart-step">
+                    <div class="step-icon">↺</div>
+                    <div class="step-content">
+                        <span class="step-number">Step 3</span>
+                        <div class="step-value" id="restart-3">136</div>
+                    </div>
+                </div>
+                <div class="restart-step">
+                    <div class="step-icon">↺</div>
+                    <div class="step-content">
+                        <span class="step-number">Step 4</span>
+                        <div class="step-value" id="restart-4">129</div>
+                    </div>
+                </div>
+                <div class="restart-step">
+                    <div class="step-icon">↺</div>
+                    <div class="step-content">
+                        <span class="step-number">Step 5</span>
+                        <div class="step-value" id="restart-5">122</div>
+                    </div>
+                </div>
+                <div class="restart-step">
+                    <div class="step-icon">↺</div>
+                    <div class="step-content">
+                        <span class="step-number">Step 6</span>
+                        <div class="step-value" id="restart-6">115</div>
+                    </div>
+                </div>
+                <div class="restart-step">
+                    <div class="step-icon">↺</div>
+                    <div class="step-content">
+                        <span class="step-number">Step 7</span>
+                        <div class="step-value" id="restart-7">108</div>
+                    </div>
+                </div>
+                <div class="restart-step">
+                    <div class="step-icon">↺</div>
+                    <div class="step-content">
+                        <span class="step-number">Step 8</span>
+                        <div class="step-value" id="restart-8">101</div>
+                    </div>
+                </div>
+                <div class="restart-step">
+                    <div class="step-icon">↺</div>
+                    <div class="step-content">
+                        <span class="step-number">Step 9</span>
+                        <div class="step-value" id="restart-9">94</div>
+                    </div>
+                </div>
+                <div class="restart-step">
+                    <div class="step-icon">↺</div>
+                    <div class="step-content">
+                        <span class="step-number">Step 10</span>
+                        <div class="step-value" id="restart-10">87</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h3>Plot of Fitness Values vs Iteration</h3>
+            <canvas id="fitnessChart"></canvas>
+        </div>
+    </div>
+
+    <script src="randomrestart-script.js"></script>
+</body>
+</html>
