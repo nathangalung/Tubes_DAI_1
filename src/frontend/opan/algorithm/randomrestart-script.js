@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const canvas = document.getElementById('fitnessChart');
+    const canvas = document.getElementById('progressChart');
     const ctx = canvas.getContext('2d');
 
     function resizeCanvas() {

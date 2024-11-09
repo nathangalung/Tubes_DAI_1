@@ -69,14 +69,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    document.addEventListener('DOMContentLoaded', function() {
     // Add hover effects to algorithm cards
     const algorithmCards = document.querySelectorAll('.algorithm-card');
     algorithmCards.forEach(card => {
         card.addEventListener('mouseenter', () => {
-            card.style.transform = 'translateY(-5px)';
+            card.style.transform = 'scale(1.02)';
         });
         card.addEventListener('mouseleave', () => {
-            card.style.transform = 'translateY(0)';
+            card.style.transform = 'scale(1)';
         });
     });
+});
 });

@@ -3,61 +3,68 @@ import time
 from . import utils
 
 def swap_two_random_positions(cube):
-    # Mengacak dua posisi dalam kubus dan menukarnya
     N = len(cube)
-    pos1 = (random.randint(0, N-1), random.randint(0, N-1), random.randint(0, N-1))
-    pos2 = (random.randint(0, N-1), random.randint(0, N-1), random.randint(0, N-1))
-    cube[pos1], cube[pos2] = cube[pos2], cube[pos1]
+    posisi1 = (random.randint(0, N-1), random.randint(0, N-1), random.randint(0, N-1))
+    posisi2 = (random.randint(0, N-1), random.randint(0, N-1), random.randint(0, N-1))
+    cube[posisi1], cube[posisi2] = cube[posisi2], cube[posisi1]
     return cube
 
-def random_restart_algorithm(cube):
+def random_restart_algorithm(cube, max_restarts=10, max_iterations_per_restart=1000):
     N = len(cube)
     start_time = time.time()
-    max_restarts = 10
-    max_iterations = 1000
     best_cube = None
-    best_cost = 0
-    restarts = 0
-    costs = []
+    best_cost = float('inf')  
+    costs_history = {}
+    total_iterations = 0
 
     for restart in range(max_restarts):
-        restart += 1
-        cube = utils.initialize_random_cube(N)
-        initial_state = cube.copy()
-        current_cost = utils.objective_function(cube)
-        costs_restart = {}
-        costs_restart[f"costs_restart_{restart+1}"] = []
+        current_cube = utils.initialize_random_cube(N)
+        current_cost = utils.objective_function(current_cube)
+        costs_history[f"restart_{restart+1}"] = {
+            "costs": [],
+            "iterations": 0
+        }
         
-        for iteration in range(max_iterations):
-            new_cube = swap_two_random_positions(cube.copy())
+        
+        iterations_this_restart = 0
+        while iterations_this_restart < max_iterations_per_restart:
+            new_cube = swap_two_random_positions(current_cube.copy())
             new_cost = utils.objective_function(new_cube)
             
             if new_cost < current_cost:
-                cube = new_cube
+                current_cube = new_cube
                 current_cost = new_cost
+                costs_history[f"restart_{restart+1}"]["costs"].append(current_cost)
             
-            # Simpan solusi terbaik jika ditemukan
             if current_cost < best_cost:
-                best_cube = cube.copy()
+                best_cube = current_cube.copy()
                 best_cost = current_cost
-                costs_restart[f"costs_restart_{restart+1}"].append(best_cost)
             
-            # Jika solusi sempurna (fitness cost = 0) ditemukan
-            if current_cost == 0:
+            iterations_this_restart += 1
+            total_iterations += 1
+            costs_history[f"restart_{restart+1}"]["iterations"] = iterations_this_restart
+            
+            if current_cost == 0: 
                 break
         
-        costs.extend(costs_restart[f"costs_restart_{restart+1}"])
-        
-        # Jika solusi ditemukan
         if current_cost == 0:
             break
 
     duration = time.time() - start_time
     
     return {
+<<<<<<< HEAD
         "final_cube": cube,
         "final_cost": best_cost,
         "duration": round(duration, 2),
         "iterations": len(costs) + 1,
         "costs": costs
+=======
+        "best_cube": best_cube,
+        "best_cost": best_cost,
+        "costs_history": costs_history,
+        "duration": f"{duration:.2f}",
+        "total_restarts": restart + 1,
+        "total_iterations": total_iterations
+>>>>>>> 4b1ca016327b636fb83fe3c412362cab69941346
     }
