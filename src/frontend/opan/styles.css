@@ -153,13 +153,6 @@ body {
     margin-bottom: 1rem;
 }
 
-.status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--primary);
-}
-
 .cube-canvas {
     width: 100%;
     height: 300px;

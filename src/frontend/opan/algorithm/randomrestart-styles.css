@@ -1,13 +1,10 @@
 :root {
     --background: #0a0a0a;
-    --card-bg: #111318;
-    --canvas-bg: #1a1d24;
+    --card-bg: #16181d;
     --text-primary: #ffffff;
     --text-secondary: #94a3b8;
-    --blue: #4f46e5;
-    --green: #22c55e;
-    --purple: #8b5cf6;
-    --purple-dark: #6d28d9;
+    --accent: #8b5cf6;
+    --border: #1e1e1e;
 }
 
 * {
@@ -20,102 +17,95 @@ body {
     font-family: 'Space Grotesk', system-ui, sans-serif;
     background-color: var(--background);
     color: var(--text-primary);
-    min-height: 100vh;
-    padding: 2rem;
+    line-height: 1.5;
 }
 
 .container {
     max-width: 1400px;
     margin: 0 auto;
+    padding: 2rem;
 }
 
 .back-button {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background-color: var(--card-bg);
-    border-radius: 0.5rem;
     color: var(--text-secondary);
     text-decoration: none;
     margin-bottom: 2rem;
-    transition: color 0.2s;
+    font-size: 0.875rem;
+    background: var(--card-bg);
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--border);
 }
 
 .back-button:hover {
     color: var(--text-primary);
 }
 
-.visualization-grid {
+.main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.description {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+
+.content-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    grid-template-columns: 1fr 1fr 300px;
     gap: 1.5rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
 }
 
-.visualization-card {
-    background-color: var(--card-bg);
-    border-radius: 1rem;
-    padding: 1.5rem;
-}
-
-.card-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+.state-section h2 {
+    font-size: 1.25rem;
     margin-bottom: 1rem;
 }
 
-.status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-}
-
-.status-dot.blue {
-    background-color: var(--blue);
-}
-
-.status-dot.green {
-    background-color: var(--green);
-}
-
-.visualization-canvas {
+.state-canvas {
     width: 100%;
     aspect-ratio: 16/9;
-    background-color: var(--canvas-bg);
+    background: var(--card-bg);
     border-radius: 0.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
-.state-info {
-    font-size: 0.875rem;
+.state-value {
     color: var(--text-secondary);
+    font-size: 0.875rem;
 }
 
-.metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
+.metrics-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
-.metric-card {
-    background-color: var(--card-bg);
+.metric-container {
+    background: var(--card-bg);
     border-radius: 1rem;
-    padding: 1.5rem;
+    padding: 1rem;
 }
 
-.metric-card h3 {
+.metric-label {
     color: var(--text-secondary);
     font-size: 0.875rem;
     margin-bottom: 0.5rem;
 }
 
 .metric-value {
+    color: var(--accent);
     font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--blue);
+    font-weight: 600;
 }
 
 .restart-steps-container {
@@ -200,45 +190,46 @@ body {
     color: var(--blue);
 }
 
-.chart-container {
-    background-color: var(--card-bg);
-    border-radius: 1rem;
+.chart-section {
+    background: var(--card-bg);
     padding: 1.5rem;
-}
-
-.chart-container h3 {
-    margin-bottom: 1rem;
-}
-
-#fitnessChart {
-    width: 100%;
-    height: 300px;
-    background-color: var(--canvas-bg);
     border-radius: 0.5rem;
 }
 
-@media (max-width: 1200px) {
-    .restart-steps-grid {
-        grid-template-columns: repeat(5, 1fr);
-    }
+.chart-section h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
 }
 
-@media (max-width: 768px) {
-    .visualization-grid {
+#progressChart {
+    width: 100%;
+    height: 300px;
+    background: var(--card-bg);
+    border-radius: 0.5rem;
+}
+
+@media (max-width: 1024px) {
+    .content-grid {
         grid-template-columns: 1fr;
     }
     
-    .metrics-grid {
-        grid-template-columns: 1fr;
+    .metrics-section {
+        flex-direction: row;
+        flex-wrap: wrap;
     }
-
-    .restart-steps-grid {
-        grid-template-columns: repeat(2, 1fr);
+    
+    .metric-container {
+        flex: 1;
+        min-width: 200px;
     }
 }
 
-@media (max-width: 480px) {
-    .restart-steps-grid {
-        grid-template-columns: 1fr;
+@media (max-width: 640px) {
+    .metrics-section {
+        flex-direction: column;
+    }
+    
+    .metric-container {
+        width: 100%;
     }
 }
