@@ -1,75 +1,67 @@
-import numpy as np
 import time
 import random
+from typing import List, Tuple
 from . import utils
 
-def select_random_position(N):
+def select_random_position(N: int) -> int:
     """Selects a random position in the cube."""
     return random.randint(0, N - 1)
 
-def calculate_cost_change(cube, pos1, pos2):
+def calculate_cost_change(cube: List[List[List[int]]], 
+                         pos1: Tuple[int, int, int], 
+                         pos2: Tuple[int, int, int]) -> int:
     """
     Calculates the change in cost for a single swap between two positions.
     """
     original_cost = utils.objective_function(cube)
     # Perform the swap
-    cube[pos1], cube[pos2] = cube[pos2], cube[pos1]
+    i1, j1, k1 = pos1
+    i2, j2, k2 = pos2
+    cube[i1][j1][k1], cube[i2][j2][k2] = cube[i2][j2][k2], cube[i1][j1][k1]
     # Calculate the new cost after the swap
     new_cost = utils.objective_function(cube)
-    # Undo the swap to keep the cube unchanged
-    cube[pos1], cube[pos2] = cube[pos2], cube[pos1]
-    # Calculate the change in cost
+    # Undo the swap
+    cube[i1][j1][k1], cube[i2][j2][k2] = cube[i2][j2][k2], cube[i1][j1][k1]
     return new_cost - original_cost
 
-def stochastic_algorithm(cube, max_moves=1000):
+def stochastic_algorithm(cube: List[List[List[int]]]) -> Tuple[List[List[List[int]]], float, List[float], float]:
     """
     Performs stochastic hill climbing with a fixed number of iterations.
     """
-    N = cube.shape[0]
-    current_cube = cube
-    current_cost = utils.objective_function(current_cube)
-    moves = 0
-    costs = []  # List to store the cost at each move for plotting
+    N = len(cube)
+    current_cost = utils.objective_function(cube)
+    best_cost = current_cost
+    max_iterations = 1000
+    iterations = 0
+    costs = []
 
     start_time = time.time()
 
-    while moves < max_moves:
-        # Generate two random positions to swap
+    while iterations < max_iterations:
+        # Generate two random positions
         pos1 = (select_random_position(N), select_random_position(N), select_random_position(N))
         pos2 = (select_random_position(N), select_random_position(N), select_random_position(N))
         
-        # Ensure they are different positions
         while pos1 == pos2:
             pos2 = (select_random_position(N), select_random_position(N), select_random_position(N))
 
-        # Calculate cost change
-        cost_change = calculate_cost_change(current_cube, pos1, pos2)
+        cost_change = calculate_cost_change(cube, pos1, pos2)
 
-        # Move to neighbor if it is better
         if cost_change < 0:
-            # Perform the swap
-            current_cube[pos1], current_cube[pos2] = current_cube[pos2], current_cube[pos1]
+            i1, j1, k1 = pos1
+            i2, j2, k2 = pos2
+            cube[i1][j1][k1], cube[i2][j2][k2] = cube[i2][j2][k2], cube[i1][j1][k1]
             current_cost += cost_change
+            best_cost = current_cost
 
-        # Store current cost in the list for tracking
         costs.append(current_cost)
-        moves += 1
+        iterations += 1
 
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    print(f"Stochastic Hill Climbing: Moves={moves}, Time={elapsed_time:.2f} seconds, Final Cost={current_cost}")
+    duration = time.time() - start_time
+    print(f"Stochastic Hill Climbing: iterations={iterations}, Time={duration:.2f} seconds, Final Cost={current_cost}")
 
-    # Save costs to JSON file
     utils.save_json(costs, "stochastic_costs.json")
-
-    # Plot the costs over iterations
-    utils.plot_function("stochastic_costs.json", "stochastic_objective_function_plot.png", "Iteration", "Objective Function", "Stochastic Algorithm Plot")
+    # utils.plot_function("stochastic_costs.json", "stochastic_objective_function_plot.png", 
+    #                    "Iteration", "Objective Function", "Stochastic Algorithm Plot")
     
-    return current_cube, costs
-
-# if __name__ == "__main__":
-#     N = 5  # Ukuran cube
-#     cube = utils.initialize_random_cube(N)
-#     print("Initial Cost=",utils.objective_function(cube))
-#     stochastic_algorithm(cube)
-#     print(cube)
+    return cube, best_cost, costs, duration

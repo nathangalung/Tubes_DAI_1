@@ -1,70 +1,57 @@
-import numpy as np
 import random
 import time
-import matplotlib.pyplot as plt
 from . import utils
 
 def swap_two_random_positions(cube):
     # Mengacak dua posisi dalam kubus dan menukarnya
-    n = cube.shape[0]
-    pos1 = (random.randint(0, n-1), random.randint(0, n-1), random.randint(0, n-1))
-    pos2 = (random.randint(0, n-1), random.randint(0, n-1), random.randint(0, n-1))
+    N = len(cube)
+    pos1 = (random.randint(0, N-1), random.randint(0, N-1), random.randint(0, N-1))
+    pos2 = (random.randint(0, N-1), random.randint(0, N-1), random.randint(0, N-1))
     cube[pos1], cube[pos2] = cube[pos2], cube[pos1]
     return cube
 
-def random_restart_algorithm(n):
+def random_restart_algorithm(cube):
+    N = len(cube)
     start_time = time.time()
-    
+    max_restarts = 10
+    max_iterations = 1000
     best_cube = None
-    best_score = float('inf')
-    restart_counts = 0
-    all_scores = []
+    best_cost = 0
+    restarts = 0
+    costs = []
 
-    for restart in range(10):
-        restart_counts += 1
-        cube = utils.initialize_random_cube(n)
+    for restart in range(max_restarts):
+        restart += 1
+        cube = utils.initialize_random_cube(N)
         initial_state = cube.copy()
-        current_score = utils.objective_function(cube)
-        scores_per_restart = [current_score]
+        current_cost = utils.objective_function(cube)
+        costs_restart = {}
+        costs_restart[f"costs_restart_{restart+1}"] = []
         
-        for iteration in range(1000):
+        for iteration in range(max_iterations):
             new_cube = swap_two_random_positions(cube.copy())
-            new_score = utils.objective_function(new_cube)
+            new_cost = utils.objective_function(new_cube)
             
-            if new_score < current_score:
+            if new_cost < current_cost:
                 cube = new_cube
-                current_score = new_score
-            
-            scores_per_restart.append(current_score)
+                current_cost = new_cost
             
             # Simpan solusi terbaik jika ditemukan
-            if current_score < best_score:
+            if current_cost < best_cost:
                 best_cube = cube.copy()
-                best_score = current_score
+                best_cost = current_cost
+                costs_restart[f"costs_restart_{restart+1}"].append(best_cost)
             
-            # Jika solusi sempurna (fitness score = 0) ditemukan
-            if current_score == 0:
+            # Jika solusi sempurna (fitness cost = 0) ditemukan
+            if current_cost == 0:
                 break
         
-        all_scores.extend(scores_per_restart)
+        costs.extend(costs_restart[f"costs_restart_{restart+1}"])
         
         # Jika solusi ditemukan
-        if current_score == 0:
+        if current_cost == 0:
             break
 
-    end_time = time.time()
-    duration = end_time - start_time
+    duration = time.time() - start_time
     
-    # Plot objective function terhadap iterasi
-    plt.plot(all_scores)
-    plt.xlabel("Iterasi")
-    plt.ylabel("Objective Function (Fitness Score)")
-    plt.title("Objective Function terhadap Iterasi")
-    plt.show()
-    
-    # Output hasil akhir
-    print("State Awal Kubus:\n", initial_state)
-    print("\nState Akhir Kubus:\n", best_cube)
-    print("\nNilai Objective Function Akhir yang Dicapai:", best_score)
-    print("\nDurasi Pencarian:", duration, "detik")
-    print("\nBanyak Restart:", restart_counts)
+    return best_cube, best_cost, costs, f"{duration:.2f}", restart, costs_restart
