@@ -154,7 +154,11 @@ export default function Main({ onAlgorithmSelect }) {
                 </p>
               </a>
               <a
-                href="./algorithm/sidewaysmove.html"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onAlgorithmSelect("sideways", cubeState);
+                }}
+                href="#"
                 className="bg-[#111318] border border-[#2d3748] rounded-2xl p-6 text-white no-underline hover:border-[#8b5cf6] hover:shadow-lg hover:shadow-[#8b5cf6]/10 transition-all duration-300 transform hover:-translate-y-1"
               >
                 <div className="text-3xl mb-4 bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] text-transparent bg-clip-text">
@@ -166,7 +170,11 @@ export default function Main({ onAlgorithmSelect }) {
                 </p>
               </a>
               <a
-                href="./algorithm/stochastic.html"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onAlgorithmSelect("stochastic", cubeState);
+                }}
+                href="#"
                 className="bg-[#111318] border border-[#2d3748] rounded-2xl p-6 text-white no-underline hover:border-[#8b5cf6] hover:shadow-lg hover:shadow-[#8b5cf6]/10 transition-all duration-300 transform hover:-translate-y-1"
               >
                 <div className="text-3xl mb-4 bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] text-transparent bg-clip-text">
@@ -178,7 +186,11 @@ export default function Main({ onAlgorithmSelect }) {
                 </p>
               </a>
               <a
-                href="./algorithm/randomrestart.html"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onAlgorithmSelect("random", cubeState);
+                }}
+                href="#"
                 className="bg-[#111318] border border-[#2d3748] rounded-2xl p-6 text-white no-underline hover:border-[#8b5cf6] hover:shadow-lg hover:shadow-[#8b5cf6]/10 transition-all duration-300 transform hover:-translate-y-1"
               >
                 <RotateCcw className="w-8 h-8 mb-4 text-[#6366f1]" />
@@ -188,7 +200,11 @@ export default function Main({ onAlgorithmSelect }) {
                 </p>
               </a>
               <a
-                href="./algorithm/simulatedannealing.html"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onAlgorithmSelect("simulated", cubeState);
+                }}
+                href="#"
                 className="bg-[#111318] border border-[#2d3748] rounded-2xl p-6 text-white no-underline hover:border-[#8b5cf6] hover:shadow-lg hover:shadow-[#8b5cf6]/10 transition-all duration-300 transform hover:-translate-y-1"
               >
                 <Thermometer className="w-8 h-8 mb-4 text-[#6366f1]" />
@@ -200,7 +216,11 @@ export default function Main({ onAlgorithmSelect }) {
                 </p>
               </a>
               <a
-                href="./algorithm/geneticalgorithm.html"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onAlgorithmSelect("genetic", cubeState);
+                }}
+                href="#"
                 className="bg-[#111318] border border-[#2d3748] rounded-2xl p-6 text-white no-underline hover:border-[#8b5cf6] hover:shadow-lg hover:shadow-[#8b5cf6]/10 transition-all duration-300 transform hover:-translate-y-1"
               >
                 <Dna className="w-8 h-8 mb-4 text-[#6366f1]" />
