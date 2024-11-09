@@ -53,18 +53,10 @@ def random_restart_algorithm(cube, max_restarts=10, max_iterations_per_restart=1
     duration = time.time() - start_time
     
     return {
-<<<<<<< HEAD
         "final_cube": cube,
         "final_cost": best_cost,
         "duration": round(duration, 2),
-        "iterations": len(costs) + 1,
-        "costs": costs
-=======
-        "best_cube": best_cube,
-        "best_cost": best_cost,
-        "costs_history": costs_history,
-        "duration": f"{duration:.2f}",
-        "total_restarts": restart + 1,
-        "total_iterations": total_iterations
->>>>>>> 4b1ca016327b636fb83fe3c412362cab69941346
+        "iterations": len(costs_history) + 1,
+        "costs": costs_history,
+        "restart": restart
     }
