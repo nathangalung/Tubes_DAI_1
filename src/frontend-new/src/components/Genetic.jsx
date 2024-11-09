@@ -1,9 +1,17 @@
 import { ArrowLeft } from "lucide-react";
 import Cube from "./Cube";
+import Chart from './Chart';
 
 export default function GeneticAlgorithmVisualization({
-  initialState,
-  result,
+  initialCube,
+  finalCube,
+  initialCost,
+  finalCost,
+  duration,
+  populations,
+  iterations,
+  costs,
+  onBack
 }) {
   return (
     <div className="bg-[#0a0a0a] text-white font-['Space_Grotesk',system-ui,sans-serif] min-h-screen p-8">
@@ -22,10 +30,9 @@ export default function GeneticAlgorithmVisualization({
               <div className="w-2 h-2 rounded-full bg-[#4f46e5]" />
               <h2 className="text-lg font-semibold">Initial State</h2>
             </div>
-            <Cube magic_cube={initialState} />
-            {/* <div className="w-full aspect-video bg-[#1a1d24] rounded-lg mb-4" /> */}
+            <Cube magic_cube={initialCube} />  {/* Changed from initialState */}
             <div className="text-sm text-[#94a3b8]">
-              Initial State Objective Function: 6505
+              Initial State Cost: {initialCost}  {/* Use prop instead of hardcoded value */}
             </div>
           </div>
           <div className="bg-[#111318] rounded-2xl p-6">
@@ -57,8 +64,10 @@ export default function GeneticAlgorithmVisualization({
         </div>
 
         <div className="bg-[#111318] rounded-2xl p-6">
-          <h3 className="mb-4">Plot of Fitness Values vs Iteration</h3>
-          {/* <canvas ref={canvasRef} className="w-full h-[300px] bg-[#1a1d24] rounded-lg" /> */}
+          <Chart 
+            costs={costs} 
+            title="Genetic Algorithm Plot" 
+          />
         </div>
       </div>
     </div>

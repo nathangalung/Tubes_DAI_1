@@ -1,21 +1,20 @@
+# main.py
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from algorithm import (
     initialize_random_cube,
     objective_function,
     steepest_ascent_algorithm,
     sideways_move_algorithm,
+    stochastic_algorithm,
+    random_restart_algorithm,
     simulated_annealing_algorithm,
     genetic_algorithm,
-    stochastic_algorithm,
-    save_json
 )
 
 app = FastAPI()
 
-# Configure CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -24,63 +23,53 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Size of the cube (dimension)
-N = 5  # Adjust as needed
+N = 5
 
-# Model for request and response
 class CubeInitResponse(BaseModel):
-    cube: list
-    objective_value: int
+    initial_cube: list
+    initial_cost: int
 
 class AlgorithmRequest(BaseModel):
-    algorithm: str  # Name of the algorithm to run
-    cube: list  # Cube data to process
+    algorithm: str
+    cube: list
 
-# Dictionary to map algorithm names to their functions
+class AlgorithmResponse(BaseModel):
+    final_cube: list
+    final_cost: int
+    duration: float
+    iterations: int
+    costs: list
+    restart: int = None  # Optional for random restart
+    population: int = None  # Optional for genetic
+
 algorithm_map = {
-    'steepest_ascent': steepest_ascent_algorithm,
-    'sideways_move': sideways_move_algorithm,
+    'steepest': steepest_ascent_algorithm,
+    'sideways': sideways_move_algorithm,
     'stochastic': stochastic_algorithm,
-    'simulated_annealing': simulated_annealing_algorithm,
+    'random': random_restart_algorithm,
+    'simulated': simulated_annealing_algorithm,
     'genetic': genetic_algorithm
 }
 
 @app.get("/initialize_cube", response_model=CubeInitResponse)
 async def initialize_cube():
-    """
-    Endpoint to initialize a random cube and return with objective value.
-    """
     initial_cube = initialize_random_cube(N)
-    objective_value = objective_function(initial_cube)
+    initial_cost = objective_function(initial_cube)
     return {
-        "cube": initial_cube,
-        "objective_value": objective_value
+        "initial_cube": initial_cube,
+        "initial_cost": initial_cost
     }
 
-@app.post("/run_algorithm_with_plot")
-async def run_algorithm_with_plot(request: AlgorithmRequest):
-    """
-    Run the selected algorithm, save the cost data, and return a plot of the objective function.
-    """
+@app.post("/run_algorithm", response_model=AlgorithmResponse)
+async def run_algorithm(request: AlgorithmRequest):
     algorithm_function = algorithm_map.get(request.algorithm)
     if not algorithm_function:
         raise HTTPException(status_code=404, detail="Algorithm not found")
 
-    # Use cube data directly as list
-    cube_data = request.cube
-
     try:
-        modified_cube, best_cost = algorithm_function(cube_data)
-    except ValueError as e:
-        print("Error:", e)
-        raise HTTPException(status_code=500, detail="Algorithm function did not return the expected output.")
-
-    plot_filename = f"{request.algorithm}_objective_function_plot.png"
-    return FileResponse(plot_filename, media_type="image/png")
-
-@app.on_event("startup")
-async def clear_algorithm_results():
-    """
-    Clear algorithm results on server startup.
-    """
-    pass
+        result = algorithm_function(request.cube)
+        print("Algorithm result:", result)  # Debug log
+        return result
+    except Exception as e:
+        print(f"Error in algorithm execution: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))

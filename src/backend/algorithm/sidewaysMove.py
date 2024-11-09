@@ -77,4 +77,10 @@ def sideways_move_algorithm(cube: List[List[List[int]]], max_sideways: int = 100
     # utils.plot_function("sideways_costs.json", "sideways_objective_function_plot.png", "Iteration",
     #                     "Objective Function Cost", "Objective Function Cost per Iteration")
 
-    return cube, best_cost, costs, f"{duration:.2f}"
+    return {
+        "final_cube": cube,
+        "final_cost": best_cost,
+        "duration": round(duration, 2),
+        "iterations": len(costs) + 1,
+        "costs": costs
+    }

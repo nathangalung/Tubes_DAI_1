@@ -73,18 +73,24 @@ def simulated_annealing_algorithm(cube: List[List[List[int]]], T_max: float = 10
 
     duration = time.time() - start_time
 
-    print("\nKeadaan Akhir Kubus:")
-    print(f"\nNilai Akhir Objective Function: {best_cost}")
-    print(f"Durasi Waktu: {duration:.2f} detik")
-    print(f"Total Langkah: {iterations}")
-    print(f"Frekuensi 'Stuck' di Local Optima: {local_optima}")
+    # print("\nKeadaan Akhir Kubus:")
+    # print(f"\nNilai Akhir Objective Function: {best_cost}")
+    # print(f"Durasi Waktu: {duration:.2f} detik")
+    # print(f"Total Langkah: {iterations}")
+    # print(f"Frekuensi 'Stuck' di Local Optima: {local_optima}")
 
-    utils.save_json(costs, "annealing_costs.json")
-    utils.save_json(exp, "annealing_probability.json")
+    # utils.save_json(costs, "annealing_costs.json")
+    # utils.save_json(exp, "annealing_probability.json")
 
     # utils.plot_function("annealing_costs.json", "annealing_objective_function_plot.png", 
     #                    "Iteration", "Objective Function Cost", "Objective Function Cost per Iteration")
     # utils.plot_function("annealing_probability.json", "annealing_probability_plot.png", 
     #                    "Iteration", "$e^{\Delta E / T}$", "Plot $e^{\Delta E / T}$ per 200 Iteration")
 
-    cube, best_cost, costs, f"{duration:.2f}", exp, local_optima
+    return {
+        "final_cube": cube,
+        "final_cost": best_cost,
+        "duration": round(duration, 2),
+        "iterations": len(costs) + 1,
+        "costs": costs
+    }

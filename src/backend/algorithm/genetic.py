@@ -79,4 +79,11 @@ def genetic_algorithm(cube: List[List[List[int]]], population_size: int = 100, m
     # utils.plot_function("genetic_costs.json", "genetic_objective_function_plot.png", 
     #                    "Iteration", "Objective Function Cost", "Objective Function Cost per Iteration")
     
-    return cube, best_cost, costs, f"{duration:.2f}", population
+    return {
+        "final_cube": cube,
+        "final_cost": best_cost,
+        "duration": round(duration, 2),
+        "population": population_size,
+        "iterations": len(costs) + 1,
+        "costs": costs
+    }
