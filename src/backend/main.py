@@ -2,17 +2,14 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
-import numpy as np
-import io
-import json
 from algorithm import (
     initialize_random_cube,
+    objective_function,
     steepest_ascent_algorithm,
     sideways_move_algorithm,
-    stochastic_algorithm,
     simulated_annealing_algorithm,
     genetic_algorithm,
-    plot_function,
+    stochastic_algorithm,
     save_json
 )
 
@@ -31,8 +28,9 @@ app.add_middleware(
 N = 5  # Adjust as needed
 
 # Model for request and response
-class CubeResponse(BaseModel):
-    cube: list  # List to represent the 3D cube array
+class CubeInitResponse(BaseModel):
+    cube: list
+    objective_value: int
 
 class AlgorithmRequest(BaseModel):
     algorithm: str  # Name of the algorithm to run
@@ -47,38 +45,37 @@ algorithm_map = {
     'genetic': genetic_algorithm
 }
 
-@app.get("/initialize_cube", response_model=CubeResponse)
+@app.get("/initialize_cube", response_model=CubeInitResponse)
 async def initialize_cube():
     """
-    Endpoint to initialize a random cube of dimension N x N x N.
+    Endpoint to initialize a random cube and return with objective value.
     """
     initial_cube = initialize_random_cube(N)
-    return {"cube": initial_cube.tolist()}  # Convert numpy array to list for JSON serialization
+    objective_value = objective_function(initial_cube)
+    return {
+        "cube": initial_cube,
+        "objective_value": objective_value
+    }
 
 @app.post("/run_algorithm_with_plot")
 async def run_algorithm_with_plot(request: AlgorithmRequest):
     """
     Run the selected algorithm, save the cost data, and return a plot of the objective function.
     """
-    # Get the algorithm function based on the requested algorithm name
     algorithm_function = algorithm_map.get(request.algorithm)
     if not algorithm_function:
         raise HTTPException(status_code=404, detail="Algorithm not found")
 
-    # Convert cube data from list to numpy array
-    cube_data = np.array(request.cube)
+    # Use cube data directly as list
+    cube_data = request.cube
 
-    # Run the algorithm and get the modified cube and cost data
     try:
         modified_cube, best_cost = algorithm_function(cube_data)
     except ValueError as e:
         print("Error:", e)
         raise HTTPException(status_code=500, detail="Algorithm function did not return the expected output.")
 
-    # Tentukan nama file PNG yang dinamis berdasarkan nama algoritma
     plot_filename = f"{request.algorithm}_objective_function_plot.png"
-
-    # Return the file as a FileResponse instead of StreamingResponse
     return FileResponse(plot_filename, media_type="image/png")
 
 @app.on_event("startup")
@@ -86,5 +83,4 @@ async def clear_algorithm_results():
     """
     Clear algorithm results on server startup.
     """
-    # Placeholder function; additional startup configurations can be added here if needed
     pass

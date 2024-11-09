@@ -1,9 +1,7 @@
-# Import utility functions
 from .utils import (
     initialize_random_cube,
     print_cube,
     objective_function,
-    plot_function,
     save_json
 )
 

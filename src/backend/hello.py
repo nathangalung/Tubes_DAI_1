@@ -1,6 +1,6 @@
-def main():
-    print("Hello from backend!")
+# def main():
+#     print("Hello from backend!")
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
