@@ -2,15 +2,12 @@ import random
 import time
 from . import utils
 
-# Fungsi pertukaran dua angka
-def swap(cube, pos1, pos2):
-    # Unpack tuples into individual indices
-    i1, j1, k1 = pos1
-    i2, j2, k2 = pos2
-    # Perform swap with proper list indexing
+def swap(cube, posisi1, posisi2):
+    i1, j1, k1 = posisi1
+    i2, j2, k2 = posisi2
     cube[i1][j1][k1], cube[i2][j2][k2] = cube[i2][j2][k2], cube[i1][j1][k1]
 
-# Algoritma Steepest Ascent Hill Climbing dengan keluaran tambahan
+# Algoritma Steepest Ascent Hill Climbing
 def steepest_ascent_algorithm(cube, max_iterations=10000):
     N = len(cube)
     start_time = time.time()
@@ -23,35 +20,29 @@ def steepest_ascent_algorithm(cube, max_iterations=10000):
         best_swap = None
         iterations += 1
         
-        # Cari pasangan pertukaran terbaik
-        for _ in range(100):  # Coba 100 pasangan secara acak
-            pos1 = (random.randint(0, N-1), random.randint(0, N-1), random.randint(0, N-1))
-            pos2 = (random.randint(0, N-1), random.randint(0, N-1), random.randint(0, N-1))
+        # Mencari anak terbaik
+        for _ in range(100):
+            posisi1 = (random.randint(0, N-1), random.randint(0, N-1), random.randint(0, N-1))
+            posisi2 = (random.randint(0, N-1), random.randint(0, N-1), random.randint(0, N-1))
             
-            if pos1 == pos2:
+            if posisi1 == posisi2:
                 continue
-            
-            # Lakukan pertukaran sementara
-            swap(cube, pos1, pos2)
+
+            swap(cube, posisi1, posisi2)
             new_cost = utils.objective_function(cube)
             
-            # Jika perbaikan ditemukan
             if new_cost < best_cost:
                 best_cost = new_cost
-                best_swap = (pos1, pos2)
+                best_swap = (posisi1, posisi2)
             
-            # Kembalikan pertukaran sementara
-            swap(cube, pos1, pos2)
+            swap(cube, posisi1, posisi2)
         
-        # Jika perbaikan ditemukan, lakukan pertukaran
         if best_swap:
             swap(cube, best_swap[0], best_swap[1])
             current_cost = best_cost
             costs.append(current_cost)
         else:
-            break  # Jika tidak ada perbaikan, keluar dari loop
-
-    # Jika batas iterasi tercapai tanpa solusi optimal
+            break 
     
     duration = time.time() - start_time
     
