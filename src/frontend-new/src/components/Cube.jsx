@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
+
 function createNumberTexture(number) {
   const size = 128;
   const canvas = document.createElement("canvas");
@@ -10,9 +11,11 @@ function createNumberTexture(number) {
   const context = canvas.getContext("2d");
   if (!context) return null;
 
+
   // Set background to white
   context.fillStyle = "#FFFFFF";
   context.fillRect(0, 0, size, size);
+
 
   // Change text color to black
   context.fillStyle = "#000000";
@@ -23,6 +26,7 @@ function createNumberTexture(number) {
   return new THREE.CanvasTexture(canvas);
 }
 
+
 const Cube = ({ magic_cube }) => {
   const rendererRef = useRef(null);
   const sceneRef = useRef(null);
@@ -31,15 +35,18 @@ const Cube = ({ magic_cube }) => {
   const controlsRef = useRef(null);
   const texturesRef = useRef([]);
 
-  const initialCameraPosition = new THREE.Vector3(0, 0, 3.5); // Reduced from 10
+
+  const initialCameraPosition = new THREE.Vector3(0, 0, 5); // Reduced from 10
+
 
   useEffect(() => {
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xdee2e6);
     sceneRef.current = scene;
 
-    const w = window.innerWidth / 3; // Reduced from /2
-    const h = window.innerHeight / 2; // Reduced from 3/4
+
+    const w = window.innerWidth / 6; // Reduced from /2
+    const h = window.innerHeight / 4; // Reduced from 3/4
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true, // Add this
@@ -49,23 +56,29 @@ const Cube = ({ magic_cube }) => {
     renderer.setSize(w, h);
     rendererRef.current = renderer;
 
-    const camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 1000);
+
+    const camera = new THREE.PerspectiveCamera(70, w / h, 0.1, 1000);
     camera.position.copy(initialCameraPosition);
     cameraRef.current = camera;
+
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.25;
     controlsRef.current = controls;
 
+
     if (containerRef.current) {
       containerRef.current.appendChild(renderer.domElement);
     }
 
-    const cubeSize = 0.3; // Reduced from 0.5
-    const spacing = 0.6; // Reduced from 1
+
+    const cubeSize = 0.4; // Reduced from 0.5
+    const spacing = 0.8; // Reduced from 1
+
 
     const parentCube = new THREE.Group();
+
 
     for (let x = 0; x < 5; x++) {
       for (let y = 0; y < 5; y++) {
@@ -74,6 +87,7 @@ const Cube = ({ magic_cube }) => {
           const texture = createNumberTexture(number);
           texturesRef.current.push(texture);
 
+
           const materials = Array(6).fill(
             new THREE.MeshBasicMaterial({
               color: 0xffffff,
@@ -81,10 +95,12 @@ const Cube = ({ magic_cube }) => {
             })
           );
 
+
           const smallCube = new THREE.Mesh(
             new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize),
             materials
           );
+
 
           smallCube.position.set(
             (x - 2) * spacing,
@@ -92,12 +108,15 @@ const Cube = ({ magic_cube }) => {
             (z - 2) * spacing
           );
 
+
           parentCube.add(smallCube);
         }
       }
     }
 
+
     scene.add(parentCube);
+
 
     const animate = () => {
       requestAnimationFrame(animate);
@@ -105,6 +124,7 @@ const Cube = ({ magic_cube }) => {
       renderer.render(scene, camera);
     };
     animate();
+
 
     return () => {
       renderer.dispose();
@@ -125,6 +145,7 @@ const Cube = ({ magic_cube }) => {
     };
   }, [magic_cube]);
 
+
   const resetCamera = () => {
     if (cameraRef.current && controlsRef.current) {
       cameraRef.current.position.copy(initialCameraPosition);
@@ -132,6 +153,7 @@ const Cube = ({ magic_cube }) => {
       controlsRef.current.reset();
     }
   };
+
 
   return (
     <div className="relative">
@@ -145,5 +167,6 @@ const Cube = ({ magic_cube }) => {
     </div>
   );
 };
+
 
 export default Cube;
