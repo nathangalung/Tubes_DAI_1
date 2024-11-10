@@ -12,8 +12,14 @@ const API_URL = 'http://localhost:8000';
 
 const App = () => {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState(null);
-  const [initialCube, setInitialCube] = useState(null); // Remove localStorage initialization
-  const [initialCost, setInitialCost] = useState(null); // Remove localStorage initialization
+  const [initialCube, setInitialCube] = useState(() => {
+    const saved = localStorage.getItem('initialCube');
+    return saved ? JSON.parse(saved) : null;
+  });
+  const [initialCost, setInitialCost] = useState(() => {
+    const saved = localStorage.getItem('initialCost');
+    return saved ? JSON.parse(saved) : null;
+  });
   const [finalCube, setFinalCube] = useState(null);
   const [finalCost, setFinalCost] = useState(null);
   const [duration, setDuration] = useState(null);
@@ -21,16 +27,26 @@ const App = () => {
   const [costs, setCosts] = useState([]);
   const [restart, setRestart] = useState(null);
   const [population, setPopulation] = useState(null);
+  const [localOptima, setLocalOptima] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const clearStorage = () => {
-      localStorage.removeItem('initialCube');
-      localStorage.removeItem('initialCost');
+    if (initialCube && initialCost) {
+      localStorage.setItem('initialCube', JSON.stringify(initialCube));
+      localStorage.setItem('initialCost', JSON.stringify(initialCost));
+    }
+  }, [initialCube, initialCost]);
+
+  useEffect(() => {
+    const handleUnload = () => {
+      localStorage.clear();
     };
 
-    window.addEventListener('beforeunload', clearStorage);
-    return () => window.removeEventListener('beforeunload', clearStorage);
+    window.addEventListener('beforeunload', handleUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleUnload);
+      localStorage.clear();
+    };
   }, []);
 
   const fetchInitialCube = async () => {
@@ -40,17 +56,11 @@ const App = () => {
       if (!response.ok) throw new Error('Network response was not ok');
       const data = await response.json();
       
-      // Update state with response data
       setInitialCube(data.initial_cube);
       setInitialCost(data.initial_cost);
       
-      // Store in localStorage
-      localStorage.setItem('initialCube', JSON.stringify(data.initial_cube));
-      localStorage.setItem('initialCost', JSON.stringify(data.initial_cost));
     } catch (error) {
       console.error("Failed to fetch initial cube:", error);
-      setInitialCube(null);
-      setInitialCost(null);
     } finally {
       setIsLoading(false);
     }
@@ -75,7 +85,10 @@ const App = () => {
       setFinalCost(result.final_cost);
       setDuration(result.duration);
       setIterations(result.iterations);
-      setCosts(result.costs); // Set costs array
+      setCosts(result.costs);
+      setRestart(result.restart);
+      setPopulation(result.population);
+      setLocalOptima(result.local_optima);
       setSelectedAlgorithm(algorithmType);
     } catch (error) {
       console.error("Algorithm execution failed:", error);
@@ -86,6 +99,14 @@ const App = () => {
 
   const handleBack = () => {
     setSelectedAlgorithm(null);
+    setFinalCube(null);
+    setFinalCost(null);
+    setDuration(null);
+    setIterations(null);
+    setCosts([]);
+    setRestart(null);
+    setPopulation(null);
+    setLocalOptima(null);
   };
 
   const renderAlgorithm = () => {
@@ -97,12 +118,13 @@ const App = () => {
       duration,
       iterations,
       costs,
-      onBack: () => setSelectedAlgorithm(null),
+      onBack: handleBack,
       isLoading
     };
 
     const specificProps = {
       random: { ...commonProps, restart },
+      simulated: {...commonProps, localOptima },
       genetic: { ...commonProps, population }
     };
 
@@ -110,7 +132,7 @@ const App = () => {
       case "steepest": return <Steepest {...commonProps} />;
       case "sideways": return <Sideways {...commonProps} />;
       case "stochastic": return <Stochastic {...commonProps} />;
-      case "simulated": return <Simulated {...commonProps} />;
+      case "simulated": return <Simulated {...specificProps.simulated} />;
       case "random": return <Random {...specificProps.random} />;
       case "genetic": return <Genetic {...specificProps.genetic} />;
       default: return null;

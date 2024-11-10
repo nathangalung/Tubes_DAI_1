@@ -10,7 +10,7 @@ export default function SteepestAscentVisualization({
   duration,
   iterations,
   costs,
-  onBack,
+  onBack
 }) {
   if (!initialCube || !finalCube) return null;
   return (
@@ -31,7 +31,6 @@ export default function SteepestAscentVisualization({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             <div className="bg-[#16181d] rounded-xl p-6">
               <h2 className="text-xl font-semibold mb-4">Initial State</h2>
-              {/* Wrapper for Cube with rounded corners and overflow-hidden */}
               <div className="w-full aspect-video bg-[#1a1d24] rounded-lg mb-2 overflow-hidden">
                 <Cube magic_cube={initialCube} />
               </div>
@@ -41,7 +40,6 @@ export default function SteepestAscentVisualization({
             </div>
             <div className="bg-[#16181d] rounded-xl p-6">
               <h2 className="text-xl font-semibold mb-4">Current State</h2>
-              {/* Wrapper for Cube with rounded corners and overflow-hidden */}
               <div className="w-full aspect-video bg-[#1a1d24] rounded-lg mb-2 overflow-hidden">
                 <Cube magic_cube={finalCube} />
               </div>

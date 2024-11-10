@@ -1,6 +1,6 @@
 import time
 import random
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 from copy import deepcopy
 from . import utils
 
@@ -35,22 +35,39 @@ def select_parents(population: List[List[List[List[int]]]], costs: List[float], 
             selected.append(deepcopy(population[idx2]))
     return selected
 
-def genetic_algorithm(cube: List[List[List[int]]], population_size: int = 100, max_iterations: int = 1000) -> Tuple[List[List[List[int]]], float, List[float], str]:
+def genetic_algorithm(
+    cube: List[List[List[int]]], 
+    population_size: int = 100, 
+    max_iterations: int = 1000,
+    crossover_rate: float = 0.8,
+    mutation_rate: float = 0.1
+) -> Dict:
     N = len(cube)
     population = [utils.initialize_random_cube(N) for _ in range(population_size)]
-    costs = []
+    costs = []  # Track all costs across iterations
+    costs_population = {}  # Track costs per population
+    current_population = 1
     best_cost = float('inf')
+    best_cube = None
     
     start_time = time.time()
+    
+    costs_population[f"population_{current_population}"] = []
     
     for iteration in range(max_iterations):
         # Evaluate population
         population_costs = [utils.objective_function(ind) for ind in population]
         current_best = min(population_costs)
+        current_best_idx = population_costs.index(current_best)
         
+        # Track costs
+        costs.append(current_best)
+        costs_population[f"population_{current_population}"].append(current_best)
+        
+        # Update best solution
         if current_best < best_cost:
             best_cost = current_best
-            costs.append(best_cost)
+            best_cube = deepcopy(population[current_best_idx])
         
         # Selection
         parents = select_parents(population, population_costs, population_size)
@@ -58,7 +75,7 @@ def genetic_algorithm(cube: List[List[List[int]]], population_size: int = 100, m
         # Crossover
         new_population = []
         for i in range(0, population_size-1, 2):
-            if random.random() < 0.8:  # crossover rate
+            if random.random() < crossover_rate:
                 child1, child2 = crossover(parents[i], parents[i+1], N)
                 new_population.extend([child1, child2])
             else:
@@ -66,24 +83,29 @@ def genetic_algorithm(cube: List[List[List[int]]], population_size: int = 100, m
         
         # Mutation
         for i in range(len(new_population)):
-            new_population[i] = mutate(new_population[i], N)
+            new_population[i] = mutate(new_population[i], N, mutation_rate)
         
         population = new_population
+        
+        # Check if we should start new population
+        if iteration > 0 and iteration % (max_iterations // population_size) == 0:
+            current_population += 1
+            costs_population[f"population_{current_population}"] = []
         
         if best_cost <= 1e-3:
             break
     
     duration = time.time() - start_time
     
-    utils.save_json(costs, "genetic_costs.json")
-    # utils.plot_function("genetic_costs.json", "genetic_objective_function_plot.png", 
-    #                    "Iteration", "Objective Function Cost", "Objective Function Cost per Iteration")
-    
     return {
-        "final_cube": cube,
+        "final_cube": best_cube,
         "final_cost": best_cost,
         "duration": round(duration, 2),
+        "iterations": len(costs),
         "population": population_size,
-        "iterations": len(costs) + 1,
         "costs": costs
+        # "iterations_per_population": len(costs) // population_size,
+        # "number_of_populations": current_population,
+        # "costs": costs,  # All costs across iterations
+        # "costs_population": costs_population  # Costs per population
     }

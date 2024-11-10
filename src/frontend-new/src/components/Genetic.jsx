@@ -35,24 +35,24 @@ export default function GeneticAlgorithmVisualization({
                 <Cube magic_cube={initialCube} />
               </div>
               <div className="text-sm text-[#94a3b8]">
-                Initial State Value: 6505
+                Initial State Value: {initialCost}
               </div>
             </div>
             <div className="bg-[#16181d] rounded-xl p-6">
               <h2 className="text-xl font-semibold mb-4">Current State</h2>
               <div className="w-full aspect-video bg-[#1a1d24] rounded-lg mb-2 overflow-hidden">
-                <Cube magic_cube={initialCube} />
+                <Cube magic_cube={finalCube} />
               </div>
               <div className="text-sm text-[#94a3b8]">
-                Current State Value: 104
+                Current State Value: {finalCost}
               </div>
             </div>
             <div className="flex flex-col gap-4">
               {[
-                { label: "Solution Cost", value: "104" },
-                { label: "Time Elapsed", value: "18.76s" },
-                { label: "Number of Iterations", value: "1500" },
-                { label: "Number of Population", value: "15" },
+                { label: "Solution Cost", value: finalCost },
+                { label: "Time Elapsed", value: `${duration}s` },
+                { label: "Number of Iterations", value: iterations },
+                { label: "Number of Population", value: populations },
               ].map((metric, index) => (
                 <div key={index} className="bg-[#16181d] rounded-xl p-4">
                   <div className="text-sm text-[#94a3b8] mb-1">{metric.label}</div>

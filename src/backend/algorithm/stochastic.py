@@ -31,7 +31,7 @@ def stochastic_algorithm(cube: List[List[List[int]]]) -> Tuple[List[List[List[in
     N = len(cube)
     current_cost = utils.objective_function(cube)
     best_cost = current_cost
-    max_iterations = 1000
+    max_iterations = 10000
     iterations = 0
     costs = []
 
@@ -58,16 +58,11 @@ def stochastic_algorithm(cube: List[List[List[int]]]) -> Tuple[List[List[List[in
         iterations += 1
 
     duration = time.time() - start_time
-    # print(f"Stochastic Hill Climbing: iterations={iterations}, Time={duration:.2f} seconds, Final Cost={current_cost}")
-
-    # utils.save_json(costs, "stochastic_costs.json")
-    # utils.plot_function("stochastic_costs.json", "stochastic_objective_function_plot.png", 
-    #                    "Iteration", "Objective Function", "Stochastic Algorithm Plot")
     
     return {
         "final_cube": cube,
         "final_cost": best_cost,
         "duration": round(duration, 2),
-        "iterations": len(costs) + 1,
+        "iterations": len(costs),
         "costs": costs
     }

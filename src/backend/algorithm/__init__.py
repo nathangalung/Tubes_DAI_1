@@ -1,8 +1,6 @@
 from .utils import (
     initialize_random_cube,
-    print_cube,
-    objective_function,
-    save_json
+    objective_function
 )
 
 from .steepestAscent import steepest_ascent_algorithm

@@ -50,6 +50,6 @@ def steepest_ascent_algorithm(cube, max_iterations=10000):
         "final_cube": cube,
         "final_cost": best_cost,
         "duration": round(duration, 2),
-        "iterations": len(costs) + 1,
+        "iterations": len(costs),
         "costs": costs
     }

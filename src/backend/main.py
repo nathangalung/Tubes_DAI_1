@@ -1,4 +1,3 @@
-# main.py
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -40,6 +39,7 @@ class AlgorithmResponse(BaseModel):
     iterations: int
     costs: list
     restart: int = None  # Optional for random restart
+    localOptima: int = None # Optional for simulated annealing
     population: int = None  # Optional for genetic
 
 algorithm_map = {
@@ -68,7 +68,8 @@ async def run_algorithm(request: AlgorithmRequest):
 
     try:
         result = algorithm_function(request.cube)
-        print("Algorithm result:", result)  # Debug log
+        # Remove or simplify debug logging
+        print(f"Algorithm {request.algorithm} completed successfully")
         return result
     except Exception as e:
         print(f"Error in algorithm execution: {str(e)}")
