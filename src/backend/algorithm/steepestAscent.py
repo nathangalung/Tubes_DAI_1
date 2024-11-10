@@ -1,6 +1,6 @@
-import random
+import itertools
 import time
-from . import utils
+import utils
 
 def swap(cube, posisi1, posisi2):
     i1, j1, k1 = posisi1
@@ -8,34 +8,29 @@ def swap(cube, posisi1, posisi2):
     cube[i1][j1][k1], cube[i2][j2][k2] = cube[i2][j2][k2], cube[i1][j1][k1]
 
 # Algoritma Steepest Ascent Hill Climbing
-def steepest_ascent_algorithm(cube, max_iterations=10000):
-    N = len(cube)
+def steepest_ascent(cube, N):
     start_time = time.time()
     current_cost = utils.objective_function(cube)
+    best_cost = current_cost
     costs = [current_cost]
-    iterations = 0
     
-    while (iterations < max_iterations):
-        best_cost = current_cost
+    while True:
         best_swap = None
-        iterations += 1
         
         # Mencari anak terbaik
-        for _ in range(100):
-            posisi1 = (random.randint(0, N-1), random.randint(0, N-1), random.randint(0, N-1))
-            posisi2 = (random.randint(0, N-1), random.randint(0, N-1), random.randint(0, N-1))
-            
-            if posisi1 == posisi2:
-                continue
+        for posisi1 in itertools.product(range(N), repeat=3):
+            for posisi2 in itertools.product(range(N), repeat=3):
+                if posisi1 == posisi2:
+                    continue
 
-            swap(cube, posisi1, posisi2)
-            new_cost = utils.objective_function(cube)
-            
-            if new_cost < best_cost:
-                best_cost = new_cost
-                best_swap = (posisi1, posisi2)
-            
-            swap(cube, posisi1, posisi2)
+                swap(cube, posisi1, posisi2)
+                new_cost = utils.objective_function(cube)
+                
+                if new_cost < best_cost:
+                    best_cost = new_cost
+                    best_swap = (posisi1, posisi2)
+                
+                swap(cube, posisi1, posisi2)
         
         if best_swap:
             swap(cube, best_swap[0], best_swap[1])
@@ -50,6 +45,5 @@ def steepest_ascent_algorithm(cube, max_iterations=10000):
         "final_cube": cube,
         "final_cost": best_cost,
         "duration": round(duration, 2),
-        "iterations": len(costs),
-        "costs": costs
+        "iterations": len(costs)
     }
