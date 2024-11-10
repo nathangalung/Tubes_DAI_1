@@ -17,57 +17,58 @@ export default function StochasticVisualization({
       <div className="max-w-[1400px] mx-auto">
         <a
           href="/"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#111318] rounded-lg text-[#94a3b8] hover:text-white transition-colors mb-8"
+          className="inline-flex items-center gap-2 px-4 py-3 bg-[#16181d] rounded-xl text-[#94a3b8] hover:text-white transition-colors mb-8 border border-[#1e1e1e] text-sm"
         >
           <ArrowLeft className="w-5 h-5" />
           Back
         </a>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div className="bg-[#111318] rounded-2xl p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-2 h-2 rounded-full bg-[#4f46e5]" />
-              <h2 className="text-lg font-semibold">Initial State</h2>
-            </div>
-            <Cube magic_cube={initialCube} />  {/* Changed from initialState */}
-            <div className="text-sm text-[#94a3b8]">
-              Initial State Cost: {initialCost}  {/* Use prop instead of hardcoded value */}
-            </div>
-          </div>
-          <div className="bg-[#111318] rounded-2xl p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-2 h-2 rounded-full bg-[#22c55e]" />
-              <h2 className="text-lg font-semibold">Final State</h2>
-            </div>
-            <Cube magic_cube={finalCube} />
-            <div className="text-sm text-[#94a3b8]">
-              Final State Cost: {finalCost}
-            </div>
-          </div>
-        </div>
+        <div className="max-w-[1200px] mx-auto">
+          <h1 className="text-4xl font-bold mb-2">Stochastic Hill-Climbing</h1>
+          <p className="text-[#94a3b8] mb-8">Visualize the randomized solution approach for solving the Magic Cube.</p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-          {[
-            { title: "Solution Cost", value: finalCost },
-            { title: "Time Elapsed", value: `${duration}s` },
-            { title: "Number of Iterations", value: iterations },
-          ].map((metric, index) => (
-            <div key={index} className="bg-[#111318] rounded-2xl p-6">
-              <h3 className="text-sm text-[#94a3b8] mb-2">{metric.title}</h3>
-              <div className="text-2xl font-bold text-[#4f46e5]">
-                {metric.value}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div className="bg-[#16181d] rounded-xl p-6">
+              <h2 className="text-xl font-semibold mb-4">Initial State</h2>
+              <div className="w-full aspect-video bg-[#1a1d24] rounded-lg mb-2 overflow-hidden">
+                <Cube magic_cube={initialCube} />
+              </div>
+              <div className="text-sm text-[#94a3b8]">
+                Initial State Value: 6505
               </div>
             </div>
-          ))}
-        </div>
+            <div className="bg-[#16181d] rounded-xl p-6">
+              <h2 className="text-xl font-semibold mb-4">Current State</h2>
+              <div className="w-full aspect-video bg-[#1a1d24] rounded-lg mb-2 overflow-hidden">
+                <Cube magic_cube={initialCube} />
+              </div>
+              <div className="text-sm text-[#94a3b8]">
+                Current State Value: 104
+              </div>
+            </div>
+            <div className="flex flex-col gap-4">
+              {[
+                { label: "Solution Cost", value: "104" },
+                { label: "Time Elapsed", value: "18.76s" },
+                { label: "Number of Iterations", value: "1500" },
+              ].map((metric, index) => (
+                <div key={index} className="bg-[#16181d] rounded-xl p-4">
+                  <div className="text-sm text-[#94a3b8] mb-1">{metric.label}</div>
+                  <div className="text-2xl font-semibold text-[#8b5cf6]">{metric.value}</div>
+                </div>
+              ))}
+            </div>
+          </div>
 
-        <div className="bg-[#111318] rounded-2xl p-6">
-          <Chart 
-            costs={costs} 
-            title="Stochastic Objective Function Plot" 
-          />
+          <div className="bg-[#16181d] rounded-xl p-6">
+            <Chart 
+              costs={costs} 
+              title="Stochastic Objective Function Plot" 
+            />
+            {/* <canvas ref={canvasRef} className="w-full h-[300px] bg-[#1a1d24] rounded-lg" /> */}
+          </div>
         </div>
       </div>
     </div>
   );
-}
+};
