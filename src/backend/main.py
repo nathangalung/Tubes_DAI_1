@@ -70,18 +70,22 @@ async def run_algorithm(request: AlgorithmRequest):
 
     try:
         result = algorithm_function(request.cube)
-        # Print debug info
-        print(f"Algorithm result for {request.algorithm}")
+        
+        # Print the entire result dictionary for debugging
+        print(f"Algorithm result for {request.algorithm}: {result}")
+
+        # Return with default None for optional fields if they are missing
         return {
-            "final_cube": result["final_cube"],
+            "final_cube": result.get("final_cube"),
             "final_cost": result.get("final_cost"),
             "duration": result.get("duration"),
             "iterations": result.get("iterations"),
             "restart": result.get("restart"),
-            "local_optima": result.get("local_optima"),
-            "population": result.get("population"),
-            "costs": result["costs"],
-            "exps": result["exps"]
+            "iteration_restart": result.get("iteration_restart", None),
+            "local_optima": result.get("local_optima", None),
+            "population": result.get("population", None),
+            "costs": result.get("costs"),
+            "exps": result.get("exps", None)  # Default to None if 'exps' key is missing
         }
     except Exception as e:
         print(f"Error in algorithm execution: {str(e)}")
