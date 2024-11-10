@@ -21,9 +21,13 @@ ChartJS.register(
   Legend
 );
 
-const Chart = ({ costs, title = "Objective Function Cost vs Iteration" }) => {
+const Chart = ({ costs, title = "Objective Function Cost vs Iteration", useIterationInterval = false }) => {
+  const labels = useIterationInterval
+    ? costs?.map((_, index) => (index + 1) * 200)
+    : costs?.map((_, index) => index + 1);
+
   const chartData = {
-    labels: costs?.map((_, index) => index + 1),
+    labels: labels,
     datasets: [
       {
         label: 'Objective Function Cost',

@@ -39,12 +39,12 @@ export default function SimulatedAnnealingVisualization({
               </div>
             </div>
             <div className="bg-[#16181d] rounded-xl p-6">
-              <h2 className="text-xl font-semibold mb-4">Current State</h2>
+              <h2 className="text-xl font-semibold mb-4">Final State</h2>
               <div className="w-full aspect-video bg-[#1a1d24] rounded-lg mb-2 overflow-hidden">
                 <Cube magic_cube={finalCube} />
               </div>
               <div className="text-sm text-[#94a3b8]">
-                Current State Value: {finalCost}
+                Final State Value: {finalCost}
               </div>
             </div>
             <div className="flex flex-col gap-4">
@@ -65,14 +65,15 @@ export default function SimulatedAnnealingVisualization({
           <div className="bg-[#16181d] rounded-xl p-6 mb-6">
             <Chart 
               costs={costs} 
-              title="Stochastic Objective Function Plot" 
+              title="Simulated Annealing Objective Function Plot" 
             />
           </div>
 
           <div className="bg-[#16181d] rounded-xl p-6">
             <Chart 
                 costs={exps} 
-                title="Stochastic Objective Function Plot" 
+                title="Simulated Annealing Acceptance Probability Plot" 
+                useIterationInterval={true}
               />
           </div>
         </div>
