@@ -15,7 +15,7 @@ def generate_random_neighbor(cube):
     new_cube[i1][j1][k1], new_cube[i2][j2][k2] = new_cube[i2][j2][k2], new_cube[i1][j1][k1]
     return new_cube
 
-def random_restart_algorithm(cube, max_iterations_per_restart=1000, max_restart=10):
+def random_restart_algorithm(cube, max_iteration_per_restart=1000, max_restart=10):
     N = len(cube)
     # Initialize the current and best cubes with the input cube
     current_cube = [[[cube[i][j][k] for k in range(N)] for j in range(N)] for i in range(N)]
@@ -26,16 +26,16 @@ def random_restart_algorithm(cube, max_iterations_per_restart=1000, max_restart=
     best_cost = current_cost
     restart = 0
     costs = []  # Track cost at each iteration
+    iteration_restart = []
     
     start_time = time.time()
 
     # Restart loop
     while restart < max_restart:
         iteration = 0
-        iteration_restart = []
 
-        # Iterations within each restart
-        while iteration < max_iterations_per_restart:
+        # iteration within each restart
+        while iteration < max_iteration_per_restart:
             # Generate a random neighbor and calculate its cost
             neighbor_cube = generate_random_neighbor(current_cube)
             neighbor_cost = utils.objective_function(neighbor_cube)
@@ -50,21 +50,22 @@ def random_restart_algorithm(cube, max_iterations_per_restart=1000, max_restart=
                     best_cube = current_cube
                     best_cost = current_cost
             iteration += 1
-            costs.append(best_cost)
+            costs.append(current_cost)
 
-        # After max_iterations_per_restart, restart with a new random cube
+        # After max_iteration_per_restart, restart with a new random cube
         current_cube = utils.initialize_random_cube(N)
         current_cost = utils.objective_function(current_cube)
-        restart += 1  # Increment restart counter
+        restart += 1
         iteration_restart.append(iteration)
 
     duration = time.time() - start_time
 
-    return {
+    return {                                                   
         "final_cube": best_cube,
         "final_cost": best_cost,
+        "average_cost": round(best_cost/109, 4),
         "duration": round(duration, 2),
-        "iterations": len(costs),
+        "iteration": len(costs),
         "iteration_restart": iteration_restart,
         "restart": restart,
         "costs": costs

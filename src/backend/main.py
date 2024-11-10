@@ -35,8 +35,9 @@ class AlgorithmRequest(BaseModel):
 class AlgorithmResponse(BaseModel):
     final_cube: list
     final_cost: int
+    average_cost: float
     duration: float
-    iterations: int
+    iteration: int
     restart: int | None = None  # Keep other optionals
     iteration_restart: list | None = None
     local_optima: int | None = None  # Make optional
@@ -72,14 +73,15 @@ async def run_algorithm(request: AlgorithmRequest):
         result = algorithm_function(request.cube)
         
         # Print the entire result dictionary for debugging
-        print(f"Algorithm result for {request.algorithm}: {result}")
+        print("Algorithm running completed")
 
         # Return with default None for optional fields if they are missing
         return {
             "final_cube": result.get("final_cube"),
             "final_cost": result.get("final_cost"),
+            "average_cost": result.get("average_cost"),
             "duration": result.get("duration"),
-            "iterations": result.get("iterations"),
+            "iteration": result.get("iteration"),
             "restart": result.get("restart", None),
             "iteration_restart": result.get("iteration_restart", None),
             "local_optima": result.get("local_optima", None),

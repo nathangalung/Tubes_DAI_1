@@ -34,12 +34,12 @@ def initialize_random_cube(N: int) -> List[List[List[int]]]:
 
 def simulated_annealing_algorithm(cube: List[List[List[int]]], T_max: float = 100.0, T_min: float = 0.1, 
                                 E_threshold: float = 0.01, cooling_rate: float = 0.9993,
-                                max_no_improvement: int = 1000, max_iterations: int = 10000):
+                                max_no_improvement: int = 1000, max_iteration: int = 10000):
     """Performs the simulated annealing algorithm to optimize the cube configuration."""
     current_cost = utils.objective_function(cube) # Initial cost
     best_cost = current_cost # Set current cost as the best cost
     temperature = T_max # Set the temperature with maximum temperature
-    iterations = 0
+    iteration = 0
     no_improvement = 0
     local_optima = 0
 
@@ -49,7 +49,7 @@ def simulated_annealing_algorithm(cube: List[List[List[int]]], T_max: float = 10
     # Start the timer
     start_time = time.time()
 
-    while temperature > T_min and current_cost > E_threshold and iterations < max_iterations:
+    while temperature > T_min and current_cost > E_threshold and iteration < max_iteration:
         # Get random positions
         pos1, pos2 = get_random_neighbor(len(cube))
         # Swap
@@ -79,12 +79,12 @@ def simulated_annealing_algorithm(cube: List[List[List[int]]], T_max: float = 10
         temperature *= cooling_rate # Decrease the temperature
         costs.append(current_cost)
 
-        # Record acceptance probability every 200 iterations
-        if iterations % 200 == 0:
+        # Record acceptance probability every 200 iteration
+        if iteration % 200 == 0:
             exp_delta_E_T = 1 if delta_cost > 0 else math.exp(delta_cost / temperature)
             exps.append(exp_delta_E_T)
 
-        iterations += 1
+        iteration += 1
 
     # Calculate the duration
     duration = time.time() - start_time
@@ -92,8 +92,9 @@ def simulated_annealing_algorithm(cube: List[List[List[int]]], T_max: float = 10
     return {
         "final_cube": cube,
         "final_cost": best_cost,
+        "average_cost": round(best_cost/109, 4),
         "duration": round(duration, 2),
-        "iterations": len(costs),
+        "iteration": len(costs),
         "local_optima": local_optima,
         "costs": costs,
         "exps": exps

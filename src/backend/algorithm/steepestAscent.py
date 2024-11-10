@@ -47,7 +47,8 @@ def steepest_ascent_algorithm(cube):
     return {
         "final_cube": cube,
         "final_cost": best_cost,
+        "average_cost": round(best_cost/109, 4),
         "duration": round(duration, 2),
-        "iterations": len(costs),
+        "iteration": len(costs),
         "costs": costs
     }

@@ -12,17 +12,18 @@ const API_URL = 'http://localhost:8000';
 const App = () => {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState(null);
   const [initialCube, setInitialCube] = useState(() => {
-    const saved = localStorage.getItem('initialCube');
-    return saved ? JSON.parse(saved) : null;
+    const savedCube = localStorage.getItem('initialCube');
+    return savedCube ? JSON.parse(savedCube) : null;
   });
   const [initialCost, setInitialCost] = useState(() => {
-    const saved = localStorage.getItem('initialCost');
-    return saved ? JSON.parse(saved) : null;
+    const savedCost = localStorage.getItem('initialCost');
+    return savedCost ? JSON.parse(savedCost) : null;
   });
   const [finalCube, setFinalCube] = useState(null);
   const [finalCost, setFinalCost] = useState(null);
+  const [averageCost, setAverageCost] = useState(null);
   const [duration, setDuration] = useState(null);
-  const [iterations, setIterations] = useState(null);
+  const [iteration, setIteration] = useState(null);
   const [restart, setRestart] = useState(null);
   const [localOptima, setLocalOptima] = useState(null);
   const [iterationRestart, setIterationRestart] = useState([]);
@@ -31,25 +32,7 @@ const App = () => {
   const [exps, setExps] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    if (initialCube && initialCost) {
-      localStorage.setItem('initialCube', JSON.stringify(initialCube));
-      localStorage.setItem('initialCost', JSON.stringify(initialCost));
-    }
-  }, [initialCube, initialCost]);
-
-  useEffect(() => {
-    const handleUnload = () => {
-      localStorage.clear();
-    };
-
-    window.addEventListener('beforeunload', handleUnload);
-    return () => {
-      window.removeEventListener('beforeunload', handleUnload);
-      localStorage.clear();
-    };
-  }, []);
-
+  // Fetch new initial cube and set state
   const fetchInitialCube = async () => {
     setIsLoading(true);
     try {
@@ -57,9 +40,11 @@ const App = () => {
       if (!response.ok) throw new Error('Network response was not ok');
       const data = await response.json();
       
+      // Save the initial cube to both state and local storage
       setInitialCube(data.initial_cube);
       setInitialCost(data.initial_cost);
-      
+      localStorage.setItem('initialCube', JSON.stringify(data.initial_cube));
+      localStorage.setItem('initialCost', JSON.stringify(data.initial_cost));
     } catch (error) {
       console.error("Failed to fetch initial cube:", error);
     } finally {
@@ -84,8 +69,9 @@ const App = () => {
       
       setFinalCube(result.final_cube);
       setFinalCost(result.final_cost);
+      setAverageCost(result.average_cost);
       setDuration(result.duration);
-      setIterations(result.iterations);
+      setIteration(result.iteration);
       setCosts(result.costs);
       if (algorithmType === 'random') {
         setRestart(result.restart);
@@ -98,7 +84,6 @@ const App = () => {
       if (algorithmType === 'genetic') {
         setPopulation(result.population);
       }
-      setCosts(result.costs);
       setSelectedAlgorithm(algorithmType);
     } catch (error) {
       console.error("Algorithm execution failed:", error);
@@ -109,16 +94,6 @@ const App = () => {
 
   const handleBack = () => {
     setSelectedAlgorithm(null);
-    setFinalCube(null);
-    setFinalCost(null);
-    setDuration(null);
-    setIterations(null);
-    setRestart(null);
-    setIterationRestart([]);
-    setLocalOptima(null);
-    setPopulation(null);
-    setCosts([]);
-    setExps([]);
   };
 
   const renderAlgorithm = () => {
@@ -127,8 +102,9 @@ const App = () => {
       finalCube,
       initialCost,
       finalCost,
+      averageCost,
       duration,
-      iterations,
+      iteration,
       costs,
       onBack: handleBack,
       isLoading

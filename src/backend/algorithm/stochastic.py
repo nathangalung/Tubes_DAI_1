@@ -29,12 +29,12 @@ def stochastic_algorithm(cube: List[List[List[int]]]) -> dict:
     current_cost = utils.objective_function(cube)
     best_cost = current_cost
     costs = []
-    max_iterations = 10000
-    iterations = 0
+    max_iteration = 10000
+    iteration = 0
 
     start_time = time.time()
 
-    while iterations < max_iterations:
+    while iteration < max_iteration:
         # Generate single integer indices instead of tuples
         i1, j1, k1 = random.randint(0, N-1), random.randint(0, N-1), random.randint(0, N-1)
         i2, j2, k2 = random.randint(0, N-1), random.randint(0, N-1), random.randint(0, N-1)
@@ -59,14 +59,15 @@ def stochastic_algorithm(cube: List[List[List[int]]]) -> dict:
             cube[i1][j1][k1], cube[i2][j2][k2] = cube[i2][j2][k2], cube[i1][j1][k1]
 
         costs.append(current_cost)
-        iterations += 1
+        iteration += 1
 
     duration = time.time() - start_time
     
     return {
         "final_cube": cube,
         "final_cost": best_cost,
+        "average_cost": round(best_cost/109, 4),
         "duration": round(duration, 2),
-        "iterations": len(costs),
+        "iteration": len(costs),
         "costs": costs
     }

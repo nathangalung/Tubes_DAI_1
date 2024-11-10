@@ -45,7 +45,7 @@ def sideways_move_algorithm(cube: List[List[List[int]]], max_sideways: int = 10)
     current_cost = utils.objective_function(cube) 
     best_cost = current_cost
     costs = [current_cost]
-    iterations = 0
+    iteration = 0
     sideways = 0
 
     # Start the timer
@@ -80,7 +80,7 @@ def sideways_move_algorithm(cube: List[List[List[int]]], max_sideways: int = 10)
                 break
                 
         costs.append(best_cost)
-        iterations += 1
+        iteration += 1
     
     # Calculate total duration
     duration = time.time() - start_time
@@ -88,7 +88,8 @@ def sideways_move_algorithm(cube: List[List[List[int]]], max_sideways: int = 10)
     return {
         "final_cube": cube,
         "final_cost": best_cost,
+        "average_cost": round(best_cost/109, 4),
         "duration": round(duration, 2),
-        "iterations": iterations,
+        "iteration": iteration,
         "costs": costs
     }

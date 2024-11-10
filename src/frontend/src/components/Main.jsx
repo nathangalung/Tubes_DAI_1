@@ -1,4 +1,3 @@
-// Main.jsx
 import { useEffect, useRef } from "react";
 import { ChevronRight, Zap, RotateCcw, Thermometer, Dna, Box } from "lucide-react";
 import Cube from "./Cube";
@@ -49,27 +48,22 @@ export default function Main({ onAlgorithmSelect, initialCube, initialCost, onIn
                       disabled={isLoading}
                       className="bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] text-white px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
                     >
-                      {isLoading ? 'Loading...' : 'Initialize New State'}
+                      {isLoading ? 'Loading...' : 'Initialize Random Cube'}
                     </button>
-                  </div>
-                ) : isLoading ? (
-                  <div className="h-[357px] flex items-center justify-center text-[#94a3b8]">
-                    Loading...
                   </div>
                 ) : (
                   <>
                     <Cube magic_cube={initialCube} />
-                    <div className="flex justify-between items-center text-sm text-[#94a3b8]">
+                    <div className="flex justify-between items-center text-sm text-[#94a3b8] mt-4">
                       <span>
-                        Initial State Cost :{" "}
-                        <strong>{initialCost}</strong>
+                        Initial State Cost: <strong>{initialCost}</strong>
                       </span>
                       <button 
                         onClick={onInitialize}
                         disabled={isLoading}
                         className="bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] text-white px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
                       >
-                        {isLoading ? 'Loading...' : 'Initialize New State'}
+                        {isLoading ? 'Loading...' : 'Initialize Random Cube'}
                       </button>
                     </div>
                   </>
@@ -89,7 +83,7 @@ export default function Main({ onAlgorithmSelect, initialCube, initialCost, onIn
                 { id: "stochastic", name: "Stochastic", icon: "⚄", desc: "Randomized solution approach" },
                 { id: "random", name: "Random Restart", icon: "↺", desc: "Multiple starting points" },
                 { id: "simulated", name: "Simulated Annealing", icon: "🌡", desc: "Temperature-based solving" },
-                { id: "genetic", name: "Genetic Algorithm", icon: "🧬", desc: "Evolution-inspired solution" }
+                { id: "genetic", name: "Genetic", icon: "🧬", desc: "Evolution-inspired solution" }
               ].map(algo => (
                 <button
                   key={algo.id}
