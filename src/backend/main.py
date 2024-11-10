@@ -80,7 +80,7 @@ async def run_algorithm(request: AlgorithmRequest):
             "final_cost": result.get("final_cost"),
             "duration": result.get("duration"),
             "iterations": result.get("iterations"),
-            "restart": result.get("restart"),
+            "restart": result.get("restart", None),
             "iteration_restart": result.get("iteration_restart", None),
             "local_optima": result.get("local_optima", None),
             "population": result.get("population", None),

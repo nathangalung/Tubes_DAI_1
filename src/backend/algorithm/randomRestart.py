@@ -32,6 +32,7 @@ def random_restart_algorithm(cube, max_iterations_per_restart=1000, max_restart=
     # Restart loop
     while restart < max_restart:
         iteration = 0
+        iteration_restart = []
 
         # Iterations within each restart
         while iteration < max_iterations_per_restart:
@@ -55,6 +56,7 @@ def random_restart_algorithm(cube, max_iterations_per_restart=1000, max_restart=
         current_cube = utils.initialize_random_cube(N)
         current_cost = utils.objective_function(current_cube)
         restart += 1  # Increment restart counter
+        iteration_restart.append(iteration)
 
     duration = time.time() - start_time
 
@@ -63,6 +65,7 @@ def random_restart_algorithm(cube, max_iterations_per_restart=1000, max_restart=
         "final_cost": best_cost,
         "duration": round(duration, 2),
         "iterations": len(costs),
+        "iteration_restart": iteration_restart,
         "restart": restart,
         "costs": costs
     }
