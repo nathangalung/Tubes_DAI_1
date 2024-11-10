@@ -1,6 +1,6 @@
 import time
 import random
-import utils
+from . import utils
 
 def generate_random_neighbor(cube):
     N = len(cube)

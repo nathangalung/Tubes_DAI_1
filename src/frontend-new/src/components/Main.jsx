@@ -9,12 +9,6 @@ export default function Main({ onAlgorithmSelect, initialCube, initialCost, onIn
       <nav className="fixed top-0 left-0 right-0 bg-[rgba(10,10,10,0.8)] backdrop-blur-[12px] border-b border-[#2d3748] z-50">
         <div className="max-w-[1200px] mx-auto px-6 flex justify-between items-center h-16">
           <div className="font-bold text-xl">Magic Cube Solver</div>
-          <div className="flex gap-8 items-center">
-            <a href="#" className="text-[#94a3b8] font-medium hover:text-white transition-colors">Home</a>
-            <a href="#" className="text-[#94a3b8] font-medium hover:text-white transition-colors">About</a>
-            <a href="#" className="text-[#94a3b8] font-medium hover:text-white transition-colors">Help</a>
-            <a href="#" className="bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] px-4 py-2 rounded-lg text-white font-medium">Try Demo</a>
-          </div>
         </div>
       </nav>
 
@@ -93,9 +87,9 @@ export default function Main({ onAlgorithmSelect, initialCube, initialCost, onIn
                 { id: "steepest", name: "Steepest Ascent", icon: "▲", desc: "Optimal path finding algorithm" },
                 { id: "sideways", name: "Sideways Move", icon: "↔", desc: "Flexible movement patterns" },
                 { id: "stochastic", name: "Stochastic", icon: "⚄", desc: "Randomized solution approach" },
-                { id: "random", name: "Random Restart", icon: <RotateCcw className="w-8 h-8" />, desc: "Multiple starting points" },
-                { id: "simulated", name: "Simulated Annealing", icon: <Thermometer className="w-8 h-8" />, desc: "Temperature-based solving" },
-                { id: "genetic", name: "Genetic Algorithm", icon: <Dna className="w-8 h-8" />, desc: "Evolution-inspired solution" }
+                { id: "random", name: "Random Restart", icon: "↺", desc: "Multiple starting points" },
+                { id: "simulated", name: "Simulated Annealing", icon: "🌡", desc: "Temperature-based solving" },
+                { id: "genetic", name: "Genetic Algorithm", icon: "🧬", desc: "Evolution-inspired solution" }
               ].map(algo => (
                 <button
                   key={algo.id}
