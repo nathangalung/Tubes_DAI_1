@@ -1,6 +1,6 @@
 import time
 import random
-from . import utils
+import utils
 
 def generate_random_neighbor(cube):
     N = len(cube)
@@ -11,42 +11,51 @@ def generate_random_neighbor(cube):
     
     # Create deep copy using list comprehension
     new_cube = [[[cube[i][j][k] for k in range(N)] for j in range(N)] for i in range(N)]
-    # Fix indexing
+    # Swap elements to create a new neighbor
     new_cube[i1][j1][k1], new_cube[i2][j2][k2] = new_cube[i2][j2][k2], new_cube[i1][j1][k1]
     return new_cube
 
 def random_restart_algorithm(cube, max_iterations_per_restart=1000, max_restart=10):
     N = len(cube)
+    # Initialize the current and best cubes with the input cube
     current_cube = [[[cube[i][j][k] for k in range(N)] for j in range(N)] for i in range(N)]
     current_cost = utils.objective_function(current_cube)
+    
+    # Set the initial best solution to the starting cube
     best_cube = [[[cube[i][j][k] for k in range(N)] for j in range(N)] for i in range(N)]
     best_cost = current_cost
-    iteration = 0
     restart = 0
+    costs = []  # Track cost at each iteration
     
     start_time = time.time()
-    costs = []
 
+    # Restart loop
     while restart < max_restart:
-        neighbor_cube = generate_random_neighbor(current_cube)
-        neighbor_cost = utils.objective_function(neighbor_cube)
+        iteration = 0
 
-        if neighbor_cost < best_cost:
-            best_cube = [[[neighbor_cube[i][j][k] for k in range(N)] for j in range(N)] for i in range(N)]
-            best_cost = neighbor_cost
+        # Iterations within each restart
+        while iteration < max_iterations_per_restart:
+            # Generate a random neighbor and calculate its cost
+            neighbor_cube = generate_random_neighbor(current_cube)
+            neighbor_cost = utils.objective_function(neighbor_cube)
+
+            # If the neighbor is better, update current cube and cost
+            if neighbor_cost < current_cost:
+                current_cube = neighbor_cube
+                current_cost = neighbor_cost
+
+                # Update best solution if the neighbor is better than the global best
+                if current_cost < best_cost:
+                    best_cube = current_cube
+                    best_cost = current_cost
             iteration += 1
-        else:
-            current_cube = utils.initialize_random_cube(N)
-            current_cost = utils.objective_function(current_cube)
-            best_cube = [[[current_cube[i][j][k] for k in range(N)] for j in range(N)] for i in range(N)]
-            best_cost = current_cost
-            restart += 1
-            iteration = 0
-        
-        costs.append(best_cost)
+            costs.append(best_cost)
 
-    # Ensure iteration_restart has at least one value
-    
+        # After max_iterations_per_restart, restart with a new random cube
+        current_cube = utils.initialize_random_cube(N)
+        current_cost = utils.objective_function(current_cube)
+        restart += 1  # Increment restart counter
+
     duration = time.time() - start_time
 
     return {
