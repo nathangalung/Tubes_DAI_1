@@ -8,7 +8,7 @@ def swap(cube, posisi1, posisi2):
     cube[i1][j1][k1], cube[i2][j2][k2] = cube[i2][j2][k2], cube[i1][j1][k1]
 
 # Algoritma Steepest Ascent Hill Climbing
-def steepest_ascent(cube, N):
+def steepest_ascent_algorithm(cube, N):
     start_time = time.time()
     current_cost = utils.objective_function(cube)
     best_cost = current_cost
