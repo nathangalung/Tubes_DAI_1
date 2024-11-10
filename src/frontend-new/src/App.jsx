@@ -124,7 +124,7 @@ const App = () => {
 
     const specificProps = {
       random: { ...commonProps, restart },
-      simulated: {...commonProps, localOptima },
+      simulated: {...commonProps, exp, localOptima },
       genetic: { ...commonProps, population }
     };
 

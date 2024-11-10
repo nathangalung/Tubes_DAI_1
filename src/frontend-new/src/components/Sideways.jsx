@@ -64,7 +64,7 @@ export default function SidewaysMoveVisualization({
           <div className="bg-[#16181d] rounded-xl p-6">
             <Chart 
               costs={costs} 
-              title="Sideways Move Objective Function Plot" 
+              title="Sideways Move Objective Function vs Iteration Plot" 
             />
           </div>
         </div>

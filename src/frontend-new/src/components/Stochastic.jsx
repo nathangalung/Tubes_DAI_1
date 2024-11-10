@@ -65,7 +65,6 @@ export default function StochasticVisualization({
               costs={costs} 
               title="Stochastic Objective Function Plot" 
             />
-            {/* <canvas ref={canvasRef} className="w-full h-[300px] bg-[#1a1d24] rounded-lg" /> */}
           </div>
         </div>
       </div>

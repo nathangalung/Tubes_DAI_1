@@ -8,7 +8,7 @@ export default function GeneticAlgorithmVisualization({
   initialCost,
   finalCost,
   duration,
-  populations,
+  population,
   iterations,
   costs,
   onBack
@@ -52,7 +52,7 @@ export default function GeneticAlgorithmVisualization({
                 { label: "Solution Cost", value: finalCost },
                 { label: "Time Elapsed", value: `${duration}s` },
                 { label: "Number of Iterations", value: iterations },
-                { label: "Number of Population", value: populations },
+                { label: "Number of Population", value: population },
               ].map((metric, index) => (
                 <div key={index} className="bg-[#16181d] rounded-xl p-4">
                   <div className="text-sm text-[#94a3b8] mb-1">{metric.label}</div>
@@ -65,7 +65,7 @@ export default function GeneticAlgorithmVisualization({
           <div className="bg-[#16181d] rounded-xl p-6">
             <Chart 
                 costs={costs} 
-                title="Stochastic Objective Function Plot" 
+                title="Genetic Objective Function vs Iteration Plot" 
               />
           </div>
         </div>

@@ -1,6 +1,6 @@
-import itertools
+import random
 import time
-import utils
+from . import utils
 
 def swap(cube, posisi1, posisi2):
     i1, j1, k1 = posisi1
@@ -8,36 +8,42 @@ def swap(cube, posisi1, posisi2):
     cube[i1][j1][k1], cube[i2][j2][k2] = cube[i2][j2][k2], cube[i1][j1][k1]
 
 # Algoritma Steepest Ascent Hill Climbing
-def steepest_ascent(cube, N):
+def steepest_ascent_algorithm(cube):
+    N = len(cube)
     start_time = time.time()
     current_cost = utils.objective_function(cube)
     best_cost = current_cost
     costs = [current_cost]
     
-    while True:
-        best_swap = None
+    # Generate all possible pairs once
+    all_positions = [(i//(N*N), (i//N)%N, i%N) for i in range(N*N*N)]
+    all_pairs = []
+    for i in range(len(all_positions)):
+        for j in range(i+1, len(all_positions)):
+            all_pairs.append((all_positions[i], all_positions[j]))
+    
+    no_improvement_count = 0
+    max_no_improvement = 3  # Early stopping threshold
+    
+    while no_improvement_count < max_no_improvement:
+        old_best = best_cost
+        random.shuffle(all_pairs)  # Randomize pair order
         
-        # Mencari anak terbaik
-        for posisi1 in itertools.product(range(N), repeat=3):
-            for posisi2 in itertools.product(range(N), repeat=3):
-                if posisi1 == posisi2:
-                    continue
-
-                swap(cube, posisi1, posisi2)
-                new_cost = utils.objective_function(cube)
-                
-                if new_cost < best_cost:
-                    best_cost = new_cost
-                    best_swap = (posisi1, posisi2)
-                
-                swap(cube, posisi1, posisi2)
+        for pos1, pos2 in all_pairs:
+            # Try swap
+            swap(cube, pos1, pos2)
+            new_cost = utils.objective_function(cube)
+            
+            if new_cost < best_cost:
+                best_cost = new_cost
+                costs.append(best_cost)
+                no_improvement_count = 0
+                break  # Found better solution, try new random order
+            else:
+                swap(cube, pos1, pos2)  # Undo swap
         
-        if best_swap:
-            swap(cube, best_swap[0], best_swap[1])
-            current_cost = best_cost
-            costs.append(current_cost)
-        else:
-            break 
+        if best_cost == old_best:
+            no_improvement_count += 1
     
     duration = time.time() - start_time
     
@@ -45,5 +51,6 @@ def steepest_ascent(cube, N):
         "final_cube": cube,
         "final_cost": best_cost,
         "duration": round(duration, 2),
-        "iterations": len(costs)
+        "iterations": len(costs),
+        "costs": costs
     }

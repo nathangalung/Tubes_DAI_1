@@ -37,8 +37,8 @@ def select_parents(population: List[List[List[List[int]]]], costs: List[float], 
 
 def genetic_algorithm(
     cube: List[List[List[int]]], 
-    population_size: int = 100, 
-    max_iterations: int = 1000,
+    population_size: int = 200, 
+    max_iterations: int = 1500,
     crossover_rate: float = 0.8,
     mutation_rate: float = 0.1
 ) -> Dict:

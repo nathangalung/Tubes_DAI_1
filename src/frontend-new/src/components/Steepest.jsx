@@ -12,12 +12,11 @@ export default function SteepestAscentVisualization({
   costs,
   onBack
 }) {
-  if (!initialCube || !finalCube) return null;
   return (
     <div className="bg-[#0a0a0a] text-white font-['Space_Grotesk',system-ui,sans-serif] min-h-screen p-8">
       <div className="max-w-[1400px] mx-auto">
         <a
-          href="../index.html"
+          href="/"
           className="inline-flex items-center gap-2 px-4 py-3 bg-[#16181d] rounded-xl text-[#94a3b8] hover:text-white transition-colors mb-8 border border-[#1e1e1e] text-sm"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -64,7 +63,7 @@ export default function SteepestAscentVisualization({
           <div className="bg-[#16181d] rounded-xl p-6">
             <Chart 
               costs={costs} 
-              title="Steepest Ascent Objective Function Plot" 
+              title="Steepest Ascent Objective Function vs Iteration Plot" 
             />
           </div>
         </div>
