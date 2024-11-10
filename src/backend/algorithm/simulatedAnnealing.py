@@ -35,7 +35,7 @@ def simulated_annealing_algorithm(cube: List[List[List[int]]], T_max: float = 10
     local_optima = 0
 
     costs = []
-    exp = []
+    exps = []
 
     start_time = time.time()
 
@@ -67,7 +67,7 @@ def simulated_annealing_algorithm(cube: List[List[List[int]]], T_max: float = 10
 
         if iterations % 200 == 0:
             exp_delta_E_T = 1 if delta_cost > 0 else math.exp(delta_cost / temperature)
-            exp.append(exp_delta_E_T)
+            exps.append(exp_delta_E_T)
 
         iterations += 1
 
@@ -78,7 +78,7 @@ def simulated_annealing_algorithm(cube: List[List[List[int]]], T_max: float = 10
         "final_cost": best_cost,
         "duration": round(duration, 2),
         "iterations": len(costs),
+        "local_optima": local_optima,
         "costs": costs,
-        "exp": exp,
-        "local_optima": local_optima
+        "exps": exps
     }

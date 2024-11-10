@@ -1,11 +1,10 @@
-// App.jsx
 import React, { useState, useEffect } from "react";
 import Main from "./components/Main";
 import Steepest from "./components/Steepest";
 import Sideways from "./components/Sideways";
 import Stochastic from "./components/Stochastic";
-import Simulated from "./components/Simulated";
 import Random from "./components/Random";
+import Simulated from "./components/Simulated";
 import Genetic from "./components/Genetic";
 
 const API_URL = 'http://localhost:8000';
@@ -24,10 +23,12 @@ const App = () => {
   const [finalCost, setFinalCost] = useState(null);
   const [duration, setDuration] = useState(null);
   const [iterations, setIterations] = useState(null);
-  const [costs, setCosts] = useState([]);
   const [restart, setRestart] = useState(null);
-  const [population, setPopulation] = useState(null);
   const [localOptima, setLocalOptima] = useState(null);
+  const [iterationRestart, setIterationRestart] = useState([]);
+  const [population, setPopulation] = useState(null);
+  const [costs, setCosts] = useState([]);
+  const [exps, setExps] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -86,9 +87,18 @@ const App = () => {
       setDuration(result.duration);
       setIterations(result.iterations);
       setCosts(result.costs);
-      setRestart(result.restart);
-      setPopulation(result.population);
-      setLocalOptima(result.local_optima);
+      if (algorithmType === 'random') {
+        setRestart(result.restart);
+        setIterationRestart(result.iteration_restart);
+      }
+      if (algorithmType === 'simulated') {
+        setLocalOptima(result.local_optima);
+        setExps(result.exps);
+      }
+      if (algorithmType === 'genetic') {
+        setPopulation(result.population);
+      }
+      setCosts(result.costs);
       setSelectedAlgorithm(algorithmType);
     } catch (error) {
       console.error("Algorithm execution failed:", error);
@@ -103,10 +113,12 @@ const App = () => {
     setFinalCost(null);
     setDuration(null);
     setIterations(null);
-    setCosts([]);
     setRestart(null);
-    setPopulation(null);
+    setIterationRestart([]);
     setLocalOptima(null);
+    setPopulation(null);
+    setCosts([]);
+    setExps([]);
   };
 
   const renderAlgorithm = () => {
@@ -123,8 +135,8 @@ const App = () => {
     };
 
     const specificProps = {
-      random: { ...commonProps, restart },
-      simulated: {...commonProps, exp, localOptima },
+      random: { ...commonProps, restart, iterationRestart },
+      simulated: {...commonProps, localOptima, exps },
       genetic: { ...commonProps, population }
     };
 
@@ -132,8 +144,8 @@ const App = () => {
       case "steepest": return <Steepest {...commonProps} />;
       case "sideways": return <Sideways {...commonProps} />;
       case "stochastic": return <Stochastic {...commonProps} />;
-      case "simulated": return <Simulated {...specificProps.simulated} />;
       case "random": return <Random {...specificProps.random} />;
+      case "simulated": return <Simulated {...specificProps.simulated} />;
       case "genetic": return <Genetic {...specificProps.genetic} />;
       default: return null;
     }

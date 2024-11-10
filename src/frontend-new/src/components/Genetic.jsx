@@ -8,10 +8,9 @@ export default function GeneticAlgorithmVisualization({
   initialCost,
   finalCost,
   duration,
-  population,
   iterations,
-  costs,
-  onBack
+  population,
+  costs
 }) {
   return (
     <div className="bg-[#0a0a0a] text-white font-['Space_Grotesk',system-ui,sans-serif] min-h-screen p-8">

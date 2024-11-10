@@ -37,10 +37,12 @@ class AlgorithmResponse(BaseModel):
     final_cost: int
     duration: float
     iterations: int
+    restart: int | None = None  # Keep other optionals
+    iteration_restart: list | None = None
+    local_optima: int | None = None  # Make optional
+    population: int | None = None
     costs: list
-    restart: int = None  # Optional for random restart
-    localOptima: int = None # Optional for simulated annealing
-    population: int = None  # Optional for genetic
+    exps: list | None = None  # Make optional
 
 algorithm_map = {
     'steepest': steepest_ascent_algorithm,
@@ -68,9 +70,19 @@ async def run_algorithm(request: AlgorithmRequest):
 
     try:
         result = algorithm_function(request.cube)
-        # Remove or simplify debug logging
-        print(f"Algorithm {request.algorithm} completed successfully")
-        return result
+        # Print debug info
+        print(f"Algorithm result for {request.algorithm}")
+        return {
+            "final_cube": result["final_cube"],
+            "final_cost": result.get("final_cost"),
+            "duration": result.get("duration"),
+            "iterations": result.get("iterations"),
+            "restart": result.get("restart"),
+            "local_optima": result.get("local_optima"),
+            "population": result.get("population"),
+            "costs": result["costs"],
+            "exps": result["exps"]
+        }
     except Exception as e:
         print(f"Error in algorithm execution: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

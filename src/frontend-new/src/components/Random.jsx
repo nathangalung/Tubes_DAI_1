@@ -8,10 +8,10 @@ export default function RandomRestartVisualization({
   initialCost,
   finalCost,
   duration,
-  restart,
   iterations,
-  costs,
-  onBack
+  restart,
+  iterationRestart,
+  costs
 }) {
   return (
     <div className="min-h-screen bg-black text-white font-sans">
@@ -36,7 +36,9 @@ export default function RandomRestartVisualization({
               <div className="w-full aspect-video bg-[#1a1d24] rounded-lg mb-2 overflow-hidden">
                 <Cube magic_cube={initialCube} />
               </div>
-              <div className="text-sm text-gray-400">Initial State Value: {initialCost} </div>
+              <div className="text-sm text-gray-400">
+                Initial State Value: {initialCost} 
+              </div>
             </div>
 
             <div className="bg-[#16181d] p-6 rounded-lg">
@@ -44,7 +46,9 @@ export default function RandomRestartVisualization({
               <div className="w-full aspect-video bg-[#1a1d24] rounded-lg mb-2 overflow-hidden">
                 <Cube magic_cube={finalCube} />
               </div>
-              <div className="text-sm text-gray-400">Current State Value: {finalCost}</div>
+              <div className="text-sm text-gray-400">
+                Current State Value: {finalCost}
+              </div>
             </div>
 
             <div className="flex flex-col gap-4">

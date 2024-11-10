@@ -24,35 +24,39 @@ def calculate_cost_change(cube: List[List[List[int]]],
     cube[i1][j1][k1], cube[i2][j2][k2] = cube[i2][j2][k2], cube[i1][j1][k1]
     return new_cost - original_cost
 
-def stochastic_algorithm(cube: List[List[List[int]]]) -> Tuple[List[List[List[int]]], float, List[float], float]:
-    """
-    Performs stochastic hill climbing with a fixed number of iterations.
-    """
+def stochastic_algorithm(cube: List[List[List[int]]]) -> dict:
     N = len(cube)
     current_cost = utils.objective_function(cube)
     best_cost = current_cost
+    costs = []
     max_iterations = 10000
     iterations = 0
-    costs = []
 
     start_time = time.time()
 
     while iterations < max_iterations:
-        # Generate two random positions
-        pos1 = (select_random_position(N), select_random_position(N), select_random_position(N))
-        pos2 = (select_random_position(N), select_random_position(N), select_random_position(N))
+        # Generate single integer indices instead of tuples
+        i1, j1, k1 = random.randint(0, N-1), random.randint(0, N-1), random.randint(0, N-1)
+        i2, j2, k2 = random.randint(0, N-1), random.randint(0, N-1), random.randint(0, N-1)
         
-        while pos1 == pos2:
-            pos2 = (select_random_position(N), select_random_position(N), select_random_position(N))
+        # Ensure different positions
+        while (i1, j1, k1) == (i2, j2, k2):
+            i2, j2, k2 = random.randint(0, N-1), random.randint(0, N-1), random.randint(0, N-1)
 
-        cost_change = calculate_cost_change(cube, pos1, pos2)
+        # Calculate cost change directly
+        original_cost = utils.objective_function(cube)
+        
+        # Perform swap
+        cube[i1][j1][k1], cube[i2][j2][k2] = cube[i2][j2][k2], cube[i1][j1][k1]
+        new_cost = utils.objective_function(cube)
+        cost_change = new_cost - original_cost
 
         if cost_change < 0:
-            i1, j1, k1 = pos1
-            i2, j2, k2 = pos2
+            current_cost = new_cost
+            best_cost = min(best_cost, current_cost)
+        else:
+            # Undo swap if no improvement
             cube[i1][j1][k1], cube[i2][j2][k2] = cube[i2][j2][k2], cube[i1][j1][k1]
-            current_cost += cost_change
-            best_cost = current_cost
 
         costs.append(current_cost)
         iterations += 1

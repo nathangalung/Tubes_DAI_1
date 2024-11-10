@@ -1,7 +1,6 @@
 import time
 import random
-from typing import List, Tuple, Dict
-from copy import deepcopy
+from typing import List
 from algorithm import utils
 
 def initialize_random_cube(N: int) -> List[List[List[int]]]:
@@ -22,102 +21,66 @@ def initialize_random_cube(N: int) -> List[List[List[int]]]:
 
     return cube
 
-def crossover(parent1: List[List[List[int]]], parent2: List[List[List[int]]], N: int) -> Tuple[List[List[List[int]]], List[List[List[int]]]]:
-    child1 = deepcopy(parent1)
-    child2 = deepcopy(parent2)
-    
-    for i in range(N):
-        for j in range(N):
-            for k in range(N):
-                if random.random() < 0.5:
-                    child1[i][j][k], child2[i][j][k] = child2[i][j][k], child1[i][j][k]
-    
-    return child1, child2
-
-def mutate(cube: List[List[List[int]]], N: int, mutation_rate: float = 0.1) -> List[List[List[int]]]:
-    mutated = deepcopy(cube)
-    for i in range(N):
-        for j in range(N):
-            for k in range(N):
-                if random.random() < mutation_rate:
-                    mutated[i][j][k] = random.randint(1, N * N * N)
-    return mutated
-
-def select_parents(population: List[List[List[List[int]]]], costs: List[float], n: int) -> List[List[List[List[int]]]]:
-    selected = []
-    for _ in range(n):
-        idx1, idx2 = random.sample(range(len(population)), 2)
-        if costs[idx1] < costs[idx2]:
-            selected.append(deepcopy(population[idx1]))
-        else:
-            selected.append(deepcopy(population[idx2]))
-    return selected
-
-def genetic_algorithm(
-    cube: List[List[List[int]]], 
-    population_size: int = 200, 
-    max_iterations: int = 1500,
-    crossover_rate: float = 0.8,
-    mutation_rate: float = 0.1
-) -> Dict:
+def generate_random_neighbor(cube):
     N = len(cube)
-    population = [utils.initialize_random_cube(N) for _ in range(population_size)]
-    costs = []  # Track all costs across iterations
-    costs_population = {}  # Track costs per population
-    current_population = 1
-    best_cost = float('inf')
-    best_cube = None
+    i1, j1, k1 = random.randint(0, N-1), random.randint(0, N-1), random.randint(0, N-1)
+    i2, j2, k2 = random.randint(0, N-1), random.randint(0, N-1), random.randint(0, N-1)
+    while i1 == i2 and j1 == j2 and k1 == k2:
+        i2, j2, k2 = random.randint(0, N-1), random.randint(0, N-1), random.randint(0, N-1)
+    
+    # Create deep copy using list comprehension
+    new_cube = [[[cube[i][j][k] for k in range(N)] for j in range(N)] for i in range(N)]
+    # Fix indexing
+    new_cube[i1][j1][k1], new_cube[i2][j2][k2] = new_cube[i2][j2][k2], new_cube[i1][j1][k1]
+    return new_cube
+
+def random_restart_algorithm(cube, max_iterations_per_restart=1000, max_restart=10):
+    N = len(cube)
+    current_cube = [[[cube[i][j][k] for k in range(N)] for j in range(N)] for i in range(N)]
+    current_cost = utils.objective_function(current_cube)
+    best_cube = [[[cube[i][j][k] for k in range(N)] for j in range(N)] for i in range(N)]
+    best_cost = current_cost
+    iteration = 0
+    restart = 0
     
     start_time = time.time()
-    
-    costs_population[f"population_{current_population}"] = []
-    
-    for iteration in range(max_iterations):
-        # Evaluate population
-        population_costs = [utils.objective_function(ind) for ind in population]
-        current_best = min(population_costs)
-        current_best_idx = population_costs.index(current_best)
+    costs = []
+    iteration_restart = []  # Initialize empty list
+
+    while restart < max_restart:
+        neighbor_cube = generate_random_neighbor(current_cube)
+        neighbor_cost = utils.objective_function(neighbor_cube)
+
+        if neighbor_cost < best_cost:
+            best_cube = [[[neighbor_cube[i][j][k] for k in range(N)] for j in range(N)] for i in range(N)]
+            best_cost = neighbor_cost
+            iteration += 1
+            print("Iteration:", iteration)
+        else:
+            current_cube = utils.initialize_random_cube(N)
+            current_cost = utils.objective_function(current_cube)
+            best_cube = [[[current_cube[i][j][k] for k in range(N)] for j in range(N)] for i in range(N)]
+            best_cost = current_cost
+            restart += 1
+            iteration = 0
         
-        # Track costs
-        costs.append(current_best)
-        costs_population[f"population_{current_population}"].append(current_best)
-        
-        # Update best solution
-        if current_best < best_cost:
-            best_cost = current_best
-            best_cube = deepcopy(population[current_best_idx])
-        
-        # Selection
-        parents = select_parents(population, population_costs, population_size)
-        
-        # Crossover
-        new_population = []
-        for i in range(0, population_size-1, 2):
-            if random.random() < crossover_rate:
-                child1, child2 = crossover(parents[i], parents[i+1], N)
-                new_population.extend([child1, child2])
-            else:
-                new_population.extend([parents[i], parents[i+1]])
-        
-        # Mutation
-        for i in range(len(new_population)):
-            new_population[i] = mutate(new_population[i], N, mutation_rate)
-        
-        population = new_population
-        
-        # Check if we should start new population
-        if iteration > 0 and iteration % (max_iterations // population_size) == 0:
-            current_population += 1
-            costs_population[f"population_{current_population}"] = []
-        
-        if best_cost <= 1e-3:
+        costs.append(best_cost)
+
+        if iteration >= max_iterations_per_restart:
+            iteration_restart.append(iteration)
+            print("Restart ke:", restart)
             break
-        
-        print(f"Iteration {iteration}: Best cost = {best_cost}")
+
+    # Ensure iteration_restart has at least one value
+    if not iteration_restart and iteration > 0:
+        iteration_restart.append(iteration)
     
     duration = time.time() - start_time
+    
+    print("Best cost: ", best_cost)
+    print("Total Restart:", restart)
 
 cube = initialize_random_cube(5)
 
-genetic_algorithm(cube)
+random_restart_algorithm(cube)
 

@@ -9,8 +9,7 @@ export default function SteepestAscentVisualization({
   finalCost,
   duration,
   iterations,
-  costs,
-  onBack
+  costs
 }) {
   return (
     <div className="bg-[#0a0a0a] text-white font-['Space_Grotesk',system-ui,sans-serif] min-h-screen p-8">

@@ -13,7 +13,7 @@ def steepest_ascent_algorithm(cube):
     start_time = time.time()
     current_cost = utils.objective_function(cube)
     best_cost = current_cost
-    costs = [current_cost]
+    costs = []
     
     # Generate all possible pairs once
     all_positions = [(i//(N*N), (i//N)%N, i%N) for i in range(N*N*N)]
@@ -22,11 +22,8 @@ def steepest_ascent_algorithm(cube):
         for j in range(i+1, len(all_positions)):
             all_pairs.append((all_positions[i], all_positions[j]))
     
-    no_improvement_count = 0
-    max_no_improvement = 3  # Early stopping threshold
-    
-    while no_improvement_count < max_no_improvement:
-        old_best = best_cost
+    while True:
+        found_improvement = False
         random.shuffle(all_pairs)  # Randomize pair order
         
         for pos1, pos2 in all_pairs:
@@ -37,13 +34,13 @@ def steepest_ascent_algorithm(cube):
             if new_cost < best_cost:
                 best_cost = new_cost
                 costs.append(best_cost)
-                no_improvement_count = 0
+                found_improvement = True
                 break  # Found better solution, try new random order
             else:
                 swap(cube, pos1, pos2)  # Undo swap
         
-        if best_cost == old_best:
-            no_improvement_count += 1
+        if not found_improvement:
+            break  # No improvement found after checking all pairs
     
     duration = time.time() - start_time
     

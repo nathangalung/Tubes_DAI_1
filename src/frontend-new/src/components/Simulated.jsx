@@ -9,8 +9,9 @@ export default function SimulatedAnnealingVisualization({
   finalCost,
   duration,
   iterations,
+  localOptima,
   costs,
-  onBack
+  exps
 }) {
   return (
     <div className="bg-[#0a0a0a] text-white font-['Space_Grotesk',system-ui,sans-serif] min-h-screen p-8">
@@ -34,7 +35,7 @@ export default function SimulatedAnnealingVisualization({
                 <Cube magic_cube={initialCube} />
               </div>
               <div className="text-sm text-[#94a3b8]">
-                Initial State Value: 6505
+                Initial State Value: {initialCost}
               </div>
             </div>
             <div className="bg-[#16181d] rounded-xl p-6">
@@ -43,15 +44,15 @@ export default function SimulatedAnnealingVisualization({
                 <Cube magic_cube={finalCube} />
               </div>
               <div className="text-sm text-[#94a3b8]">
-                Current State Value: 104
+                Current State Value: {finalCost}
               </div>
             </div>
             <div className="flex flex-col gap-4">
               {[
-                { label: "Solution Cost", value: "104" },
-                { label: "Time Elapsed", value: "18.76s" },
-                { label: "Number of Iterations", value: "1500" },
-                { label: "Number of Stuck in Local Optima", value: "15" },
+                { label: "Solution Cost", value: finalCost },
+                { label: "Time Elapsed", value: `${duration}s` },
+                { label: "Number of Iterations", value: iterations },
+                { label: "Number of Stuck in Local Optima", value: localOptima },
               ].map((metric, index) => (
                 <div key={index} className="bg-[#16181d] rounded-xl p-4">
                   <div className="text-sm text-[#94a3b8] mb-1">{metric.label}</div>
@@ -70,7 +71,7 @@ export default function SimulatedAnnealingVisualization({
 
           <div className="bg-[#16181d] rounded-xl p-6">
             <Chart 
-                costs={costs} 
+                costs={exps} 
                 title="Stochastic Objective Function Plot" 
               />
           </div>

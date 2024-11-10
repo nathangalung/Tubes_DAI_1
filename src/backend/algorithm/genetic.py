@@ -96,6 +96,7 @@ def genetic_algorithm(
             break
     
     duration = time.time() - start_time
+    print(f"Duration: {duration}")
     
     return {
         "final_cube": best_cube,
@@ -104,8 +105,4 @@ def genetic_algorithm(
         "iterations": len(costs),
         "population": population_size,
         "costs": costs
-        # "iterations_per_population": len(costs) // population_size,
-        # "number_of_populations": current_population,
-        # "costs": costs,  # All costs across iterations
-        # "costs_population": costs_population  # Costs per population
     }

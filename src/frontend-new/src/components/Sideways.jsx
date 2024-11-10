@@ -9,8 +9,7 @@ export default function SidewaysMoveVisualization({
   finalCost,
   duration,
   iterations,
-  costs,
-  onBack
+  costs
 }) {
   if (!initialCube || !finalCube) return null;
   return (
