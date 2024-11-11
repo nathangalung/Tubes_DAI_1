@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import Main from "../components/Main";
-import Steepest from "../components/Steepest";
-import Sideways from "../components/Sideways";
-import Stochastic from "../components/Stochastic";
-import Random from "../components/Random";
-import Simulated from "../components/Simulated";
-import Genetic from "../components/Genetic";
+import Main from "./components/Main";
+import Steepest from "./components/Steepest";
+import Sideways from "./components/Sideways";
+import Stochastic from "./components/Stochastic";
+import Random from "./components/Random";
+import Simulated from "./components/Simulated";
+import Genetic from "./components/Genetic";
 
 const API_URL = 'http://localhost:8000';
 
