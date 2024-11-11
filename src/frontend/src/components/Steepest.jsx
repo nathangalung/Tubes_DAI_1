@@ -55,7 +55,7 @@ export default function SteepestAscentVisualization({
 
             <div className="flex flex-col gap-4">
               {[{ label: "Average Cost", value: `${averageCost}s` },
-                { label: "Duration", value: `${duration}` },
+                { label: "Duration", value: `${duration}s` },
                 { label: "Number of Iteration", value: iteration }
               ].map((metric, index) => (
                 <div key={index} className="bg-[#16181d] rounded-lg p-2 w-[185px]">
