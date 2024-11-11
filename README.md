@@ -1,5 +1,5 @@
 # Tubes_DAI_1
-Magic cube solver adalah website ditunjukkan untuk menyelesaikan permasalahan magic cube. Penyelesaian masalah magic cube menggunakan pendekatan algoritma local search berupa, steepest ascent, sideways move, stochastic, random restart, simulated annealing, dan genetic. 
+Magic cube solver adalah website yang ditunjukkan untuk menyelesaikan permasalahan magic cube. Penyelesaian masalah magic cube menggunakan pendekatan algoritma local search berupa, steepest ascent, sideways move, stochastic, random restart, simulated annealing, dan genetic. 
 
 Repository utama terbagi menjadi dua yaitu bagian folder backend yang berisi seluruh algoritma serta cube dan frontend yang berisi algoritma tampilan website.
 
