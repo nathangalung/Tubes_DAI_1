@@ -1,68 +1,93 @@
 import copy
 import time
 import random
+from typing import List, Tuple
 from . import utils
 
-def generate_random_neighbor(cube):
+def swap_elements(cube: List[List[List[int]]], pos1: Tuple[int, int, int], pos2: Tuple[int, int, int]) -> None:
+    #menukar elemen 
+    i, j, k = pos1
+    l, m, n = pos2
+    cube[i][j][k], cube[l][m][n] = cube[l][m][n], cube[i][j][k]
+
+def generate_random_neighbor(cube: List[List[List[int]]]) -> List[List[List[int]]]:
+    #menghasilkan anak secara acak dengan menukar 2 elemen
     N = len(cube)
     i1, j1, k1 = random.randint(0, N-1), random.randint(0, N-1), random.randint(0, N-1)
     i2, j2, k2 = random.randint(0, N-1), random.randint(0, N-1), random.randint(0, N-1)
-    while i1 == i2 and j1 == j2 and k1 == k2:
+    
+    #untuk memastikan pertukarannya gasama
+    while (i1, j1, k1) == (i2, j2, k2):
         i2, j2, k2 = random.randint(0, N-1), random.randint(0, N-1), random.randint(0, N-1)
     
+    # Salin kubus untuk tetangga baru
     new_cube = [[[cube[i][j][k] for k in range(N)] for j in range(N)] for i in range(N)]
-    # menukar elemen
-    new_cube[i1][j1][k1], new_cube[i2][j2][k2] = new_cube[i2][j2][k2], new_cube[i1][j1][k1]
+    
+    # tukar elemen
+    swap_elements(new_cube, (i1, j1, k1), (i2, j2, k2))
+    
     return new_cube
 
-def random_restart_algorithm(cube, max_iteration_per_restart=1000, max_restart=10):
+def random_restart_algorithm(cube: List[List[List[int]]], max_restart: int = 10, max_iterations: int = 100) -> dict:
+    """
+    Melakukan algoritma random restart untuk meminimalkan cost kubus dengan mempertahankan variabel asli.
+    Setiap restart memiliki batas maksimal iterasi, dan best_cube dibandingkan antar-restart.
+    """
     N = len(cube)
-    # Inisialisasi current cube dan current cost
-    current_cube = [[[cube[i][j][k] for k in range(N)] for j in range(N)] for i in range(N)]
+    current_cube = utils.initialize_random_cube(N)
     current_cost = utils.objective_function(current_cube)
-    
-    best_cube = [[[cube[i][j][k] for k in range(N)] for j in range(N)] for i in range(N)]
+    cube = current_cube
     best_cost = current_cost
     restart = 0
+    total_iteration = 0
     costs = []
     states = []
     iteration_restart = []
     
     start_time = time.time()
 
-    # Restart loop
     while restart < max_restart:
         iteration = 0
-
-        # Iterasi dalam range max iterations per restart
-        while iteration < max_iteration_per_restart:
-            # Generate neighbor random dan hitung costnya
+        while iteration < max_iterations:
+            # melakukan Generate random neighbor
             neighbor_cube = generate_random_neighbor(current_cube)
             neighbor_cost = utils.objective_function(neighbor_cube)
-
-            # kalau neighbor lebih baik, update current cube dan cost
-            if neighbor_cost < current_cost:
+            
+            if neighbor_cost >= current_cost:
+                iteration += 1
+                costs.append(current_cost)
+                states.append(copy.deepcopy(current_cube))
+                # Jika biaya tetangga lebih buruk atau sama, keluar dari pencarian
+                break
+            else:
+                # Jika tetangga lebih baik, update current_cube
                 current_cube = neighbor_cube
                 current_cost = neighbor_cost
-
-                # Perbarui solusi terbaik jika neighbor lebih baik dari solusi terbaik
-                if current_cost < best_cost:
-                    best_cube = current_cube
-                    best_cost = current_cost
             iteration += 1
             costs.append(current_cost)
             states.append(copy.deepcopy(current_cube))
 
-        # Setelah maksimal iterasi per restart, restart dengan random cube
+        # Bandingkan best_cube di setiap restart setelah restart pertama
+        if restart == 0:
+            cube = current_cube
+            best_cost = current_cost
+        else:
+            # Jika solusi restart saat ini lebih baik, update best_cube
+            if current_cost < best_cost:
+                cube = current_cube
+                best_cost = current_cost
+
+        iteration_restart.append(iteration)
+        restart += 1
+
+        # Restart pencarian dengan solusi acak yang baru
         current_cube = utils.initialize_random_cube(N)
         current_cost = utils.objective_function(current_cube)
-        restart += 1  # counter restart
-        iteration_restart.append(iteration)
 
     duration = time.time() - start_time
 
     return {                                                   
-        "final_cube": best_cube,
+        "final_cube": cube,
         "final_cost": best_cost,
         "average_cost": round(best_cost/109, 4),
         "duration": round(duration, 2),
