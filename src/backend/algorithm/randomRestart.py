@@ -39,7 +39,6 @@ def random_restart_algorithm(cube: List[List[List[int]]], max_restart: int = 10,
     cube = current_cube
     best_cost = current_cost
     restart = 0
-    total_iteration = 0
     costs = []
     states = []
     iteration_restart = []

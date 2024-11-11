@@ -1,22 +1,17 @@
-import copy
 import time
 import random
-from typing import List, Tuple, Dict
+from typing import List, Dict
 from copy import deepcopy
 from . import utils
-from multiprocessing import Pool
 
-def crossover(parent1: List[List[List[int]]], parent2: List[List[List[int]]], N: int) -> Tuple[List[List[List[int]]], List[List[List[int]]]]:
-    child1 = deepcopy(parent1)
-    child2 = deepcopy(parent2)
-    
+def crossover(parent1: List[List[List[int]]], parent2: List[List[List[int]]], N: int) -> List[List[List[int]]]:
+    child = deepcopy(parent1)
     for i in range(N):
         for j in range(N):
             for k in range(N):
                 if random.random() < 0.5:
-                    child1[i][j][k], child2[i][j][k] = child2[i][j][k], child1[i][j][k]
-    
-    return child1, child2
+                    child[i][j][k] = parent2[i][j][k]
+    return child
 
 def mutate(cube: List[List[List[int]]], N: int, mutation_rate: float) -> List[List[List[int]]]:
     mutated = deepcopy(cube)
@@ -27,85 +22,73 @@ def mutate(cube: List[List[List[int]]], N: int, mutation_rate: float) -> List[Li
                     mutated[i][j][k] = random.randint(1, N * N * N)
     return mutated
 
-def select_parents(population: List[List[List[List[int]]]], costs: List[float], n: int) -> List[List[List[List[int]]]]:
+def evaluate_population(population: List[List[List[int]]]) -> List[float]:
+    return [utils.objective_function(individual) for individual in population]
+
+def tournament_selection(population: List[List[List[int]]], costs: List[float], tournament_size: int) -> List[List[List[int]]]:
     selected = []
-    for _ in range(n):
-        tournament = random.sample(list(zip(population, costs)), k=3)
+    for _ in range(len(population)):
+        tournament = random.sample(list(zip(population, costs)), k=tournament_size)
         winner = min(tournament, key=lambda x: x[1])
         selected.append(deepcopy(winner[0]))
     return selected
 
-def evaluate_population(population: List[List[List[int]]]) -> List[float]:
-    with Pool() as pool:
-        costs = pool.map(utils.objective_function, population)
-    return costs
-
-def genetic_algorithm(
-    cube: List[List[List[int]]], 
-    population_size: int = 200, 
-    max_iteration: int = 1500,
-    crossover_rate: float = 0.8,
-    initial_mutation_rate: float = 0.1,
-    elitism_count: int = 5
-) -> Dict:
+def genetic_algorithm(cube: List[List[List[int]]], crossover_rate: float = 0.8, initial_mutation_rate: float = 0.05, elitism_count: int = 5, tournament_size: int = 5) -> Dict:
     N = len(cube)
+    population_size = 300 
+    max_iteration = 500
     population = [utils.initialize_random_cube(N) for _ in range(population_size)]
     costs = []
-    costs_population = {}
     states = []
     best_cost = float('inf')
     best_cube = None
-    mutation_rate = initial_mutation_rate
     
     start_time = time.time()
     
     for iteration in range(max_iteration):
         # Evaluate population
         population_costs = evaluate_population(population)
-        current_best_cost = min(population_costs)
-        current_best_idx = population_costs.index(current_best_cost)
+        fitness_scores = list(zip(population_costs, population))
+        fitness_scores.sort(key=lambda x: x[0])
         
-        # Track costs and states
-        costs.append(current_best_cost)
-        states.append(deepcopy(population[current_best_idx]))
+        current_fitness_values = [score[0] for score in fitness_scores]
+        avg_fitness = sum(current_fitness_values) / len(current_fitness_values)
         
-        # Update best solution
-        if current_best_cost < best_cost:
-            best_cost = current_best_cost
-            best_cube = deepcopy(population[current_best_idx])
+        costs.append(avg_fitness)
+        states.append(deepcopy(fitness_scores[0][1]))
+        
+        if fitness_scores[0][0] < best_cost:
+            best_cost = fitness_scores[0][0]
+            best_cube = deepcopy(fitness_scores[0][1])
         
         # Elitism: preserve top elitism_count individuals
-        sorted_population = sorted(zip(population, population_costs), key=lambda x: x[1])
-        elites = [deepcopy(ind) for ind, _ in sorted_population[:elitism_count]]
+        elites = [deepcopy(ind) for _, ind in fitness_scores[:elitism_count]]
         
-        # Selection
-        parents = select_parents(population, population_costs, population_size - elitism_count)
+        # Tournament selection
+        selected_population = tournament_selection(population, population_costs, tournament_size)
         
         # Crossover and mutation
-        new_population = []
-        for i in range(0, len(parents) - 1, 2):
+        next_population = []
+        mutation_rate = initial_mutation_rate * (1 - iteration / max_iteration)  # Adaptive mutation rate
+        while len(next_population) < population_size - elitism_count:
+            parent1 = random.choice(selected_population)
+            parent2 = random.choice(selected_population)
             if random.random() < crossover_rate:
-                child1, child2 = crossover(parents[i], parents[i+1], N)
+                child = crossover(parent1, parent2, N)
             else:
-                child1, child2 = deepcopy(parents[i]), deepcopy(parents[i+1])
-            new_population.extend([mutate(child1, N, mutation_rate), mutate(child2, N, mutation_rate)])
+                child = deepcopy(parent1)
+            child = mutate(child, N, mutation_rate)
+            next_population.append(child)
         
         # Add elites to the new population
-        population = elites + new_population[:population_size - elitism_count]
-        
-        # Gradually decrease mutation rate as solution improves
-        mutation_rate = max(initial_mutation_rate * (0.99 ** iteration), 0.01)
-        
-        # Early stopping if satisfactory solution found
-        if best_cost <= 1e-3:
-            break
+        population = elites + next_population
     
     duration = time.time() - start_time
     
     return {
         "final_cube": best_cube,
         "final_cost": best_cost,
-        "average_cost": round(sum(costs) / len(costs), 4),
+        "average_cost": round(best_cost / 109, 4),
         "duration": round(duration, 2),
         "iteration": len(costs),
         "population": population_size,
