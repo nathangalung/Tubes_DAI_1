@@ -1,8 +1,29 @@
-import { useEffect, useRef } from "react";
-import { ChevronRight, Zap, RotateCcw, Thermometer, Dna, Box } from "lucide-react";
+import React from "react";
 import Cube from "./Cube";
+import { saveAs } from "file-saver";
 
-export default function Main({ onAlgorithmSelect, initialCube, initialCost, onInitialize, isLoading }) {
+export default function Main({ onAlgorithmSelect, initialCube, initialCost, onInitialize, isLoading, onLoadCube }) {
+  const handleLoadCube = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const loadedCube = JSON.parse(e.target.result);
+        if (loadedCube.magic_cube) {
+          onLoadCube(loadedCube.magic_cube); // Ensure we're passing only the cube data to `onLoadCube`
+        } else {
+          alert("Invalid file format. Please upload a valid cube JSON file.");
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  const handleSaveCube = () => {
+    const blob = new Blob([JSON.stringify({ magic_cube: initialCube })], { type: "application/json" });
+    saveAs(blob, "magic_cube.json");
+  };
+
   return (
     <div className="bg-[#0a0a0a] text-white font-['Space_Grotesk',system-ui,sans-serif]">
       <nav className="fixed top-0 left-0 right-0 bg-[rgba(10,10,10,0.8)] backdrop-blur-[12px] border-b border-[#2d3748] z-50">
@@ -23,24 +44,12 @@ export default function Main({ onAlgorithmSelect, initialCube, initialCost, onIn
                 Visualize, learn, and apply different algorithms tailored to your solving style.
               </p>
               
-              <div className="flex gap-4 justify-center flex-wrap mb-12">
-                <span className="flex items-center gap-2 px-4 py-2 bg-[#111318] border border-[#2d3748] rounded-full text-[#94a3b8] text-sm">
-                  <Box className="w-5 h-5 text-[#8b5cf6]" />3D Visualization
-                </span>
-                <span className="flex items-center gap-2 px-4 py-2 bg-[#111318] border border-[#2d3748] rounded-full text-[#94a3b8] text-sm">
-                  <ChevronRight className="w-5 h-5 text-[#8b5cf6]" />Multiple Algorithms
-                </span>
-                <span className="flex items-center gap-2 px-4 py-2 bg-[#111318] border border-[#2d3748] rounded-full text-[#94a3b8] text-sm">
-                  <Zap className="w-5 h-5 text-[#8b5cf6]" />Real-time Solving
-                </span>
-              </div>
-
               <div className="bg-[#111318] rounded-2xl p-6 max-w-[600px] mx-auto">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-2 h-2 rounded-full bg-[#6366f1]" />
                   <h3 className="font-semibold">Initial State Cube</h3>
                 </div>
-                
+
                 {!initialCube ? (
                   <div className="h-[357px] flex items-center justify-center text-[#94a3b8]">
                     <button 
@@ -54,10 +63,29 @@ export default function Main({ onAlgorithmSelect, initialCube, initialCost, onIn
                 ) : (
                   <>
                     <Cube magic_cube={initialCube} />
-                    <div className="flex justify-between items-center text-sm text-[#94a3b8] mt-4">
-                      <span>
-                        Initial State Cost: <strong>{initialCost}</strong>
-                      </span>
+                    <div className="text-sm text-[#94a3b8] mt-4">
+                      Initial State Cost: <strong>{initialCost}</strong>
+                    </div>
+                    <div className="flex gap-2 mt-4 justify-center">
+                      <input
+                        type="file"
+                        accept="application/json"
+                        onChange={handleLoadCube}
+                        className="hidden"
+                        id="loadCubeInput"
+                      />
+                      <button
+                        onClick={() => document.getElementById("loadCubeInput").click()}
+                        className="bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] text-white px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                      >
+                        Load Cube
+                      </button>
+                      <button
+                        onClick={handleSaveCube}
+                        className="bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] text-white px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                      >
+                        Save Cube
+                      </button>
                       <button 
                         onClick={onInitialize}
                         disabled={isLoading}

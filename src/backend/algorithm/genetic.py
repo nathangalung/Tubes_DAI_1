@@ -4,6 +4,7 @@ import random
 from typing import List, Tuple, Dict
 from copy import deepcopy
 from . import utils
+from multiprocessing import Pool
 
 def crossover(parent1: List[List[List[int]]], parent2: List[List[List[int]]], N: int) -> Tuple[List[List[List[int]]], List[List[List[int]]]]:
     child1 = deepcopy(parent1)
@@ -17,7 +18,7 @@ def crossover(parent1: List[List[List[int]]], parent2: List[List[List[int]]], N:
     
     return child1, child2
 
-def mutate(cube: List[List[List[int]]], N: int, mutation_rate: float = 0.1) -> List[List[List[int]]]:
+def mutate(cube: List[List[List[int]]], N: int, mutation_rate: float) -> List[List[List[int]]]:
     mutated = deepcopy(cube)
     for i in range(N):
         for j in range(N):
@@ -29,85 +30,85 @@ def mutate(cube: List[List[List[int]]], N: int, mutation_rate: float = 0.1) -> L
 def select_parents(population: List[List[List[List[int]]]], costs: List[float], n: int) -> List[List[List[List[int]]]]:
     selected = []
     for _ in range(n):
-        idx1, idx2 = random.sample(range(len(population)), 2)
-        if costs[idx1] < costs[idx2]:
-            selected.append(deepcopy(population[idx1]))
-        else:
-            selected.append(deepcopy(population[idx2]))
+        tournament = random.sample(list(zip(population, costs)), k=3)
+        winner = min(tournament, key=lambda x: x[1])
+        selected.append(deepcopy(winner[0]))
     return selected
+
+def evaluate_population(population: List[List[List[int]]]) -> List[float]:
+    with Pool() as pool:
+        costs = pool.map(utils.objective_function, population)
+    return costs
 
 def genetic_algorithm(
     cube: List[List[List[int]]], 
     population_size: int = 200, 
     max_iteration: int = 1500,
     crossover_rate: float = 0.8,
-    mutation_rate: float = 0.1
+    initial_mutation_rate: float = 0.1,
+    elitism_count: int = 5
 ) -> Dict:
     N = len(cube)
     population = [utils.initialize_random_cube(N) for _ in range(population_size)]
     costs = []
-    costs_population = {} 
+    costs_population = {}
     states = []
-    current_population = 1
     best_cost = float('inf')
     best_cube = None
+    mutation_rate = initial_mutation_rate
     
     start_time = time.time()
     
-    costs_population[f"population_{current_population}"] = []
-    
     for iteration in range(max_iteration):
         # Evaluate population
-        population_costs = [utils.objective_function(ind) for ind in population]
-        current_best = min(population_costs)
-        current_best_idx = population_costs.index(current_best)
+        population_costs = evaluate_population(population)
+        current_best_cost = min(population_costs)
+        current_best_idx = population_costs.index(current_best_cost)
         
-        # Track costs
-        costs.append(current_best)
-        costs_population[f"population_{current_population}"].append(current_best)
+        # Track costs and states
+        costs.append(current_best_cost)
         states.append(deepcopy(population[current_best_idx]))
         
         # Update best solution
-        if current_best < best_cost:
-            best_cost = current_best
+        if current_best_cost < best_cost:
+            best_cost = current_best_cost
             best_cube = deepcopy(population[current_best_idx])
         
-        # Selection
-        parents = select_parents(population, population_costs, population_size)
+        # Elitism: preserve top elitism_count individuals
+        sorted_population = sorted(zip(population, population_costs), key=lambda x: x[1])
+        elites = [deepcopy(ind) for ind, _ in sorted_population[:elitism_count]]
         
-        # Crossover
+        # Selection
+        parents = select_parents(population, population_costs, population_size - elitism_count)
+        
+        # Crossover and mutation
         new_population = []
-        for i in range(0, population_size-1, 2):
+        for i in range(0, len(parents) - 1, 2):
             if random.random() < crossover_rate:
                 child1, child2 = crossover(parents[i], parents[i+1], N)
-                new_population.extend([child1, child2])
             else:
-                new_population.extend([parents[i], parents[i+1]])
+                child1, child2 = deepcopy(parents[i]), deepcopy(parents[i+1])
+            new_population.extend([mutate(child1, N, mutation_rate), mutate(child2, N, mutation_rate)])
         
-        # Mutation
-        for i in range(len(new_population)):
-            new_population[i] = mutate(new_population[i], N, mutation_rate)
+        # Add elites to the new population
+        population = elites + new_population[:population_size - elitism_count]
         
-        population = new_population
+        # Gradually decrease mutation rate as solution improves
+        mutation_rate = max(initial_mutation_rate * (0.99 ** iteration), 0.01)
         
-        # Check if we should start new population
-        if iteration > 0 and iteration % (max_iteration // population_size) == 0:
-            current_population += 1
-            costs_population[f"population_{current_population}"] = []
-        
+        # Early stopping if satisfactory solution found
         if best_cost <= 1e-3:
             break
     
     duration = time.time() - start_time
-    print(f"Duration: {duration}")
     
     return {
         "final_cube": best_cube,
         "final_cost": best_cost,
-        "average_cost": round(best_cost/109, 4),
+        "average_cost": round(sum(costs) / len(costs), 4),
         "duration": round(duration, 2),
         "iteration": len(costs),
         "population": population_size,
         "costs": costs,
-        "states": states
+        "states": states,
     }

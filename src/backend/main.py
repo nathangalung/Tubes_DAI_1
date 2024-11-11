@@ -1,9 +1,13 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from algorithm import (
+import os
+import json
+from algorithm.utils import (
     initialize_random_cube,
-    objective_function,
+    objective_function
+)
+from algorithm import (
     steepest_ascent_algorithm,
     sideways_move_algorithm,
     stochastic_algorithm,
@@ -23,6 +27,9 @@ app.add_middleware(
 )
 
 N = 5
+SAVE_DIR = "./cube"
+if not os.path.exists(SAVE_DIR):
+    os.makedirs(SAVE_DIR)
 
 class CubeInitResponse(BaseModel):
     initial_cube: list
@@ -38,13 +45,23 @@ class AlgorithmResponse(BaseModel):
     average_cost: float
     duration: float
     iteration: int
-    restart: int | None = None  # Keep other optionals
+    restart: int | None = None
     iteration_restart: list | None = None
-    local_optima: int | None = None  # Make optional
+    local_optima: int | None = None
     population: int | None = None
     costs: list
     states: list
-    exps: list | None = None  # Make optional
+    exps: list | None = None
+
+class CubeData(BaseModel):
+    file_name: str
+    cube: list
+
+class CubeCostRequest(BaseModel):
+    cube: list
+
+class CubeCostResponse(BaseModel):
+    cost: int
 
 algorithm_map = {
     'steepest': steepest_ascent_algorithm,
@@ -72,11 +89,6 @@ async def run_algorithm(request: AlgorithmRequest):
 
     try:
         result = algorithm_function(request.cube)
-        
-        # Print the entire result dictionary for debugging
-        print("Algorithm running completed")
-
-        # Return with default None for optional fields if they are missing
         return {
             "final_cube": result.get("final_cube"),
             "final_cost": result.get("final_cost"),
@@ -89,8 +101,40 @@ async def run_algorithm(request: AlgorithmRequest):
             "population": result.get("population", None),
             "costs": result.get("costs"),
             "states": result.get("states"),
-            "exps": result.get("exps", None)  # Default to None if 'exps' key is missing
+            "exps": result.get("exps", None)
         }
     except Exception as e:
-        print(f"Error in algorithm execution: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/calculate_cost", response_model=CubeCostResponse)
+async def calculate_cost(request: CubeCostRequest):
+    try:
+        cost = objective_function(request.cube)
+        return {"cost": cost}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/save_cube")
+async def save_cube(cube_data: CubeData):
+    file_path = os.path.join(SAVE_DIR, f"{cube_data.file_name}.json")
+    with open(file_path, "w") as file:
+        json.dump({"magic_cube": cube_data.cube}, file)  # Save with "magic_cube" key
+    return {"message": "Cube saved successfully"}
+
+@app.post("/load_cube", response_model=CubeInitResponse)
+async def load_cube(file: UploadFile = File(...)):
+    try:
+        content = await file.read()
+        data = json.loads(content)
+        magic_cube = data.get("magic_cube")
+        if not magic_cube or not isinstance(magic_cube, list):
+            raise HTTPException(status_code=400, detail="Invalid cube format")
+
+        # Check if the loaded cube meets the magic cube objective
+        cost = objective_function(magic_cube)
+        return {
+            "initial_cube": magic_cube,
+            "initial_cost": cost
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to load cube: {str(e)}")

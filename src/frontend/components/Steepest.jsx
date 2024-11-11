@@ -4,7 +4,7 @@ import Cube from "./Cube";
 import Chart from './Chart';
 import Player from './Player';
 
-export default function GeneticAlgorithmVisualization({
+export default function SteepestAscentVisualization({
   initialCube,
   finalCube,
   initialCost,
@@ -12,7 +12,6 @@ export default function GeneticAlgorithmVisualization({
   averageCost,
   duration,
   iteration,
-  population,
   costs,
   states
 }) {
@@ -30,14 +29,14 @@ export default function GeneticAlgorithmVisualization({
         </a>
 
         <div className="max-w-[1200px] mx-auto">
-          <h1 className="text-4xl font-bold mb-2">Genetic Algorithm</h1>
-          <p className="text-[#94a3b8] mb-8">Discover how evolutionary processes guide the search for the optimal Magic Cube configuration.</p>
+          <h1 className="text-4xl font-bold mb-2">Steepest Ascent Hill-climbing Algorithm</h1>
+          <p className="text-[#94a3b8] mb-8">Visualize the optimal gradient-based solution approach for solving the Magic Cube.</p>
 
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_300px] gap-6 mb-8">
             <div className="bg-[#16181d] p-10 rounded-lg flex flex-col items-center text-center">
               <h2 className="text-xl font-semibold mb-2">Initial State Cube</h2>
               <div className="w-full max-w-[400px] h-[400px] bg-[#1a1d24] rounded-lg overflow-hidden flex items-center justify-center">
-                <Cube magic_cube={JSON.parse(JSON.stringify(initialCube))} />
+              <Cube magic_cube={JSON.parse(JSON.stringify(initialCube))} />
               </div>
               <div className="text-sm text-[#94a3b8] mt-2">
                 Initial State Cost: {initialCost}
@@ -55,11 +54,9 @@ export default function GeneticAlgorithmVisualization({
             </div>
 
             <div className="flex flex-col gap-4">
-              {[
-                { label: "Average Cost", value: `${averageCost}` },
-                { label: "Duration", value: `${duration}s` },
-                { label: "Number of Iteration", value: iteration },
-                { label: "Population", value: population }
+              {[{ label: "Average Cost", value: `${averageCost}s` },
+                { label: "Duration", value: `${duration}` },
+                { label: "Number of Iteration", value: iteration }
               ].map((metric, index) => (
                 <div key={index} className="bg-[#16181d] rounded-lg p-2 w-[185px]">
                   <div className="text-sm text-[#94a3b8] mb-1">{metric.label}</div>
@@ -77,19 +74,17 @@ export default function GeneticAlgorithmVisualization({
 
           <div className="bg-[#16181d] rounded-xl p-6">
             <Chart 
-                costs={costs} 
-                title="Genetic Objective Function vs Iteration Plot" 
-              />
+              costs={costs} 
+              title="Steepest Ascent Objective Function vs Iteration Plot" 
+            />
           </div>
         </div>
       </div>
-
+      
       {isPlayerOpen && (
         <Player
           onClose={() => setIsPlayerOpen(false)}
           states={states}
-          iteration={iteration}
-          population={population}
         />
       )}
     </div>

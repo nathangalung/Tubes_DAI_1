@@ -9,48 +9,61 @@ export default function Player({
   states,
   playbackSpeeds = [0.5, 1, 2, 4],
   iteration,
-  population = null,
   restart = null,
+  population = null,
+  iterationRestart = [], // Array containing iteration thresholds for each restart
 }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [elapsedTime, setElapsedTime] = useState(0); // Track time in seconds
   const requestRef = useRef(null);
-  
+  const [restartCount, setRestartCount] = useState(0); // Initialize restart count
+
   const maxIterations = Math.min(states.length, 10000);
-  const totalDuration = (maxIterations / 10000) * 1000; // Adjust total duration based on the number of states
-  const stateDuration = 1000 / 10000; // 0.1 seconds per state at 1x speed
+  const totalDuration = (maxIterations / 10000) * 1000;
+  const stateDuration = 1000 / 10000;
 
   // Calculate the current state index based on elapsedTime and playbackSpeed
   const currentCubeStateIndex = Math.min(
     Math.floor(elapsedTime / (stateDuration / playbackSpeed)),
     maxIterations - 1
   );
+
   const currentCubeState = states[currentCubeStateIndex];
+
+  useEffect(() => {
+    // Check if currentCubeStateIndex has crossed the next threshold in iterationRestart
+    if (iterationRestart.length > 0 && currentCubeStateIndex >= iterationRestart[0]) {
+      setRestartCount((prev) => prev + 1);
+      iterationRestart.shift(); // Remove the first element as it’s reached
+    }
+  }, [currentCubeStateIndex, iterationRestart]);
 
   const handlePlayPause = () => {
     setIsPlaying((prev) => !prev);
+  };
+
+  const handleProgressChange = (e) => {
+    const newElapsedTime = parseFloat(e.target.value) * totalDuration / 100;
+    setElapsedTime(newElapsedTime);
   };
 
   const handleSpeedChange = (speed) => {
     setPlaybackSpeed(speed);
   };
 
-  // Update elapsedTime and handle playback
-  const animateProgress = (timestamp) => {
-    requestRef.current = requestAnimationFrame(animateProgress);
-    setElapsedTime((prevElapsedTime) => {
-      const newElapsedTime = prevElapsedTime + 0.0167 * playbackSpeed; // 0.0167 ~ 1 frame at 60fps
+  const animateProgress = () => {
+    setElapsedTime((prev) => {
+      const newElapsedTime = prev + playbackSpeed * 0.1;
       if (newElapsedTime >= totalDuration) {
         setIsPlaying(false);
-        cancelAnimationFrame(requestRef.current);
         return totalDuration;
       }
       return newElapsedTime;
     });
+    requestRef.current = requestAnimationFrame(animateProgress);
   };
 
-  // Start or stop animation
   useEffect(() => {
     if (isPlaying) {
       requestRef.current = requestAnimationFrame(animateProgress);
@@ -58,13 +71,6 @@ export default function Player({
       cancelAnimationFrame(requestRef.current);
     }
     return () => cancelAnimationFrame(requestRef.current);
-  }, [isPlaying, playbackSpeed]);
-
-  // Reset elapsedTime when playback is stopped or speed is changed
-  useEffect(() => {
-    if (!isPlaying) {
-      setElapsedTime(0); // Reset time if playback is paused or stopped
-    }
   }, [isPlaying, playbackSpeed]);
 
   return (
@@ -78,19 +84,19 @@ export default function Player({
         </button>
 
         <div className="relative w-full h-[400px] bg-[#1a1d24] rounded-lg flex justify-center items-center overflow-hidden mb-4">
-          <MemoizedCube magic_cube={currentCubeState} fetchCubeData={false} />
+          <MemoizedCube key={`player-cube-${currentCubeStateIndex}`} magic_cube={currentCubeState} />
         </div>
 
         <input
           type="range"
           min="0"
-          max={totalDuration}
-          value={elapsedTime}
-          onChange={(e) => setElapsedTime(Number(e.target.value))}
-          className="w-full mb-4"
+          max="100"
+          value={(elapsedTime / totalDuration) * 100}
+          onChange={handleProgressChange}
+          className="w-full mb-2"
         />
 
-        <div className="flex items-center justify-center gap-4 mt-2 mb-4">
+        <div className="flex items-center justify-center gap-4 mt-4">
           <button
             onClick={handlePlayPause}
             className="p-3 bg-[#8b5cf6] rounded-full text-white hover:bg-[#7a4bd1] transition"
@@ -111,24 +117,17 @@ export default function Player({
           ))}
         </div>
 
-        {/* Display time and iteration with improved spacing and formatting */}
-        <div className="flex justify-between w-full px-6 text-white text-sm">
-          <div>
-            Time: {elapsedTime.toFixed(2)}s / {totalDuration.toFixed(2)}s
-          </div>
-          <div>
-            Iteration: {currentCubeStateIndex}
-          </div>
+        <div className="absolute bottom-4 left-4 text-white text-sm">
+          Iteration: {currentCubeStateIndex}
         </div>
-
         {population !== null && (
           <div className="absolute bottom-4 right-4 text-white text-sm">
             Population: {population}
           </div>
         )}
         {restart !== null && (
-          <div className="absolute bottom-4 right-16 text-white text-sm">
-            Restart: {restart}
+          <div className="absolute bottom-4 right-4 text-white text-sm">
+            Restart: {restartCount}
           </div>
         )}
       </div>

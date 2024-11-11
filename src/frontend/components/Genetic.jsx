@@ -4,7 +4,7 @@ import Cube from "./Cube";
 import Chart from './Chart';
 import Player from './Player';
 
-export default function SimulatedAnnealingVisualization({
+export default function GeneticAlgorithmVisualization({
   initialCube,
   finalCube,
   initialCost,
@@ -12,10 +12,9 @@ export default function SimulatedAnnealingVisualization({
   averageCost,
   duration,
   iteration,
-  localOptima,
+  population,
   costs,
-  states,
-  exps
+  states
 }) {
   const [isPlayerOpen, setIsPlayerOpen] = useState(false);
 
@@ -31,14 +30,14 @@ export default function SimulatedAnnealingVisualization({
         </a>
 
         <div className="max-w-[1200px] mx-auto">
-          <h1 className="text-4xl font-bold mb-2">Simulated Annealing Algorithm</h1>
-          <p className="text-[#94a3b8] mb-8">Experience the temperature-based probabilistic approach to finding a Magic Cube solution.</p>
+          <h1 className="text-4xl font-bold mb-2">Genetic Algorithm</h1>
+          <p className="text-[#94a3b8] mb-8">Discover how evolutionary processes guide the search for the optimal Magic Cube configuration.</p>
 
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_300px] gap-6 mb-8">
             <div className="bg-[#16181d] p-10 rounded-lg flex flex-col items-center text-center">
               <h2 className="text-xl font-semibold mb-2">Initial State Cube</h2>
               <div className="w-full max-w-[400px] h-[400px] bg-[#1a1d24] rounded-lg overflow-hidden flex items-center justify-center">
-                <Cube magic_cube={initialCube} />
+                <Cube magic_cube={JSON.parse(JSON.stringify(initialCube))} />
               </div>
               <div className="text-sm text-[#94a3b8] mt-2">
                 Initial State Cost: {initialCost}
@@ -48,7 +47,7 @@ export default function SimulatedAnnealingVisualization({
             <div className="bg-[#16181d] p-10 rounded-lg flex flex-col items-center text-center">
               <h2 className="text-xl font-semibold mb-2">Final State Cube</h2>
               <div className="w-full max-w-[400px] h-[400px] bg-[#1a1d24] rounded-lg overflow-hidden flex items-center justify-center">
-                <Cube magic_cube={finalCube} />
+                <Cube magic_cube={JSON.parse(JSON.stringify(finalCube))} />
               </div>
               <div className="text-sm text-[#94a3b8] mt-2">
                 Final State Cost: {finalCost}
@@ -60,7 +59,7 @@ export default function SimulatedAnnealingVisualization({
                 { label: "Average Cost", value: `${averageCost}` },
                 { label: "Duration", value: `${duration}s` },
                 { label: "Number of Iteration", value: iteration },
-                { label: "Number of Stuck in Local Optima", value: localOptima }
+                { label: "Population", value: population }
               ].map((metric, index) => (
                 <div key={index} className="bg-[#16181d] rounded-lg p-2 w-[185px]">
                   <div className="text-sm text-[#94a3b8] mb-1">{metric.label}</div>
@@ -76,18 +75,10 @@ export default function SimulatedAnnealingVisualization({
             </div>
           </div>
 
-          <div className="bg-[#16181d] rounded-lg p-6">
+          <div className="bg-[#16181d] rounded-xl p-6">
             <Chart 
-              costs={costs} 
-              title="Simulated Annealing Objective Function vs Iteration Plot" 
-            />
-          </div>
-
-          <div className="bg-[#16181d] rounded-lg p-6">
-            <Chart 
-                costs={exps} 
-                title="Simulated Annealing Acceptance Probability vs Iteration Plot" 
-                useIterationInterval={true}
+                costs={costs} 
+                title="Genetic Objective Function vs Iteration Plot" 
               />
           </div>
         </div>
@@ -97,8 +88,7 @@ export default function SimulatedAnnealingVisualization({
         <Player
           onClose={() => setIsPlayerOpen(false)}
           states={states}
-          iteration={iteration}
-          localOptima={localOptima}
+          population={population}
         />
       )}
     </div>

@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { ArrowLeft, RotateCcw } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Cube from "./Cube";
 import Chart from './Chart';
 import Player from './Player';
 
-export default function RandomRestartVisualization({
+export default function SidewaysMoveVisualization({
   initialCube,
   finalCube,
   initialCost,
@@ -12,13 +12,10 @@ export default function RandomRestartVisualization({
   averageCost,
   duration,
   iteration,
-  restart,
-  iterationRestart,
   costs,
   states
 }) {
   const [isPlayerOpen, setIsPlayerOpen] = useState(false);
-  const displayIterations = iterationRestart.slice(0, 10);
 
   return (
     <div className="bg-[#0a0a0a] text-white font-['Space_Grotesk',system-ui,sans-serif] min-h-screen p-8 overflow-hidden">
@@ -32,8 +29,8 @@ export default function RandomRestartVisualization({
         </a>
 
         <div className="max-w-[1200px] mx-auto">
-          <h1 className="text-4xl font-bold mb-2">Random Restart Hill-Climbing Algorithm</h1>
-          <p className="text-[#94a3b8] mb-8">Explore multiple randomized restarts to escape local optima and solve the Magic Cube.</p>
+          <h1 className="text-4xl font-bold mb-2">Sideways Move Hill-Climbing Algorithm</h1>
+          <p className="text-[#94a3b8] mb-8">Observe how allowing sideways moves improves the search process for the Magic Cube solution.</p>
 
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_300px] gap-6 mb-8">
             <div className="bg-[#16181d] p-10 rounded-lg flex flex-col items-center text-center">
@@ -61,7 +58,6 @@ export default function RandomRestartVisualization({
                 { label: "Average Cost", value: `${averageCost}` },
                 { label: "Duration", value: `${duration}s` },
                 { label: "Number of Iteration", value: iteration },
-                { label: 'Number of Restart', value: restart }
               ].map((metric, index) => (
                 <div key={index} className="bg-[#16181d] rounded-lg p-2 w-[185px]">
                   <div className="text-sm text-[#94a3b8] mb-1">{metric.label}</div>
@@ -77,32 +73,10 @@ export default function RandomRestartVisualization({
             </div>
           </div>
 
-          <div className="bg-[#16181d] p-8 rounded-lg mb-6">
-            <h2 className="text-xl text-gray-400 font-semibold text-center mb-8">
-              Number of Iteration per Restart
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-10 gap-4">
-              {displayIterations.map((value, index) => (
-                <div
-                  key={index}
-                  className="flex flex-col items-center p-4 bg-[#1a1d24]/60 rounded-lg backdrop-blur-xl transition-transform hover:-translate-y-1"
-                >
-                  <div className="w-12 h-12 bg-[#16181d] rounded-xl flex items-center justify-center mb-4">
-                    <RotateCcw className="w-6 h-6" />
-                  </div>
-                  <div className="text-center">
-                    <div className="text-sm text-gray-400 mb-1">Restart {index + 1}</div>
-                    <div className="text-xl font-bold">{value}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="bg-[#16181d] p-6 rounded-lg">
+          <div className="bg-[#16181d] rounded-xl p-6">
             <Chart 
               costs={costs} 
-              title="Random Restart Objective Function vs Iteration Plot" 
+              title="Sideways Move Objective Function vs Iteration Plot" 
             />
           </div>
         </div>
@@ -112,8 +86,6 @@ export default function RandomRestartVisualization({
         <Player
           onClose={() => setIsPlayerOpen(false)}
           states={states}
-          iteration={iteration}
-          restart={restart}
         />
       )}
     </div>

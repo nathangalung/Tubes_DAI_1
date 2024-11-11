@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
-import Main from "./components/Main";
-import Steepest from "./components/Steepest";
-import Sideways from "./components/Sideways";
-import Stochastic from "./components/Stochastic";
-import Random from "./components/Random";
-import Simulated from "./components/Simulated";
-import Genetic from "./components/Genetic";
+import React, { useState } from "react";
+import Main from "../components/Main";
+import Steepest from "../components/Steepest";
+import Sideways from "../components/Sideways";
+import Stochastic from "../components/Stochastic";
+import Random from "../components/Random";
+import Simulated from "../components/Simulated";
+import Genetic from "../components/Genetic";
 
 const API_URL = 'http://localhost:8000';
 
@@ -48,6 +48,27 @@ const App = () => {
       localStorage.setItem('initialCost', JSON.stringify(data.initial_cost));
     } catch (error) {
       console.error("Failed to fetch initial cube:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onLoadCube = async (loadedCube) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/calculate_cost`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cube: loadedCube })
+      });
+      if (!response.ok) throw new Error('Failed to calculate cost');
+      const data = await response.json();
+      setInitialCube(loadedCube);
+      setInitialCost(data.cost);
+      localStorage.setItem('initialCube', JSON.stringify(loadedCube));
+      localStorage.setItem('initialCost', JSON.stringify(data.cost));
+    } catch (error) {
+      console.error("Failed to calculate cost:", error);
     } finally {
       setIsLoading(false);
     }
@@ -138,6 +159,7 @@ const App = () => {
           initialCube={initialCube}
           initialCost={initialCost}
           onInitialize={fetchInitialCube}
+          onLoadCube={onLoadCube}
           isLoading={isLoading}
         />
       ) : (
