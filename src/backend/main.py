@@ -118,7 +118,7 @@ async def calculate_cost(request: CubeCostRequest):
 async def save_cube(cube_data: CubeData):
     file_path = os.path.join(SAVE_DIR, f"{cube_data.file_name}.json")
     with open(file_path, "w") as file:
-        json.dump({"magic_cube": cube_data.cube}, file)  # Save with "magic_cube" key
+        json.dump({"magic_cube": cube_data.cube}, file)
     return {"message": "Cube saved successfully"}
 
 @app.post("/load_cube", response_model=CubeInitResponse)
