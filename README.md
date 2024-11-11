@@ -1,16 +1,16 @@
 # Tubes_DAI_1
-Magic cube solver adalah website ditunjukkan untuk menyelesaikan permasalahan magic cube. Penyelesaian masalah magic cube menggunakan pendekatan algoritma local search berupa, steepest ascent, sideways move, stochastic, random restart, simulated annealing, dan genetic. 
+Magic cube solver adalah website yang ditunjukkan untuk menyelesaikan permasalahan magic cube. Penyelesaian masalah magic cube menggunakan pendekatan algoritma local search berupa, steepest ascent, sideways move, stochastic, random restart, simulated annealing, dan genetic. 
 
 Repository utama terbagi menjadi dua yaitu bagian folder backend yang berisi seluruh algoritma serta cube dan frontend yang berisi algoritma tampilan website.
 
 **Instalasi**
 - frontend
-npm install chart.js react-chartjs-2 axios file-saver vite fastapi
-npm run dev
+1. npm install chart.js react-chartjs-2 axios file-saver vite fastapi
+2. npm run dev
 
 - backend
-uv sync
-uv run fastapi dev
+1. uv sync
+2. uv run fastapi dev
 
 **Cara Run Program**
 1. Buka path program backend
