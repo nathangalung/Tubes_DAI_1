@@ -1,3 +1,4 @@
+import copy
 import time
 import random
 from typing import Tuple, List
@@ -44,7 +45,8 @@ def sideways_move_algorithm(cube: List[List[List[int]]], max_sideways: int = 10)
     N = len(cube)
     current_cost = utils.objective_function(cube) 
     best_cost = current_cost
-    costs = [current_cost]
+    costs = []
+    states = []
     iteration = 0
     sideways = 0
 
@@ -80,6 +82,7 @@ def sideways_move_algorithm(cube: List[List[List[int]]], max_sideways: int = 10)
                 break
                 
         costs.append(best_cost)
+        states.append(copy.deepcopy(cube))
         iteration += 1
     
     # Calculate total duration
@@ -90,6 +93,7 @@ def sideways_move_algorithm(cube: List[List[List[int]]], max_sideways: int = 10)
         "final_cost": best_cost,
         "average_cost": round(best_cost/109, 4),
         "duration": round(duration, 2),
-        "iteration": iteration,
-        "costs": costs
+        "iteration": len(costs),
+        "costs": costs,
+        "states": states
     }

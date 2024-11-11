@@ -1,3 +1,4 @@
+import copy
 import time
 import math
 import random
@@ -45,6 +46,7 @@ def simulated_annealing_algorithm(cube: List[List[List[int]]], T_max: float = 10
 
     costs = []
     exps = []
+    states = []
 
     # Start the timer
     start_time = time.time()
@@ -78,6 +80,7 @@ def simulated_annealing_algorithm(cube: List[List[List[int]]], T_max: float = 10
 
         temperature *= cooling_rate # Decrease the temperature
         costs.append(current_cost)
+        states.append(copy.deepcopy(cube))
 
         # Record acceptance probability every 200 iteration
         if iteration % 200 == 0:
@@ -97,5 +100,6 @@ def simulated_annealing_algorithm(cube: List[List[List[int]]], T_max: float = 10
         "iteration": len(costs),
         "local_optima": local_optima,
         "costs": costs,
-        "exps": exps
+        "exps": exps,
+        "states": states
     }

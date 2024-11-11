@@ -1,3 +1,4 @@
+import copy
 import time
 import random
 from typing import List, Tuple, Dict
@@ -44,8 +45,9 @@ def genetic_algorithm(
 ) -> Dict:
     N = len(cube)
     population = [utils.initialize_random_cube(N) for _ in range(population_size)]
-    costs = []  # Track all costs across iteration
-    costs_population = {}  # Track costs per population
+    costs = []
+    costs_population = {} 
+    states = []
     current_population = 1
     best_cost = float('inf')
     best_cube = None
@@ -63,6 +65,7 @@ def genetic_algorithm(
         # Track costs
         costs.append(current_best)
         costs_population[f"population_{current_population}"].append(current_best)
+        states.append(deepcopy(population[current_best_idx]))
         
         # Update best solution
         if current_best < best_cost:
@@ -105,5 +108,6 @@ def genetic_algorithm(
         "duration": round(duration, 2),
         "iteration": len(costs),
         "population": population_size,
-        "costs": costs
+        "costs": costs,
+        "states": states
     }

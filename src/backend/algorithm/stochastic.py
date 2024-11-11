@@ -1,3 +1,4 @@
+import copy
 import time
 import random
 from typing import List, Tuple
@@ -29,6 +30,7 @@ def stochastic_algorithm(cube: List[List[List[int]]]) -> dict:
     current_cost = utils.objective_function(cube)
     best_cost = current_cost
     costs = []
+    states = []
     max_iteration = 10000
     iteration = 0
 
@@ -59,6 +61,7 @@ def stochastic_algorithm(cube: List[List[List[int]]]) -> dict:
             cube[i1][j1][k1], cube[i2][j2][k2] = cube[i2][j2][k2], cube[i1][j1][k1]
 
         costs.append(current_cost)
+        states.append(copy.deepcopy(cube))
         iteration += 1
 
     duration = time.time() - start_time
@@ -69,5 +72,6 @@ def stochastic_algorithm(cube: List[List[List[int]]]) -> dict:
         "average_cost": round(best_cost/109, 4),
         "duration": round(duration, 2),
         "iteration": len(costs),
-        "costs": costs
+        "costs": costs,
+        "states": states
     }

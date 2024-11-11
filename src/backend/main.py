@@ -43,6 +43,7 @@ class AlgorithmResponse(BaseModel):
     local_optima: int | None = None  # Make optional
     population: int | None = None
     costs: list
+    states: list
     exps: list | None = None  # Make optional
 
 algorithm_map = {
@@ -87,6 +88,7 @@ async def run_algorithm(request: AlgorithmRequest):
             "local_optima": result.get("local_optima", None),
             "population": result.get("population", None),
             "costs": result.get("costs"),
+            "states": result.get("states"),
             "exps": result.get("exps", None)  # Default to None if 'exps' key is missing
         }
     except Exception as e:

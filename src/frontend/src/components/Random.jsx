@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { ArrowLeft, RotateCcw } from "lucide-react";
 import Cube from "./Cube";
 import Chart from './Chart';
+import Player from './Player';
 
 export default function RandomRestartVisualization({
   initialCube,
@@ -12,9 +14,10 @@ export default function RandomRestartVisualization({
   iteration,
   restart,
   iterationRestart,
-  costs
+  costs,
+  states
 }) {
-  
+  const [isPlayerOpen, setIsPlayerOpen] = useState(false);
   const displayIterations = iterationRestart.slice(0, 10);
 
   return (
@@ -36,7 +39,7 @@ export default function RandomRestartVisualization({
             <div className="bg-[#16181d] p-10 rounded-lg flex flex-col items-center text-center">
               <h2 className="text-xl font-semibold mb-2">Initial State Cube</h2>
               <div className="w-full max-w-[400px] h-[400px] bg-[#1a1d24] rounded-lg overflow-hidden flex items-center justify-center">
-                <Cube magic_cube={initialCube} />
+                <Cube magic_cube={JSON.parse(JSON.stringify(initialCube))} />
               </div>
               <div className="text-sm text-[#94a3b8] mt-2">
                 Initial State Cost: {initialCost}
@@ -46,7 +49,7 @@ export default function RandomRestartVisualization({
             <div className="bg-[#16181d] p-10 rounded-lg flex flex-col items-center text-center">
               <h2 className="text-xl font-semibold mb-2">Final State Cube</h2>
               <div className="w-full max-w-[400px] h-[400px] bg-[#1a1d24] rounded-lg overflow-hidden flex items-center justify-center">
-                <Cube magic_cube={finalCube} />
+                <Cube magic_cube={JSON.parse(JSON.stringify(finalCube))} />
               </div>
               <div className="text-sm text-[#94a3b8] mt-2">
                 Final State Cost: {finalCost}
@@ -65,6 +68,12 @@ export default function RandomRestartVisualization({
                   <div className="text-2xl font-semibold text-[#8b5cf6]">{metric.value}</div>
                 </div>
               ))}
+              <button
+                onClick={() => setIsPlayerOpen(true)}
+                className="mt-4 bg-[#8b5cf6] text-white rounded-lg py-2 px-4 hover:bg-[#7a4bd1] transition w-[185px]"
+              >
+                Replay
+              </button>
             </div>
           </div>
 
@@ -98,6 +107,15 @@ export default function RandomRestartVisualization({
           </div>
         </div>
       </div>
+
+      {isPlayerOpen && (
+        <Player
+          onClose={() => setIsPlayerOpen(false)}
+          states={states}
+          iteration={iteration}
+          restart={restart}
+        />
+      )}
     </div>
   );
-}
+};

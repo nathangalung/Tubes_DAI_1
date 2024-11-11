@@ -1,3 +1,5 @@
+
+import copy
 import random
 import time
 from typing import List, Tuple
@@ -16,6 +18,7 @@ def steepest_ascent_algorithm(cube):
     current_cost = utils.objective_function(cube)
     best_cost = current_cost
     costs = []
+    states = []
     
     #membuat daftar semua pasangan
     all_positions = [(i//(N*N), (i//N)%N, i%N) for i in range(N*N*N)]
@@ -36,6 +39,7 @@ def steepest_ascent_algorithm(cube):
             if new_cost < best_cost:
                 best_cost = new_cost
                 costs.append(best_cost)
+                states.append(copy.deepcopy(cube))
                 found_improvement = True
                 break 
             else:
@@ -53,5 +57,6 @@ def steepest_ascent_algorithm(cube):
         "average_cost": round(best_cost/109, 4),
         "duration": round(duration, 2),
         "iteration": len(costs),
-        "costs": costs
+        "costs": costs,
+        "states": states
     }

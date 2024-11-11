@@ -29,6 +29,7 @@ const App = () => {
   const [iterationRestart, setIterationRestart] = useState([]);
   const [population, setPopulation] = useState(null);
   const [costs, setCosts] = useState([]);
+  const [states, setStates] = useState([]);
   const [exps, setExps] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -73,6 +74,7 @@ const App = () => {
       setDuration(result.duration);
       setIteration(result.iteration);
       setCosts(result.costs);
+      setStates(result.states);
       if (algorithmType === 'random') {
         setRestart(result.restart);
         setIterationRestart(result.iteration_restart);
@@ -106,6 +108,7 @@ const App = () => {
       duration,
       iteration,
       costs,
+      states,
       onBack: handleBack,
       isLoading
     };

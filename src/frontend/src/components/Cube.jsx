@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import axios from "axios";
 
 function createNumberTexture(number) {
   const size = 128;
@@ -10,11 +11,8 @@ function createNumberTexture(number) {
   const context = canvas.getContext("2d");
   if (!context) return null;
 
-  // Set background to white for the number texture
   context.fillStyle = "#FFFFFF";
   context.fillRect(0, 0, size, size);
-
-  // Set text color to black
   context.fillStyle = "#000000";
   context.font = "bold 70px Arial";
   context.textAlign = "center";
@@ -23,29 +21,46 @@ function createNumberTexture(number) {
   return new THREE.CanvasTexture(canvas);
 }
 
-const Cube = ({ magic_cube }) => {
+const Cube = ({ magic_cube, fetchCubeData }) => {
   const rendererRef = useRef(null);
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
   const containerRef = useRef(null);
   const controlsRef = useRef(null);
   const texturesRef = useRef([]);
+  const parentCubeRef = useRef(null);
+  const [cubeData, setCubeData] = useState(magic_cube);
+  const [initialized, setInitialized] = useState(false);
 
-  // Sesuaikan posisi awal kamera agar seluruh kubus terlihat jelas
   const initialCameraPosition = new THREE.Vector3(0, 0, 10);
 
+  // Fetch initial cube data when component mounts
+  useEffect(() => {
+    const fetchInitialCube = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/initialize_cube");
+        setCubeData(response.data.initial_cube); // Set cube data from backend
+      } catch (error) {
+        console.error("Error fetching initial cube data:", error);
+      }
+    };
+
+    if (fetchCubeData) {
+      fetchInitialCube();
+    } else {
+      setCubeData(magic_cube);
+    }
+  }, [fetchCubeData, magic_cube]);
+
+  // Initialize scene and camera only once
   useEffect(() => {
     const scene = new THREE.Scene();
-    scene.background = null; // Transparent background
+    scene.background = null;
     sceneRef.current = scene;
 
-    const w = window.innerWidth / 2.5; // Sesuaikan ukuran frame
+    const w = window.innerWidth / 2.5;
     const h = window.innerHeight / 2;
-    const renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      alpha: true, // Enable transparency
-    });
-    renderer.setClearColor(0x000000, 0); // Transparent renderer
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(w, h);
     rendererRef.current = renderer;
 
@@ -62,42 +77,10 @@ const Cube = ({ magic_cube }) => {
       containerRef.current.appendChild(renderer.domElement);
     }
 
-    const cubeSize = 0.75;
-    const spacing = 1.7;
+    parentCubeRef.current = new THREE.Group();
+    scene.add(parentCubeRef.current);
 
-    const parentCube = new THREE.Group();
-
-    for (let x = 0; x < 5; x++) {
-      for (let y = 0; y < 5; y++) {
-        for (let z = 0; z < 5; z++) {
-          const number = magic_cube[x][y][z];
-          const texture = createNumberTexture(number);
-          texturesRef.current.push(texture);
-
-          const materials = Array(6).fill(
-            new THREE.MeshBasicMaterial({
-              color: 0xffffff, // Set cube face color to white
-              map: texture,
-            })
-          );
-
-          const smallCube = new THREE.Mesh(
-            new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize),
-            materials
-          );
-
-          smallCube.position.set(
-            (x - 2) * spacing,
-            (y - 2) * spacing,
-            (z - 2) * spacing
-          );
-
-          parentCube.add(smallCube);
-        }
-      }
-    }
-
-    scene.add(parentCube);
+    setInitialized(true);
 
     const animate = () => {
       requestAnimationFrame(animate);
@@ -108,7 +91,6 @@ const Cube = ({ magic_cube }) => {
 
     return () => {
       renderer.dispose();
-      texturesRef.current.forEach((texture) => texture.dispose());
       scene.traverse((object) => {
         if (object instanceof THREE.Mesh) {
           object.geometry.dispose();
@@ -123,7 +105,39 @@ const Cube = ({ magic_cube }) => {
         containerRef.current.removeChild(renderer.domElement);
       }
     };
-  }, [magic_cube]);
+  }, []);
+
+  useEffect(() => {
+    if (!initialized || !cubeData) return;
+
+    const cubeSize = 0.75;
+    const spacing = 1.7;
+
+    cubeData.forEach((plane, x) => {
+      plane.forEach((row, y) => {
+        row.forEach((number, z) => {
+          const texture = createNumberTexture(number);
+          const materials = Array(6).fill(
+            new THREE.MeshBasicMaterial({ color: 0xffffff, map: texture })
+          );
+
+          let cube = parentCubeRef.current.children.find(
+            (child) => child.position.x === (x - 2) * spacing &&
+                       child.position.y === (y - 2) * spacing &&
+                       child.position.z === (z - 2) * spacing
+          );
+
+          if (!cube) {
+            cube = new THREE.Mesh(new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize), materials);
+            cube.position.set((x - 2) * spacing, (y - 2) * spacing, (z - 2) * spacing);
+            parentCubeRef.current.add(cube);
+          } else {
+            cube.material = materials;
+          }
+        });
+      });
+    });
+  }, [cubeData, initialized]);
 
   const resetCamera = () => {
     if (cameraRef.current && controlsRef.current) {

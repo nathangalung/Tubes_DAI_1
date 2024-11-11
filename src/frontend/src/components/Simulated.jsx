@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { ArrowLeft } from "lucide-react";
 import Cube from "./Cube";
 import Chart from './Chart';
+import Player from './Player';
 
 export default function SimulatedAnnealingVisualization({
   initialCube,
@@ -12,8 +14,11 @@ export default function SimulatedAnnealingVisualization({
   iteration,
   localOptima,
   costs,
+  states,
   exps
 }) {
+  const [isPlayerOpen, setIsPlayerOpen] = useState(false);
+
   return (
     <div className="bg-[#0a0a0a] text-white font-['Space_Grotesk',system-ui,sans-serif] min-h-screen p-8 overflow-hidden">
       <div className="max-w-[1400px] mx-auto">
@@ -62,6 +67,12 @@ export default function SimulatedAnnealingVisualization({
                   <div className="text-2xl font-semibold text-[#8b5cf6]">{metric.value}</div>
                 </div>
               ))}
+              <button
+                onClick={() => setIsPlayerOpen(true)}
+                className="mt-4 bg-[#8b5cf6] text-white rounded-lg py-2 px-4 hover:bg-[#7a4bd1] transition w-[185px]"
+              >
+                Replay
+              </button>
             </div>
           </div>
 
@@ -75,12 +86,21 @@ export default function SimulatedAnnealingVisualization({
           <div className="bg-[#16181d] rounded-lg p-6">
             <Chart 
                 costs={exps} 
-                title="Simulated Annealing Acceptance Probability vs IterationPlot" 
+                title="Simulated Annealing Acceptance Probability vs Iteration Plot" 
                 useIterationInterval={true}
               />
           </div>
         </div>
       </div>
+
+      {isPlayerOpen && (
+        <Player
+          onClose={() => setIsPlayerOpen(false)}
+          states={states}
+          iteration={iteration}
+          localOptima={localOptima}
+        />
+      )}
     </div>
   );
 };

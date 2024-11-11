@@ -1,3 +1,4 @@
+import copy
 import time
 import random
 from . import utils
@@ -23,7 +24,8 @@ def random_restart_algorithm(cube, max_iteration_per_restart=1000, max_restart=1
     best_cube = [[[cube[i][j][k] for k in range(N)] for j in range(N)] for i in range(N)]
     best_cost = current_cost
     restart = 0
-    costs = []  # Track cost at each iteration
+    costs = []
+    states = []
     iteration_restart = []
     
     start_time = time.time()
@@ -49,6 +51,7 @@ def random_restart_algorithm(cube, max_iteration_per_restart=1000, max_restart=1
                     best_cost = current_cost
             iteration += 1
             costs.append(current_cost)
+            states.append(copy.deepcopy(current_cube))
 
         # Setelah maksimal iterasi per restart, restart dengan random cube
         current_cube = utils.initialize_random_cube(N)
@@ -66,5 +69,6 @@ def random_restart_algorithm(cube, max_iteration_per_restart=1000, max_restart=1
         "iteration": len(costs),
         "iteration_restart": iteration_restart,
         "restart": restart,
-        "costs": costs
+        "costs": costs,
+        "states": states
     }
