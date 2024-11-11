@@ -107,6 +107,7 @@ const Cube = ({ magic_cube, fetchCubeData }) => {
     };
   }, []);
 
+  // Update only necessary cubes
   useEffect(() => {
     if (!initialized || !cubeData) return;
 
