@@ -1,9 +1,10 @@
 import random
 import time
+from typing import List, Tuple
 from . import utils
 
 #fungsi untuk swap
-def swap(cube, posisi1, posisi2):
+def swap(cube: List[List[List[int]]], posisi1: Tuple[int, int, int], posisi2: Tuple[int, int, int]) -> None:
     i1, j1, k1 = posisi1
     i2, j2, k2 = posisi2
     cube[i1][j1][k1], cube[i2][j2][k2] = cube[i2][j2][k2], cube[i1][j1][k1]
