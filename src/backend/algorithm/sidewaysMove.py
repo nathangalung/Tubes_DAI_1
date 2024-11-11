@@ -14,27 +14,27 @@ def find_best_neighbor(cube: List[List[List[int]]], N: int, all_pairs: List[Tupl
                       best_cost: int, max_sideways: int, sideways: int) -> Tuple[int, Tuple[int, int, int, int, int, int]]:
     """Finds best neighbor using random pair selection."""
     best_neighbor_cost = best_cost
-    best_swap = (-1, -1, -1, -1, -1, -1) #Default for invalid swap
+    best_swap = (-1, -1, -1, -1, -1, -1) #Default untuk swap yang invalid
     
-    # Shuffle pairs for random search
+    # Shuffle pasangan untuk random search
     random.shuffle(all_pairs)
     
     for pos1, pos2 in all_pairs:
-        # Swap elements and check cost
+        # Swap tiap elemen dan cek cost
         swap_elements(cube, pos1, pos2)
         new_cost = utils.objective_function(cube)
         
-        # Update if new cost is better or sideways move allowed
+        # Update jika new cost lebih baik atau bisa sideways move
         if new_cost < best_neighbor_cost or (new_cost == best_neighbor_cost and sideways < max_sideways):
             best_neighbor_cost = new_cost
             i, j, k = pos1
             l, m, n = pos2
             best_swap = (i, j, k, l, m, n)
 
-        # Revert the swap    
+        # Membalikkan swap ke yang semula  
         swap_elements(cube, pos1, pos2)
         
-        # Break if improvement found
+        # Break jika ditemukan cost yang lebih baik
         if new_cost < best_neighbor_cost:
             break
             
@@ -50,10 +50,10 @@ def sideways_move_algorithm(cube: List[List[List[int]]], max_sideways: int = 10)
     iteration = 0
     sideways = 0
 
-    # Start the timer
+    # Mulai timer
     start_time = time.time()
     
-    # Generate all possible pairs of positions in the cube
+    # Generate seluruh pasangan yang mungkin
     all_positions = [(i//(N*N), (i//N)%N, i%N) for i in range(N*N*N)]
     all_pairs = []
     for i in range(len(all_positions)):
@@ -61,18 +61,18 @@ def sideways_move_algorithm(cube: List[List[List[int]]], max_sideways: int = 10)
             all_pairs.append((all_positions[i], all_positions[j]))
     
     while True:
-        # Get the best neighbor
+        # Cari tetangga yang lebih baik
         best_neighbor_cost, best_swap = find_best_neighbor(cube, N, all_pairs, best_cost, max_sideways, sideways)
         
-        # Stop if no better neighbor found
+        # Stop jika tidak menemukan tetangga yang lebih baik
         if best_swap == (-1, -1, -1, -1, -1, -1):
             break
 
-        # Perform the best swap    
+        # Perform swap yang terbaik  
         i, j, k, l, m, n = best_swap
         swap_elements(cube, (i, j, k), (l, m, n))
         
-        # Update cost and check sideways moves
+        # Update cost dan check sideways move
         if best_neighbor_cost < best_cost:
             best_cost = best_neighbor_cost
             sideways = 0
@@ -85,7 +85,7 @@ def sideways_move_algorithm(cube: List[List[List[int]]], max_sideways: int = 10)
         states.append(copy.deepcopy(cube))
         iteration += 1
     
-    # Calculate total duration
+    # Menghitung total durasi
     duration = time.time() - start_time
     
     return {
